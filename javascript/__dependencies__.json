@@ -1,0 +1,10 @@
+{
+	"SUIT": false,
+	"Object": ["SUIT"],
+	"Allocation": false,
+	"Widget": ["Allocation", "Object"],
+	"Bin": ["Container", "Widget"],
+	"Container": ["Object"],
+	"Screen": ["Bin"],
+	"Label": ["Widget"]
+}

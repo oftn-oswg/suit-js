@@ -1,0 +1,28 @@
+<!DOCTYPE html> 
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US"> 
+<head> 
+<meta charset="utf-8"/> 
+<title>SUIT Canvas Toolkit Demo</title> 
+</head> 
+<body> 
+ 
+<div id="container" style="width: 640px; height: 480px;"> 
+	Loading...
+</div> 
+ 
+<script src="javascript/Allocation.js" type="application/ecmascript"></script> 
+<script src="javascript/SUIT.js" type="application/ecmascript"></script> 
+<script src="javascript/Object.js" type="application/ecmascript"></script> 
+<script src="javascript/Container.js" type="application/ecmascript"></script> 
+<script src="javascript/Widget.js" type="application/ecmascript"></script> 
+<script src="javascript/Label.js" type="application/ecmascript"></script> 
+<script src="javascript/Bin.js" type="application/ecmascript"></script> 
+<script src="javascript/Screen.js" type="application/ecmascript"></script> 
+ 
+<script type="application/ecmascript"> 
+var screen = new Screen(document.getElementById('container'));
+var label = new Label("Lorem ipsum, dolor sit amet, consectetuer adipscing elit.");
+screen.set_child (label);
+</script> 
+</body> 
+</html>
