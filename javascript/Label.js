@@ -1,4 +1,5 @@
 var Label = function(text) {
+	Widget.call(this);
 	this.text = text;
 	this.align = "left";
 };
@@ -16,7 +17,7 @@ Label.prototype.draw = function() {
 	context.textAlign = "left";
 	context.textBaseline = "top";
 	context.font = "16px sans-serif";
-	context.fillText (this.text, 0, 0);
+	context.fillText (this.text, this.allocation.x, this.allocation.y);
 };
 
 Label.prototype.get_preferred_size = function(orientation) {

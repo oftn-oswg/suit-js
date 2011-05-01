@@ -6,5 +6,6 @@
 	"Bin": ["Container", "Widget"],
 	"Container": ["Object"],
 	"Screen": ["Bin"],
-	"Label": ["Widget"]
+	"Label": ["Widget"],
+	"Button": ["Bin"]
 }

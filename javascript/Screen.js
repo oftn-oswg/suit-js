@@ -2,6 +2,7 @@ var Screen = function(parentnode) {
 	Bin.call(this);
 	
 	this.update_timer = null;
+	this.throttling = false;
 	
 	var w, h;
 	
@@ -22,12 +23,23 @@ var Screen = function(parentnode) {
 	
 	this.canvas.width = w;
 	this.canvas.height = h;
+	
+	
+	this.canvas.onmousedown = function() {
+		this.child.pressed = true;
+		this.child.invalidate();
+	}.bind(this);
+	this.canvas.onmouseup = function() {
+		this.child.pressed = false;
+		this.child.invalidate();
+	}.bind(this);
 
 };
 Screen.prototype = SUIT.construct_prototype(Bin);
 Screen.prototype.set_child = function(widget) {
 	Bin.prototype.set_child.call(this, widget);
-	this.child.set_allocation (new Allocation (this.width, this.height));
+	//this.child.set_allocation (new Allocation (0, 0, this.width, this.height));
+	this.child.set_allocation (new Allocation (25, 25, 80, 25));
 	this.invalidate();
 };
 
@@ -35,16 +47,21 @@ Screen.prototype.invalidate = function() {
 	if (this.update_timer) {
 		clearTimeout(this.update_timer);
 	}
-	this.update_timer = setTimeout(this.draw.bind(this), 100);
+	if (this.throttling)
+		this.update_timer = setTimeout(this.draw.bind(this), 100);
+	else
+		this.draw();
 };
 
 Screen.prototype.draw = function() {
 	console.log("Drawing child");
 	var context = this.context;
-	context.save();
 	
-	context.fillStyle = "rgb(225,225,255)";
-	context.fillRect (0, 0, this.width, this.height);
+	context.save();
+	context.translate(0.5, 0.5); // Make everything align to the middle of the pixel
+	
+	context.fillStyle = "#191919";
+	context.fillRect (-1, -1, this.width+1, this.height+1);
 	
 	this.child.draw ();
 	

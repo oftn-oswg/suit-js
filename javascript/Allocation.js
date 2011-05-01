@@ -1,4 +1,6 @@
-var Allocation = function(width, height) {
+var Allocation = function(x, y, width, height) {
+	this.x = x;
+	this.y = y;
 	this.width = width;
 	this.height = height;
 };

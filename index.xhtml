@@ -3,6 +3,7 @@
 <head> 
 <meta charset="utf-8"/> 
 <title>SUIT Canvas Toolkit Demo</title> 
+<link href="http://fonts.googleapis.com/css?family=Cabin:400,400italic,500,500italic,600,600italic,bold,bolditalic" rel="stylesheet" type="text/css"/> 
 </head> 
 <body> 
  
@@ -17,12 +18,13 @@
 <script src="javascript/Widget.js" type="application/ecmascript"></script> 
 <script src="javascript/Label.js" type="application/ecmascript"></script> 
 <script src="javascript/Bin.js" type="application/ecmascript"></script> 
+<script src="javascript/Button.js" type="application/ecmascript"></script> 
 <script src="javascript/Screen.js" type="application/ecmascript"></script> 
  
 <script type="application/ecmascript"> 
-var screen = new Screen(document.getElementById('container'));
-var label = new Label("Lorem ipsum, dolor sit amet, consectetuer adipscing elit.");
-screen.set_child (label);
+var suit_screen = new Screen(document.getElementById('container'));
+var button = new Button();
+suit_screen.set_child (button);
 </script> 
 </body> 
 </html>

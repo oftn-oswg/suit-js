@@ -7,6 +7,7 @@ require './php/ui.inc.php';
 <head>
 <meta charset="utf-8"/>
 <title>SUIT Canvas Toolkit Demo</title>
+<link href="http://fonts.googleapis.com/css?family=Cabin:400,400italic,500,500italic,600,600italic,bold,bolditalic" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 
@@ -20,9 +21,9 @@ try {
 	$ui->output_scripts(); ?>
 
 <script type="application/ecmascript">
-var screen = new Screen(document.getElementById('container'));
-var label = new Label("Lorem ipsum, dolor sit amet, consectetuer adipscing elit.");
-screen.set_child (label);
+var suit_screen = new Screen(document.getElementById('container'));
+var button = new Button();
+suit_screen.set_child (button);
 </script>
 <?php
 } catch ( DependenciesUnresolvedException $e ) {
