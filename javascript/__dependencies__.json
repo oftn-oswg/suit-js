@@ -1,8 +1,9 @@
 {
+	"Graphics": false,
 	"SUIT": false,
 	"Object": ["SUIT"],
 	"Allocation": false,
-	"Widget": ["Allocation", "Object"],
+	"Widget": ["Allocation", "Object", "Graphics"],
 	"Bin": ["Container", "Widget"],
 	"Container": ["Object"],
 	"Screen": ["Bin"],

@@ -14,7 +14,7 @@ var Screen = function(parentnode) {
 		alert("Your browser does not have canvas support.");
 		return false;
 	}
-	this.context = this.canvas.getContext("2d");
+	this.context = new Graphics(this.canvas.getContext("2d"));
 	
 	while (parentnode.hasChildNodes()) {
 		parentnode.removeChild(parentnode.lastChild);
@@ -58,10 +58,9 @@ Screen.prototype.draw = function() {
 	var context = this.context;
 	
 	context.save();
-	context.translate(0.5, 0.5); // Make everything align to the middle of the pixel
 	
-	context.fillStyle = "#191919";
-	context.fillRect (-1, -1, this.width+1, this.height+1);
+	context.set_fill_stroke ("#191919");
+	context.rect (0, 0, this.width, this.height);
 	
 	this.child.draw ();
 	

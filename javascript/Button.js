@@ -9,53 +9,46 @@ Button.prototype.draw = function() {
 	var a = this.allocation;
 	
 	// TODO: Move this into a theme class
-	context.shadowOffsetX = 0;
-	context.shadowOffsetY = 0;
-	context.shadowBlur = 5;
-	context.shadowColor = "#000";
+	context.set_shadow (0, 0, 5, "#000");
 	
-	var gradient = context.createLinearGradient(a.x, a.y, a.x, a.y+a.height);
+	var stops;
 	if (!this.pressed) {
-		gradient.addColorStop(0, '#3f3f3f');
-		gradient.addColorStop(1, '#2e2e2e');
+		stops = [
+			[0, "#3f3f3f"],
+			[1, "#2e2e2e"]
+		];
 	} else {
-		gradient.addColorStop(0, '#2e2e2e');
-		gradient.addColorStop(1, '#3f3f3f');
+		stops = [
+			[0, "#2e2e2e"],
+			[1, "#3f3f3f"]
+		];
 	}
 	
-	context.fillStyle = gradient;
-	context.fillRect(a.x, a.y, a.width, a.height);
+	context.set_fill_stroke (
+		context.create_linear_gradient (a.x, a.y, a.x, a.y+a.height, stops),
+		"#575757");
+	context.rect(a.x, a.y, a.width, a.height);
 	
+	context.set_shadow();
 	
-	context.shadowOffsetX = 0;
-	context.shadowOffsetY = 0;
-	context.shadowBlur = 0;
-	context.shadowColor = "transparent";
+	context.set_stroke_style (1, "butt", "miter");
+	context.path([
+		[a.x,           a.y + a.height],
+		[a.x,           a.y],
+		[a.x + a.width, a.y],
+		[a.x + a.width, a.y + a.height]
+	]);
 	
-	context.strokeStyle = "#575757";
-	context.lineWidth = 1;
-	context.lineCap = "butt";
-	context.beginPath();
-	context.moveTo(a.x, a.y+a.height);
-	context.lineTo(a.x, a.y);
-	context.lineTo(a.x+a.width, a.y);
-	context.lineTo(a.x+a.width, a.y+a.height);
-	context.stroke();
-	
-	context.strokeStyle = "#0b0b0b";
-	context.beginPath();
-	context.moveTo(a.x+a.width, a.y+a.height);
-	context.lineTo(a.x, a.y+a.height);
-	context.stroke();
+	context.set_fill_stroke ("#ffffff", "#0b0b0b");
+	context.path([
+		[a.x + a.width, a.y + a.height],
+		[a.x,           a.y + a.height]
+	]);
 	
 	// Demonstration purposes
-	context.fillStyle = "#fff";
-	context.font = "16px Cabin";
-	context.textAlign = "center";
-	context.textBaseline = "top";
+	context.set_font_style ("16px Cabin", "center", "top");
 	
-	context.fillText("Button", (a.x + a.width/2) |0, a.y+1+(this.pressed?1:0));
-	//#0b0b0b
+	context.text("Button", (a.x + a.width/2) |0, a.y+2+(this.pressed?1:0));
 };
 
 Button.prototype.get_request_mode = function() {
