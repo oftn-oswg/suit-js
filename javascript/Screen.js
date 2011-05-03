@@ -2,7 +2,7 @@ var Screen = function(parentnode) {
 	Bin.call(this);
 	
 	this.update_timer = null;
-	this.throttling = false;
+	this.throttling = true;
 	
 	var w, h;
 	
@@ -25,9 +25,15 @@ var Screen = function(parentnode) {
 	this.canvas.height = h;
 	
 	
-	this.canvas.onmousedown = function() {
-		this.child.pressed = true;
-		this.child.invalidate();
+	this.canvas.onmousedown = function(e) {
+		var coords = SUIT.get_mouse_coordinates(this.canvas, e);
+		if (coords[0] >= this.child.allocation.x &&
+			coords[0] <= this.child.allocation.x + this.child.allocation.width &&
+			coords[1] >= this.child.allocation.y &&
+			coords[1] <= this.child.allocation.y + this.child.allocation.height) {
+			this.child.pressed = true;
+			this.child.invalidate();
+		}
 	}.bind(this);
 	this.canvas.onmouseup = function() {
 		this.child.pressed = false;
@@ -38,8 +44,8 @@ var Screen = function(parentnode) {
 Screen.prototype = SUIT.construct_prototype(Bin);
 Screen.prototype.set_child = function(widget) {
 	Bin.prototype.set_child.call(this, widget);
-	//this.child.set_allocation (new Allocation (0, 0, this.width, this.height));
-	this.child.set_allocation (new Allocation (25, 25, 80, 25));
+	//this.child.set_allocation (new Allocation (5, 5, this.width-10, this.height-10));
+	this.child.set_allocation (new Allocation (this.width/2-50, this.height/2-16, 100, 32));
 	this.invalidate();
 };
 
@@ -48,21 +54,17 @@ Screen.prototype.invalidate = function() {
 		clearTimeout(this.update_timer);
 	}
 	if (this.throttling)
-		this.update_timer = setTimeout(this.draw.bind(this), 100);
+		this.update_timer = setTimeout(this.draw.bind(this), 50);
 	else
 		this.draw();
 };
 
 Screen.prototype.draw = function() {
-	console.log("Drawing child");
 	var context = this.context;
 	
 	context.save();
-	
 	context.set_fill_stroke ("#191919");
 	context.rect (0, 0, this.width, this.height);
-	
 	this.child.draw ();
-	
 	context.restore();
 };

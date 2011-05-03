@@ -5,7 +5,21 @@ var SUIT = {
 		return new f();
 	},
 	HORIZONTAL: 1,
-	VERTICAL: 2
+	VERTICAL: 2,
+	get_mouse_coordinates: function(canvas, e) {
+		var x = 0;
+		var y = 0;
+		if (e.pageX || e.pageY) { 
+			x = e.pageX;
+			y = e.pageY;
+		} else { 
+			x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+			y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+		}
+		x -= canvas.offsetLeft;
+		y -= canvas.offsetTop;
+		return [x, y];
+	}
 };
 
 if (!Function.prototype.bind) {

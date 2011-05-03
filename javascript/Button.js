@@ -10,7 +10,10 @@ Button.prototype.draw = function() {
 	
 	// TODO: Move this into a theme class
 	context.set_shadow (0, 0, 5, "#000");
-	
+	context.rect(a.x, a.y, a.width, a.height);
+		// Safari can't do shadows on shapes with gradients I guess
+	context.set_shadow();
+
 	var stops;
 	if (!this.pressed) {
 		stops = [
@@ -28,27 +31,27 @@ Button.prototype.draw = function() {
 		context.create_linear_gradient (a.x, a.y, a.x, a.y+a.height, stops),
 		"#575757");
 	context.rect(a.x, a.y, a.width, a.height);
-	
-	context.set_shadow();
-	
+		
 	context.set_stroke_style (1, "butt", "miter");
 	context.path([
-		[a.x,           a.y + a.height],
+		[a.x,           a.y + a.height - 1],
 		[a.x,           a.y],
-		[a.x + a.width, a.y],
-		[a.x + a.width, a.y + a.height]
+		[a.x + a.width - 1, a.y],
+		[a.x + a.width - 1, a.y + a.height - 1]
 	]);
 	
 	context.set_fill_stroke ("#ffffff", "#0b0b0b");
 	context.path([
-		[a.x + a.width, a.y + a.height],
-		[a.x,           a.y + a.height]
+		[a.x + a.width - 1, a.y + a.height - 1],
+		[a.x,           a.y + a.height - 1]
 	]);
 	
 	// Demonstration purposes
-	context.set_font_style ("16px Cabin", "center", "top");
-	
-	context.text("Button", (a.x + a.width/2) |0, a.y+2+(this.pressed?1:0));
+	context.set_shadow (1, 1, 1, "black");
+	context.set_font_style ("16px Cabin, sans-serif", "center", "middle");
+	var top = a.y+((a.height-1)/2);
+	context.text("Button", (a.x + (a.width-1)/2) |0, top+(this.pressed?1:0));
+	context.set_shadow ();
 };
 
 Button.prototype.get_request_mode = function() {

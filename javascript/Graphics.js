@@ -54,10 +54,10 @@ Graphics.prototype.create_linear_gradient = function(x, y, x2, y2, data) {
 Graphics.prototype.set_stroke_style = function(width, cap, linejoin, miterlimit) {
 	if (typeof width !== "undefined" && width !== null) this.cc.lineWidth = width;
 	// butt, round, square
-	if (typeof cap !== "undefined" && cap !== null) this.cc.lineCap = width;
+	if (typeof cap !== "undefined" && cap !== null) this.cc.lineCap = cap;
 	// bevel, round, miter
 	if (typeof linejoin !== "undefined" && linejoin !== null) this.cc.lineJoin = linejoin;
-	if (typeof miterlimit !== "undefined" && miterlimit !== null) this.cc.miterLimit = width;
+	if (typeof miterlimit !== "undefined" && miterlimit !== null) this.cc.miterLimit = miterlimit;
 };
 
 Graphics.prototype.set_font_style = function(font, align, baseline) {
@@ -74,6 +74,10 @@ Graphics.prototype.text = function(text, x, y, stroke, fill) {
 	
 	if (fill) this.cc.fillText (text, x, y);
 	if (stroke) this.cc.strokeText (text, x, y);
+};
+
+Graphics.prototype.text_width = function(text) {
+	return this.cc.measureText(text).width;
 };
 
 Graphics.prototype.set_fill_stroke = function(fill, stroke) {
