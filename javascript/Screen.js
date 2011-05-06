@@ -49,7 +49,7 @@ Screen.prototype.set_child = function(widget) {
 	this.invalidate();
 };
 
-Screen.prototype.invalidate = function() {
+Screen.prototype.queue_redraw = function() {
 	if (this.update_timer) {
 		clearTimeout(this.update_timer);
 	}

@@ -1,12 +1,13 @@
 {
 	"Graphics": false,
 	"SUIT": false,
+	"TextLayout": false,
 	"Object": ["SUIT"],
 	"Allocation": false,
 	"Widget": ["Allocation", "Object", "Graphics"],
 	"Bin": ["Container", "Widget"],
 	"Container": ["Object"],
 	"Screen": ["Bin"],
-	"Label": ["Widget"],
-	"Button": ["Bin"]
+	"Label": ["Widget", "TextLayout"],
+	"Button": ["Bin", "Label"]
 }
