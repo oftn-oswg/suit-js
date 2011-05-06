@@ -1,14 +1,10 @@
-var TextLayout = function(context) {
-	this.context = context;
+var TextLayout = function() {
 	this.text = "";
 	this.text_wrapped = [""];
 	
 	this.font_name = null;
 	this.font_size = null;
-	
-	this.line_sizes = [0];
-	this.word_sizes = [[0]];
-	this.space_width = 0;
+	this.line_height = null;
 	
 	this.align = "left";
 	this.width = null; // Infinite
@@ -24,9 +20,7 @@ TextLayout.canvas_context = (function() {
 })();
 
 TextLayout.prototype.text_width = function(string) {
-	var cc = TextLayout.canvas_context;
-	//cc.font = this.font;
-	return cc.measureText(string).width;
+	return TextLayout.canvas_context.measureText(string).width;
 };
 
 TextLayout.prototype.set_text = function (text) {
@@ -34,14 +28,18 @@ TextLayout.prototype.set_text = function (text) {
 	this.calculated = false;
 };
 
-TextLayout.prototype.set_font = function (font) {
-	this.font = font;
+TextLayout.prototype.set_font = function (font_name, font_size) {
+	this.font_name = font_name;
+	this.font_size = font_size;
 	this.calculated = false;
+};
+
+TextLayout.prototype.set_line_height = function (line_height) {
+	this.line_height = line_height;
 };
 
 TextLayout.prototype.set_align = function (align) {
 	this.align = align;
-	this.calculated = false;
 };
 
 TextLayout.prototype.set_width = function (width) {
@@ -49,26 +47,22 @@ TextLayout.prototype.set_width = function (width) {
 	this.calculated = false;
 };
 
+TextLayout.prototype.get_css_font_string = function() {
+	return this.font_size + "px \""+this.font_name+"\"";
+};
+
+// TODO: Implement this function
+TextLayout.prototype.get_index_at_pos = function() {};
+
 TextLayout.prototype.recalculate_layout = function() {
 	var line_split = this.text.split("\n"); // TODO: Regex
 	var number_of_lines = line_split.length;
 	
-	TextLayout.canvas_context.font = this.font_size + "px \""+this.font_name+"\"";
+	TextLayout.canvas_context.font = this.get_css_font_string();
 	
 	var text_wrapped = [];
 	
-	if (this.width === null) { // No bounding width on layout
-		var apparent_width = 0;
-		for (var i = 0; i < number_of_lines; i++) {
-			apparent_width = Math.max(apparent_width,
-				this.text_width (line_split[i]));
-		}
-		this.apparent_width = apparent_width;
-		this.apparent_height = this.font_size * number_of_lines;
-		
-		text_wrapped = line_split;
-		
-	} else { // Constrained to width
+	if (this.width) { // Constrained to width
 		for (var i = 0; i < number_of_lines; i++) {
 		
 			var line = line_split[i];
@@ -79,6 +73,8 @@ TextLayout.prototype.recalculate_layout = function() {
 			
 			var m, w;
 			
+			// FIXME: Change algorithm to wrap the last line of the paragraph as
+			// well, like it should.
 			while (m = line.substr(last_break_index).match(/. |-[^ ]/)) {
 				break_index += m.index+1;
 				
@@ -99,7 +95,35 @@ TextLayout.prototype.recalculate_layout = function() {
 			text_wrapped.push(line.substring(start_index).replace(/^\s+/, ""));
 			
 		}
+	} else {
+		text_wrapped = line_split;
 	}
+	
+	// FIXME: Avoid going through a second time to find longest line
+	var apparent_width = 0;
+	for (var i = 0, len = text_wrapped.length; i < len; i++) {
+		apparent_width = Math.max(apparent_width, this.text_width(text_wrapped[i]));
+	}
+	
+	this.apparent_width = apparent_width;
+	this.apparent_height = this.line_height * text_wrapped.length;
+	
 	this.calculated = true;
 	this.text_wrapped = text_wrapped;
+};
+
+TextLayout.prototype.render = function(context, x, y) {
+	if (!this.calculated) this.recalculate_layout();
+	
+	context.save();
+	context.font = this.get_css_font_string();
+	context.textBaseline = "top";
+	context.textAlign = this.align;
+	
+	for (var i = 0, len = this.text_wrapped.length; i < len; i++) {
+		context.fillText(this.text_wrapped[i], x,
+			(y + i * this.line_height + (this.line_height/2-this.font_size/2)) | 0 );
+	};
+	
+	context.restore();
 };
