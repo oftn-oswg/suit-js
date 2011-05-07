@@ -7,6 +7,13 @@ var Button = function(text) {
 		this.child.set_valign ("middle");
 	}
 	this.connect("add", this.on_event_add);
+	
+	this.style = {
+		padding_top: 10,
+		padding_bottom: 10,
+		padding_left: 10,
+		padding_right: 10
+	};
 };
 Button.prototype = SUIT.construct_prototype(Bin);
 
@@ -64,10 +71,10 @@ Button.prototype.set_allocation = function(allocation) {
 	Widget.prototype.set_allocation.call(this, allocation);
 	if (this.child) {
 		this.child.set_allocation(new Allocation(
-			allocation.x + 10,
-			allocation.y + 10,
-			allocation.width - 20,
-			allocation.height - 20
+			allocation.x + this.style.padding_left,
+			allocation.y + this.style.padding_top,
+			allocation.width - this.style.padding_left - this.style.padding_right - 1,
+			allocation.height - this.style.padding_top - this.style.padding_bottom - 1
 		));
 	}
 };
