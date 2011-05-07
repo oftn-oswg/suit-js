@@ -7,11 +7,33 @@ require './php/ui.inc.php';
 <head>
 <meta charset="utf-8"/>
 <title>SUIT Canvas Toolkit Demo</title>
-<link href="http://fonts.googleapis.com/css?family=Cabin:400,400italic,500,500italic,600,600italic,bold,bolditalic" rel="stylesheet" type="text/css"/>
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+html, body {
+	background-color: #000;
+	text-align: center;
+	color: #fff;
+	font-family: sans-serif;
+	font-weight: bold;
+}
+#container {
+	width: 640px;
+	height: 480px;
+	text-align: left;
+	position: absolute;
+	margin-left: -320px;
+	margin-top: -240px;
+	top: 50%;
+	left: 50%;
+}
+</style>
 </head>
 <body>
 
-<div id="container" style="width: 640px; height: 480px;">
+<div id="container">
 	Loading...
 </div>
 

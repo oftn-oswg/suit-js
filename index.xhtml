@@ -1,28 +1,52 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US"> 
-<head> 
-<meta charset="utf-8"/> 
-<title>SUIT Canvas Toolkit Demo</title> 
-<link href="http://fonts.googleapis.com/css?family=Cabin:400,400italic,500,500italic,600,600italic,bold,bolditalic" rel="stylesheet" type="text/css"/> 
-</head> 
-<body> 
- 
-<div id="container" style="width: 640px; height: 480px;"> 
+<head>
+<meta charset="utf-8"/>
+<title>SUIT Canvas Toolkit Demo</title>
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+html, body {
+	background-color: #000;
+	text-align: center;
+	color: #fff;
+	font-family: sans-serif;
+	font-weight: bold;
+}
+#container {
+	width: 640px;
+	height: 480px;
+	text-align: left;
+	position: absolute;
+	margin-left: -320px;
+	margin-top: -240px;
+	top: 50%;
+	left: 50%;
+}
+</style>
+</head>
+<body>
+
+<div id="container">
 	Loading...
-</div> 
- 
-<script src="javascript/Allocation.js" type="application/ecmascript"></script> 
-<script src="javascript/TextLayout.js" type="application/ecmascript"></script> 
-<script src="javascript/SUIT.js" type="application/ecmascript"></script> 
-<script src="javascript/Object.js" type="application/ecmascript"></script> 
-<script src="javascript/Container.js" type="application/ecmascript"></script> 
-<script src="javascript/Graphics.js" type="application/ecmascript"></script> 
-<script src="javascript/Widget.js" type="application/ecmascript"></script> 
-<script src="javascript/Label.js" type="application/ecmascript"></script> 
-<script src="javascript/Bin.js" type="application/ecmascript"></script> 
-<script src="javascript/Button.js" type="application/ecmascript"></script> 
-<script src="javascript/Screen.js" type="application/ecmascript"></script> 
- 
+</div>
+
+<script src="javascript/Allocation.js" type="application/ecmascript"></script>
+
+<script src="javascript/TextLayout.js" type="application/ecmascript"></script>
+<script src="javascript/SUIT.js" type="application/ecmascript"></script>
+<script src="javascript/Object.js" type="application/ecmascript"></script>
+<script src="javascript/Container.js" type="application/ecmascript"></script>
+<script src="javascript/Graphics.js" type="application/ecmascript"></script>
+<script src="javascript/Widget.js" type="application/ecmascript"></script>
+<script src="javascript/Label.js" type="application/ecmascript"></script>
+<script src="javascript/Bin.js" type="application/ecmascript"></script>
+<script src="javascript/Button.js" type="application/ecmascript"></script>
+
+<script src="javascript/Screen.js" type="application/ecmascript"></script>
+
 <script type="application/ecmascript">
 
 var counter = 0;
@@ -33,6 +57,6 @@ button.connect("activate", function() {
 });
 suit_screen.set_child (button);
 
-</script> 
-</body> 
+</script>
+</body>
 </html>

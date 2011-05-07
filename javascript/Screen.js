@@ -65,6 +65,8 @@ Screen.prototype.queue_redraw = function() {
 Screen.prototype.draw = function() {
 	var context = this.context;
 	
+	console.log("Executing redraw");
+	
 	context.save();
 	context.set_fill_stroke ("#191919");
 	context.rect (0, 0, this.width, this.height);
