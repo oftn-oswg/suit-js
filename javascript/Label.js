@@ -1,31 +1,31 @@
-var Label = function(text) {
-	Widget.call(this);
+suit.Label = function(text) {
+	suit.Widget.call(this);
 	this.valign = "top"; // top, middle, bottom
-	this.layout = new TextLayout();
+	this.layout = new suit.TextLayout();
 	this.layout.set_font("Droid Sans", 16);
 	if (text) {
 		this.layout.set_text(text);
 	}
 };
-Label.prototype = SUIT.construct_prototype(Widget);
+suit.Label.prototype = suit.Widget.inherit();
 
-Label.prototype.set_text = function(text) {
+suit.Label.prototype.set_text = function(text) {
 	this.layout.set_text(text);
 };
 
-Label.prototype.set_align = function(align) {
+suit.Label.prototype.set_align = function(align) {
 	this.layout.set_align (align);
 };
 
-Label.prototype.set_valign = function(valign) {
+suit.Label.prototype.set_valign = function(valign) {
 	this.valign = valign;
 };
 
-Label.prototype.draw = function(context) {
+suit.Label.prototype.draw = function(context) {
 
 	var height, x, y;
 	context.set_fill_stroke ("#fff");
-	
+
 	switch (this.valign) {
 	case "top":
 		y = this.allocation.y; break;
@@ -38,7 +38,7 @@ Label.prototype.draw = function(context) {
 		y = this.allocation.y + this.allocation.height - height - 1;
 		break;
 	}
-	
+
 	switch (this.layout.align) {
 	case "left":
 		x = this.allocation.x; break;
@@ -47,16 +47,16 @@ Label.prototype.draw = function(context) {
 	case "right":
 		x = this.allocation.x + this.allocation.width - 1;
 	}
-	
+
 	this.layout.render(context.cc, x, y);
 };
 
-Label.prototype.set_allocation = function(allocation) {
-	Widget.prototype.set_allocation.call(this, allocation);
+suit.Label.prototype.set_allocation = function(allocation) {
+	suit.Widget.prototype.set_allocation.call(this, allocation);
 	this.layout.set_width(allocation.width);
 };
 
-Label.prototype.get_preferred_size = function(orientation) {
+suit.Label.prototype.get_preferred_size = function(orientation) {
 	var m = 0, n;
 	if (orientation === SUIT.HORIZONTAL) {
 		for (var i = 0, len = this.word_sizes.length; i < len; i++) {
@@ -64,24 +64,24 @@ Label.prototype.get_preferred_size = function(orientation) {
 			m = (lm > m) ? lm : m;
 		}
 		n = Math.max.apply(null, this.line_sizes);
-		return new RequestedSize(m, n);
+		return new suit.RequestedSize(m, n);
 	} else {
 		m = this.line_sizes.length * this.line_height;
 		n = m;
-		return new RequestedSize(m, n);
+		return new suit.RequestedSize(m, n);
 	}
 };
 
-Label.prototype.get_request_mode = function() {
+suit.Label.prototype.get_request_mode = function() {
 	return SizeRequestMode.HEIGHT_FOR_WIDTH; // TODO: Rotatable text labels
 };
-Label.prototype.get_preferred_width = function() {
+suit.Label.prototype.get_preferred_width = function() {
 	return this.get_preferred_size (SUIT.HORIZONTAL);
 };
-Label.prototype.get_preferred_height = function() {
+suit.Label.prototype.get_preferred_height = function() {
 	return this.get_preferred_size (SUIT.VERTICAL);
 };
-Label.prototype.get_preferred_height_for_width = function(width) {
+suit.Label.prototype.get_preferred_height_for_width = function(width) {
 	var space_left = width;
 	var word_width;
 	var number_of_lines = 0;
@@ -98,9 +98,8 @@ Label.prototype.get_preferred_height_for_width = function(width) {
 		}
 	}
 	var height = number_of_lines * this.line_height;
-	return new RequestedSize(height, height);
+	return new suit.RequestedSize(height, height);
 };
-Label.prototype.get_preferred_width_for_height = function(height) {
+suit.Label.prototype.get_preferred_width_for_height = function(height) {
 	return this.get_preferred_size (SUIT.HORIZONTAL);
 };
-

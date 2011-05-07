@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US"> 
-<head>
-<meta charset="utf-8"/>
-<title>SUIT Canvas Toolkit Demo</title>
-<style type="text/css">
+<head> 
+<meta charset="utf-8"/> 
+<title>SUIT Canvas Toolkit Demo</title> 
+<style type="text/css"> 
 * {
 	margin: 0;
 	padding: 0;
@@ -25,38 +25,35 @@ html, body {
 	top: 50%;
 	left: 50%;
 }
-</style>
-</head>
-<body>
-
-<div id="container">
+</style> 
+</head> 
+<body> 
+ 
+<div id="container"> 
 	Loading...
-</div>
-
-<script src="javascript/Allocation.js" type="application/ecmascript"></script>
-
-<script src="javascript/TextLayout.js" type="application/ecmascript"></script>
-<script src="javascript/SUIT.js" type="application/ecmascript"></script>
-<script src="javascript/Object.js" type="application/ecmascript"></script>
-<script src="javascript/Container.js" type="application/ecmascript"></script>
-<script src="javascript/Graphics.js" type="application/ecmascript"></script>
-<script src="javascript/Widget.js" type="application/ecmascript"></script>
-<script src="javascript/Label.js" type="application/ecmascript"></script>
-<script src="javascript/Bin.js" type="application/ecmascript"></script>
-<script src="javascript/Button.js" type="application/ecmascript"></script>
-
-<script src="javascript/Screen.js" type="application/ecmascript"></script>
-
-<script type="application/ecmascript">
-
+</div> 
+ 
+<script src="javascript/SUIT.js" type="application/ecmascript"></script> 
+<script src="javascript/Allocation.js" type="application/ecmascript"></script> 
+<script src="javascript/Object.js" type="application/ecmascript"></script> 
+<script src="javascript/TextLayout.js" type="application/ecmascript"></script> 
+<script src="javascript/Graphics.js" type="application/ecmascript"></script> 
+<script src="javascript/Widget.js" type="application/ecmascript"></script> 
+<script src="javascript/Label.js" type="application/ecmascript"></script> 
+<script src="javascript/Bin.js" type="application/ecmascript"></script> 
+<script src="javascript/Button.js" type="application/ecmascript"></script> 
+<script src="javascript/Screen.js" type="application/ecmascript"></script> 
+ 
+<script type="application/ecmascript"> 
+ 
 var counter = 0;
-var suit_screen = new Screen(document.getElementById('container'));
-var button = new Button("Hello, world!");
+var suit_screen = new suit.Screen(document.getElementById('container'));
+var button = new suit.Button("Hello, world!");
 button.connect("activate", function() {
 	this.child.set_text("Hello, click "+(++counter)+"!");
 });
 suit_screen.set_child (button);
-
-</script>
-</body>
+ 
+</script> 
+</body> 
 </html>

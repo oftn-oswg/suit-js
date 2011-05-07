@@ -1,4 +1,4 @@
-var TextLayout = function() {
+suit.TextLayout = function() {
 	this.text = "";
 	this.text_wrapped = [""];
 	
@@ -14,51 +14,51 @@ var TextLayout = function() {
 	this.apparent_height = null;
 };
 
-TextLayout.canvas_context = (function() {
+suit.TextLayout.canvas_context = (function() {
 	var c = document.createElement('canvas');
 	return c.getContext('2d');
 })();
 
-TextLayout.prototype.text_width = function(string) {
-	return TextLayout.canvas_context.measureText(string).width;
+suit.TextLayout.prototype.text_width = function(string) {
+	return suit.TextLayout.canvas_context.measureText(string).width;
 };
 
-TextLayout.prototype.set_text = function (text) {
+suit.TextLayout.prototype.set_text = function (text) {
 	this.text = text;
 	this.calculated = false;
 };
 
-TextLayout.prototype.set_font = function (font_name, font_size) {
+suit.TextLayout.prototype.set_font = function (font_name, font_size) {
 	this.font_name = font_name;
 	this.font_size = font_size;
 	this.calculated = false;
 };
 
-TextLayout.prototype.set_line_height = function (line_height) {
+suit.TextLayout.prototype.set_line_height = function (line_height) {
 	this.line_height = line_height;
 };
 
-TextLayout.prototype.set_align = function (align) {
+suit.TextLayout.prototype.set_align = function (align) {
 	this.align = align;
 };
 
-TextLayout.prototype.set_width = function (width) {
+suit.TextLayout.prototype.set_width = function (width) {
 	this.width = width;
 	this.calculated = false;
 };
 
-TextLayout.prototype.get_css_font_string = function() {
+suit.TextLayout.prototype.get_css_font_string = function() {
 	return this.font_size + "px \""+this.font_name+"\"";
 };
 
 // TODO: Implement this function
-TextLayout.prototype.get_index_at_pos = function() {};
+suit.TextLayout.prototype.get_index_at_pos = function() {};
 
-TextLayout.prototype.recalculate_layout = function() {
+suit.TextLayout.prototype.recalculate_layout = function() {
 	var line_split = this.text.split("\n"); // TODO: Regex
 	var number_of_lines = line_split.length;
 	
-	TextLayout.canvas_context.font = this.get_css_font_string();
+	suit.TextLayout.canvas_context.font = this.get_css_font_string();
 	
 	var text_wrapped = [];
 	
@@ -115,21 +115,21 @@ TextLayout.prototype.recalculate_layout = function() {
 	this.text_wrapped = text_wrapped;
 };
 
-TextLayout.prototype.get_apparent_height = function() {
+suit.TextLayout.prototype.get_apparent_height = function() {
 	if (!this.calculated) this.recalculate_layout();
 	return this.apparent_height;
 };
 
-TextLayout.prototype.get_apparent_width = function() {
+suit.TextLayout.prototype.get_apparent_width = function() {
 	if (!this.calculated) this.recalculate_layout();
 	return this.apparent_width;
 };
 
-TextLayout.prototype.get_line_height = function() {
+suit.TextLayout.prototype.get_line_height = function() {
 	return (this.line_height !== null) ? this.line_height : this.font_size;
 }
 
-TextLayout.prototype.render = function(context, x, y) {
+suit.TextLayout.prototype.render = function(context, x, y) {
 	if (!this.calculated) this.recalculate_layout();
 	
 	context.save();

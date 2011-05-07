@@ -1,8 +1,8 @@
-var BaseObject = function() {
+suit.Object = function() {
 	this.signals = {};
 };
 
-BaseObject.prototype.connect = function( signal, fn ) {
+suit.Object.prototype.connect = function( signal, fn ) {
 
 	if( typeof this.signals[signal] == 'undefined' ) {
 		this.signals[signal] = [];
@@ -14,7 +14,7 @@ BaseObject.prototype.connect = function( signal, fn ) {
 	return true;
 };
 
-BaseObject.prototype.disconnect = function( signal, fn ) {
+suit.Object.prototype.disconnect = function( signal, fn ) {
 
 	if( typeof this.signals[signal] == 'undefined' )
 		return false;
@@ -30,7 +30,7 @@ BaseObject.prototype.disconnect = function( signal, fn ) {
 
 };
 
-BaseObject.prototype.emit = function( signal ) {
+suit.Object.prototype.emit = function( signal ) {
 
 	if( typeof this.signals[signal] == 'undefined' )
 		return false;
