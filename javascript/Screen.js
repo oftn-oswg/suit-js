@@ -36,8 +36,11 @@ var Screen = function(parentnode) {
 		}
 	}.bind(this);
 	this.canvas.onmouseup = function() {
-		this.child.pressed = false;
-		this.child.queue_redraw();
+		if (this.child.pressed) {
+			this.child.pressed = false;
+			this.child.queue_redraw();
+			this.child.emit("activate");
+		}
 	}.bind(this);
 
 };

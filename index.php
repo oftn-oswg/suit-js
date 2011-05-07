@@ -21,9 +21,15 @@ try {
 	$ui->output_scripts(); ?>
 
 <script type="application/ecmascript">
+
+var counter = 0;
 var suit_screen = new Screen(document.getElementById('container'));
 var button = new Button("Hello, world!");
+button.connect("activate", function() {
+	this.child.set_text("Hello, click "+(++counter)+"!");
+});
 suit_screen.set_child (button);
+
 </script>
 <?php
 } catch ( DependenciesUnresolvedException $e ) {
