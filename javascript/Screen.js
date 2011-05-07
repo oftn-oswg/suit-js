@@ -3,6 +3,7 @@ suit.Screen = function(parentnode) {
 	
 	this.update_timer = null;
 	this.throttling = true;
+	this.lock = null; // When set to a widget object, events are channeled directly to the widget
 	
 	var w, h;
 	
@@ -27,19 +28,28 @@ suit.Screen = function(parentnode) {
 	
 	this.canvas.onmousedown = function(e) {
 		var coords = this.get_mouse_coordinates(e);
-		if (coords[0] >= this.child.allocation.x &&
-			coords[0] <= this.child.allocation.x + this.child.allocation.width &&
-			coords[1] >= this.child.allocation.y &&
-			coords[1] <= this.child.allocation.y + this.child.allocation.height) {
-			this.child.pressed = true;
-			this.child.queue_redraw();
+		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+		if (widget) {
+			widget.register_event(
+				new suit.EventButton(
+					suit.Event.ButtonPress,
+					suit.Modifiers.None,
+					this.get_button(e),
+					coords[0], coords[1], 0
+				));
 		}
 	}.bind(this);
-	this.canvas.onmouseup = function() {
-		if (this.child.pressed) {
-			this.child.pressed = false;
-			this.child.queue_redraw();
-			this.child.emit("activate");
+	this.canvas.onmouseup = function(e) {
+		var coords = this.get_mouse_coordinates(e);
+		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+		if (widget) {
+			widget.register_event(
+				new suit.EventButton(
+					suit.Event.ButtonRelease,
+					suit.Modifiers.None,
+					this.get_button(e),
+					coords[0], coords[1], 0
+				));
 		}
 	}.bind(this);
 
@@ -65,13 +75,20 @@ suit.Screen.prototype.queue_redraw = function() {
 suit.Screen.prototype.draw = function() {
 	var context = this.context;
 	
-	console.log("Executing redraw");
+	//console.log("Executing redraw");
 	
 	context.save();
 	context.set_fill_stroke ("#191919");
 	context.rect (0, 0, this.width, this.height);
 	this.child.draw (context);
 	context.restore();
+};
+
+suit.Screen.prototype.get_button = function(e) {
+	var right_click = false;
+	if (e.which) rightclick = (e.which == 3);
+	else if (e.button) rightclick = (e.button == 2);
+	return right_click ? 3 : 1;
 };
 
 suit.Screen.prototype.get_mouse_coordinates = function(e) {

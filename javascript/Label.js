@@ -11,14 +11,17 @@ suit.Label.prototype = suit.Widget.inherit();
 
 suit.Label.prototype.set_text = function(text) {
 	this.layout.set_text(text);
+	this.queue_redraw();
 };
 
 suit.Label.prototype.set_align = function(align) {
 	this.layout.set_align (align);
+	this.queue_redraw();
 };
 
 suit.Label.prototype.set_valign = function(valign) {
 	this.valign = valign;
+	this.queue_redraw();
 };
 
 suit.Label.prototype.draw = function(context) {

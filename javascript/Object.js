@@ -35,8 +35,11 @@ suit.Object.prototype.emit = function( signal ) {
 	if( typeof this.signals[signal] == 'undefined' )
 		return false;
 
+	var args = Array.prototype.slice.call(arguments, 1);
+
 	for( var i = 0, len = this.signals[signal].length; i < len; i++ ) {
-		this.signals[signal][i]['callback'].apply(this, this.signals[signal][i]['extras']);
+		this.signals[signal][i]['callback'].apply(this,
+			args.concat(this.signals[signal][i]['extras']));
 	}
 
 };

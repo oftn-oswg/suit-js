@@ -1,5 +1,8 @@
 suit.Button = function(text) {
 	suit.Bin.call(this);
+	
+	this.event_mask = suit.Event.ButtonPress | suit.Event.ButtonRelease;
+	
 	this.pressed = false;
 	if (text) {
 		this.set_child(new suit.Label(text));
@@ -7,6 +10,7 @@ suit.Button = function(text) {
 		this.child.set_valign ("middle");
 	}
 	this.connect("add", this.on_event_add);
+	this.connect("event_button", this.on_event_button);
 
 	this.style = {
 		padding_top: 10,
@@ -82,6 +86,23 @@ suit.Button.prototype.set_allocation = function(allocation) {
 suit.Button.prototype.on_event_add = function(widget) {
 	if (this.allocation) {
 		suit.Button.prototype.set_allocation(this.allocation);
+	}
+};
+
+suit.Button.prototype.on_event_button = function(e) {
+	switch (e.type) {
+	case suit.Event.ButtonPress:
+		this.pressed = true;
+		this.lock();
+		this.queue_redraw();
+		break;
+	case suit.Event.ButtonRelease:
+		if (this.pressed) {
+			this.emit("activate");
+			this.pressed = false;
+			this.unlock();
+			this.queue_redraw();
+		}
 	}
 };
 
