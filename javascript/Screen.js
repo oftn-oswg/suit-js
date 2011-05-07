@@ -32,12 +32,12 @@ var Screen = function(parentnode) {
 			coords[1] >= this.child.allocation.y &&
 			coords[1] <= this.child.allocation.y + this.child.allocation.height) {
 			this.child.pressed = true;
-			this.child.invalidate();
+			this.child.queue_redraw();
 		}
 	}.bind(this);
 	this.canvas.onmouseup = function() {
 		this.child.pressed = false;
-		this.child.invalidate();
+		this.child.queue_redraw();
 	}.bind(this);
 
 };
@@ -45,8 +45,8 @@ Screen.prototype = SUIT.construct_prototype(Bin);
 Screen.prototype.set_child = function(widget) {
 	Bin.prototype.set_child.call(this, widget);
 	//this.child.set_allocation (new Allocation (5, 5, this.width-10, this.height-10));
-	this.child.set_allocation (new Allocation (this.width/2-50, this.height/2-16, 100, 32));
-	this.invalidate();
+	this.child.set_allocation (new Allocation (this.width/2-75, this.height/2-18, 150, 36));
+	this.queue_redraw();
 };
 
 Screen.prototype.queue_redraw = function() {
@@ -65,6 +65,6 @@ Screen.prototype.draw = function() {
 	context.save();
 	context.set_fill_stroke ("#191919");
 	context.rect (0, 0, this.width, this.height);
-	this.child.draw ();
+	this.child.draw (context);
 	context.restore();
 };

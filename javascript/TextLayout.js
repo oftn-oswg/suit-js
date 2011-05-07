@@ -105,12 +105,29 @@ TextLayout.prototype.recalculate_layout = function() {
 		apparent_width = Math.max(apparent_width, this.text_width(text_wrapped[i]));
 	}
 	
+	
+	var line_height = this.get_line_height();
+	
 	this.apparent_width = apparent_width;
-	this.apparent_height = this.line_height * text_wrapped.length;
+	this.apparent_height = line_height * text_wrapped.length;
 	
 	this.calculated = true;
 	this.text_wrapped = text_wrapped;
 };
+
+TextLayout.prototype.get_apparent_height = function() {
+	if (!this.calculated) this.recalculate_layout();
+	return this.apparent_height;
+};
+
+TextLayout.prototype.get_apparent_width = function() {
+	if (!this.calculated) this.recalculate_layout();
+	return this.apparent_width;
+};
+
+TextLayout.prototype.get_line_height = function() {
+	return (this.line_height !== null) ? this.line_height : this.font_size;
+}
 
 TextLayout.prototype.render = function(context, x, y) {
 	if (!this.calculated) this.recalculate_layout();
@@ -120,9 +137,11 @@ TextLayout.prototype.render = function(context, x, y) {
 	context.textBaseline = "top";
 	context.textAlign = this.align;
 	
+	var line_height = this.get_line_height();
+	
 	for (var i = 0, len = this.text_wrapped.length; i < len; i++) {
 		context.fillText(this.text_wrapped[i], x,
-			(y + i * this.line_height + (this.line_height/2-this.font_size/2)) | 0 );
+			(y + i * line_height + (line_height/2-this.font_size/2)) | 0 );
 	};
 	
 	context.restore();

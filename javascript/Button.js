@@ -1,11 +1,16 @@
-var Button = function() {
+var Button = function(text) {
 	Bin.call(this);
 	this.pressed = false;
+	if (text) {
+		this.set_child(new Label(text));
+		this.child.set_align ("center");
+		this.child.set_valign ("middle");
+	}
+	this.connect("add", this.on_event_add);
 };
 Button.prototype = SUIT.construct_prototype(Bin);
 
-Button.prototype.draw = function() {
-	var context = this.context;
+Button.prototype.draw = function(context) {
 	var a = this.allocation;
 	
 	// TODO: Move this into a theme class
@@ -48,10 +53,29 @@ Button.prototype.draw = function() {
 	
 	// Demonstration purposes
 	context.set_shadow (1, 1, 1, "black");
-	context.set_font_style ("16px Cabin, sans-serif", "center", "middle");
-	var top = a.y+((a.height-1)/2);
-	context.text("Button", (a.x + (a.width-1)/2) |0, top+(this.pressed?1:0));
+	this.child.draw(context);
+	//context.set_font_style ("16px \"Droid Sans\", Cabin, sans-serif", "center", "middle");
+	//var top = a.y+((a.height-1)/2);
+	//context.text("Droid Sans", (a.x + (a.width-1)/2) |0, top+(this.pressed?1:0));
 	context.set_shadow ();
+};
+
+Button.prototype.set_allocation = function(allocation) {
+	Widget.prototype.set_allocation.call(this, allocation);
+	if (this.child) {
+		this.child.set_allocation(new Allocation(
+			allocation.x + 10,
+			allocation.y + 10,
+			allocation.width - 20,
+			allocation.height - 20
+		));
+	}
+};
+
+Button.prototype.on_event_add = function(widget) {
+	if (this.allocation) {
+		Button.prototype.set_allocation(this.allocation);
+	}
 };
 
 Button.prototype.get_request_mode = function() {

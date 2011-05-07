@@ -21,17 +21,9 @@ try {
 	$ui->output_scripts(); ?>
 
 <script type="application/ecmascript">
-window.addEventListener ("load", function() {
-	var suit_screen = new Screen(document.getElementById('container'));
-	var button = new Button();
-	suit_screen.set_child (button);
-	/*label.set_text(
-		"FLTK — A light, cross platform, non-native widget toolkit\n" +
-		"FOX toolkit — A fast, open source, cross-platform widget toolkit\n" +
-		"FrugalWidgets - A minimalistic widget set for Win32\n" +
-		"GNUstep — A free software implementation of Cocoa (formerly NeXT's OpenStep) Objective-C libraries\n" +
-		"GTK+ — The GIMP toolkit, a widget toolkit used by GNOME applications");*/
-}, false);
+var suit_screen = new Screen(document.getElementById('container'));
+var button = new Button("Hello, world!");
+suit_screen.set_child (button);
 </script>
 <?php
 } catch ( DependenciesUnresolvedException $e ) {

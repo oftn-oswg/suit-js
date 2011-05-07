@@ -1,5 +1,6 @@
 var Label = function(text) {
 	Widget.call(this);
+	this.valign = "top"; // top, middle, bottom
 	this.layout = new TextLayout();
 	this.layout.set_font("Droid Sans", 16);
 	if (text) {
@@ -12,10 +13,42 @@ Label.prototype.set_text = function(text) {
 	this.layout.set_text(text);
 };
 
-Label.prototype.draw = function() {
-	var context = this.context;
+Label.prototype.set_align = function(align) {
+	this.layout.set_align (align);
+};
+
+Label.prototype.set_valign = function(valign) {
+	this.valign = valign;
+};
+
+Label.prototype.draw = function(context) {
+
+	var height, x, y;
 	context.set_fill_stroke ("#fff");
-	this.layout.render(context.cc, this.allocation.x, this.allocation.y);
+	
+	switch (this.valign) {
+	case "top":
+		y = this.allocation.y; break;
+	case "middle":
+		height = this.layout.get_apparent_height();
+		y = (this.allocation.y + (this.allocation.height/2) - (height/2) - 1) | 0;
+		break;
+	case "bottom":
+		height = this.layout.get_apparent_height();
+		y = this.allocation.y + this.allocation.height - height - 1;
+		break;
+	}
+	
+	switch (this.layout.align) {
+	case "left":
+		x = this.allocation.x; break;
+	case "center":
+		x = (this.allocation.x + this.allocation.width/2 - 1) | 0; break;
+	case "right":
+		x = this.allocation.x + this.allocation.width - 1;
+	}
+	
+	this.layout.render(context.cc, x, y);
 };
 
 Label.prototype.set_allocation = function(allocation) {
