@@ -10,6 +10,12 @@ suit.Graphics.prototype.rect = function(x, y, w, h, stroke, fill) {
 	if (stroke) this.cc.fillRect (x, y, w, h);
 };
 
+suit.Graphics.prototype.clip = function(x, y, w, h) {
+	this.cc.beginPath();
+	this.cc.rect (x, y, w, h);
+	this.cc.clip();
+};
+
 suit.Graphics.prototype.path = function(data, closepath, stroke, fill) {
 	if (typeof closepath === "undefined" || closepath === null) closepath = false;
 	if (typeof stroke === "undefined" || stroke === null) stroke = true;

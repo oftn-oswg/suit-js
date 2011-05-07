@@ -8,12 +8,9 @@ suit.Event = {
 	KeyPress: 8,
 	KeyRelease: 16,
 	
-	ScrollUp: 32,
-	ScrollDown: 64,
-	ScrollLeft: 128,
-	ScrollRight: 256,
+	Scroll: 32,
 	
-	Motion: 512
+	Motion: 64
 };
 
 suit.Modifiers = {
@@ -47,12 +44,14 @@ suit.EventButton = function(type, state, button, x, y, id) {
 suit.EventButton.prototype.name = "event_button";
 
 // Mouse wheel scroll events
-suit.EventScroll = function(type, state, x, y, id) {
-	this.type = type; // ScrollUp | ScrollDown | ScrollLeft | ScrollRight
+suit.EventScroll = function(state, x, y, deltax, deltay, id) {
+	this.type = suit.Event.Scroll;
 	//this.time = new Date(); // Time the event was generated
 	this.state = state; // (Modifiers -- shift, ctrl, capslock, alt)
 	this.x = x; // x-coordinate of mouse when event occured
 	this.y = y; // y-coordinate of mouse when event occured
+	this.deltaX = deltax; // amount of scroll horizontally
+	this.deltaY = deltay; // amount of scroll vertically
 	this.id = id; // Used for multitouch
 };
 suit.EventScroll.prototype.name = "event_scroll";

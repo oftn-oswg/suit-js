@@ -52,13 +52,51 @@ suit.Screen = function(parentnode) {
 				));
 		}
 	}.bind(this);
+	
+	this.canvas.onmousewheel = function(e) {
+		var coords = this.get_mouse_coordinates(e);
+		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+		if (widget) {
+			widget.register_event(
+				new suit.EventScroll(
+					suit.Modifiers.None,
+					coords[0], coords[1],
+					e.wheelDeltaX, e.wheelDeltaY,
+					0
+				));
+		}
+		e.stopPropagation();
+	}.bind(this);
+	
+	var last_mouse_move_coords = [-1,-1];
+	this.canvas.onmousemove = function(e) {
+	
+		var coords = this.get_mouse_coordinates(e);
+		if (coords[0] === last_mouse_move_coords[0] &&
+			coords[1] === last_mouse_move_coords[1]) {
+			return;
+		}
+		last_mouse_move_coords = coords;
+		
+		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+		if (widget) {
+			widget.register_event(
+				new suit.EventMotion(
+					suit.Modifiers.None,
+					coords[0], coords[1],
+					0
+				));
+		}
+	}.bind(this);
 
 };
 suit.Screen.prototype = suit.Bin.inherit();
 suit.Screen.prototype.set_child = function(widget) {
 	suit.Bin.prototype.set_child.call(this, widget);
 	//this.child.set_allocation (new suit.Allocation (5, 5, this.width-10, this.height-10));
-	this.child.set_allocation (new suit.Allocation (this.width/2-75, this.height/2-18, 150, 36));
+	var w = 200;
+	var h = 400;
+	this.child.set_allocation (new suit.Allocation (this.width/2-w/2, this.height/2-h/2, w, h));
 	this.queue_redraw();
 };
 
@@ -67,7 +105,7 @@ suit.Screen.prototype.queue_redraw = function() {
 		clearTimeout(this.update_timer);
 	}
 	if (this.throttling)
-		this.update_timer = setTimeout(this.draw.bind(this), 50);
+		this.update_timer = setTimeout(this.draw.bind(this), 10);
 	else
 		this.draw();
 };

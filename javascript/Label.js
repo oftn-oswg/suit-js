@@ -24,6 +24,11 @@ suit.Label.prototype.set_valign = function(valign) {
 	this.queue_redraw();
 };
 
+suit.Label.prototype.set_line_height = function(line_height) {
+	this.layout.set_line_height(line_height);
+	this.queue_redraw();
+};
+
 suit.Label.prototype.draw = function(context) {
 
 	var height, x, y;

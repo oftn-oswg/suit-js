@@ -9,5 +9,6 @@
 	"Bin": ["Widget"],
 	"Screen": ["Bin"],
 	"Label": ["Widget", "TextLayout"],
-	"Button": ["Bin", "Label"]
+	"Button": ["Bin", "Label"],
+	"Scroller": ["Bin"]
 }

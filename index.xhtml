@@ -14,6 +14,7 @@ html, body {
 	color: #fff;
 	font-family: sans-serif;
 	font-weight: bold;
+	overflow: hidden;
 }
 #container {
 	width: 640px;
@@ -34,6 +35,7 @@ html, body {
 </div> 
  
 <script src="javascript/SUIT.js" type="application/ecmascript"></script> 
+<script src="javascript/Event.js" type="application/ecmascript"></script> 
 <script src="javascript/Allocation.js" type="application/ecmascript"></script> 
 <script src="javascript/Object.js" type="application/ecmascript"></script> 
 <script src="javascript/TextLayout.js" type="application/ecmascript"></script> 
@@ -41,18 +43,18 @@ html, body {
 <script src="javascript/Widget.js" type="application/ecmascript"></script> 
 <script src="javascript/Label.js" type="application/ecmascript"></script> 
 <script src="javascript/Bin.js" type="application/ecmascript"></script> 
+<script src="javascript/Scroller.js" type="application/ecmascript"></script> 
 <script src="javascript/Button.js" type="application/ecmascript"></script> 
 <script src="javascript/Screen.js" type="application/ecmascript"></script> 
  
 <script type="application/ecmascript"> 
  
-var counter = 0;
 var suit_screen = new suit.Screen(document.getElementById('container'));
-var button = new suit.Button("Hello, world!");
-button.connect("activate", function() {
-	this.child.set_text("Hello, click "+(++counter)+"!");
-});
-suit_screen.set_child (button);
+var label = new suit.Label("Lorem Ipsum is simply dummy text of the printing and typesetting industry.\n\nLorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.\n\nContrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.\n\nThere are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. Antidisestablishmentarianism");
+//label.set_align("center");
+label.set_line_height(16*1.2);
+var scroller = new suit.Scroller(label);
+suit_screen.set_child (scroller);
  
 </script> 
 </body> 
