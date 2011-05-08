@@ -57,7 +57,7 @@ suit.Screen.prototype.draw = function() {
 
 suit.Screen.prototype.attach_events = function() {
 
-	this.canvas.addEventListener("mousedown", function(e) {
+	addEventListener("mousedown", function(e) {
 		var coords = this.get_mouse_coordinates(e);
 		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
 		if (widget) {
@@ -123,7 +123,7 @@ suit.Screen.prototype.attach_events = function() {
 	this.canvas.addEventListener("mousewheel", mouse_scroll_func, false);
 	
 	var last_mousemove_coords = [-1,-1];
-	this.canvas.addEventListener("mousemove", function(e) {
+	window.addEventListener("mousemove", function(e) {
 	
 		var coords = this.get_mouse_coordinates(e);
 		if (coords[0] === last_mousemove_coords[0] &&

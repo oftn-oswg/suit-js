@@ -19,10 +19,10 @@ suit.Scroller = function(child) {
 	this.connect("event_motion", this.on_event_motion);
 
 	this.style = {
-		padding_top: 0,
-		padding_bottom: 0,
-		padding_left: 10,
-		padding_right: 10
+		padding_top: 5,
+		padding_bottom: 5,
+		padding_left: 8,
+		padding_right: 8
 	};
 };
 suit.Scroller.prototype = suit.Bin.inherit();
