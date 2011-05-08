@@ -45,8 +45,9 @@ suit.Scroller.prototype.draw = function(context) {
 		]));
 	context.rect(a.x, a.y+1, a.width, gradhei);
 	
-	context.clip(a.x, a.y, a.width, a.height);
+	context.push_clip(a.x, a.y, a.width, a.height);
 	this.child.draw(context);
+	context.pop_clip();
 };
 
 suit.Scroller.prototype.set_allocation = function(allocation) {

@@ -167,17 +167,31 @@ suit.TextLayout.prototype.get_line_size = function() {
 suit.TextLayout.prototype.render = function(context, x, y) {
 	if (!this.calculated) this.recalculate_layout();
 	
-	context.save();
-	context.font = this.get_css_font_string();
-	context.textBaseline = "top";
-	context.textAlign = this.align;
+	context.cc.save();
+	context.cc.font = this.get_css_font_string();
+	context.cc.textBaseline = "top";
+	context.cc.textAlign = this.align;
 	
 	var line_size = this.get_line_size();
 	
-	for (var i = 0, len = this.text_wrapped.length; i < len; i++) {
-		context.fillText(this.text_wrapped[i], x,
+	// Contrain rendered lines to clipping area
+	var i = 0;
+	var len, lines_n;
+	len = lines_n = this.text_wrapped.length;
+	var clip = context.get_clip();
+	if (clip.y > y) {
+		i = (((clip.y - y)/line_size) | 0);
+		i = i < 0 ? 0 : i;
+	}
+	if (clip.height) {
+		len = i + ((clip.height/line_size) | 0) + 2;
+		len = len > lines_n ? lines_n : len;
+	}
+	
+	for (;i < len; i++) {
+		context.cc.fillText(this.text_wrapped[i], x,
 			(y + i * line_size + (line_size/2-this.font_size/2)) | 0 );
 	};
 	
-	context.restore();
+	context.cc.restore();
 };

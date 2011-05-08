@@ -1,5 +1,6 @@
 suit.Graphics = function(context) {
 	this.cc = context;
+	this.clip = [];
 }
 
 suit.Graphics.prototype.rect = function(x, y, w, h, stroke, fill) {
@@ -10,10 +11,21 @@ suit.Graphics.prototype.rect = function(x, y, w, h, stroke, fill) {
 	if (stroke) this.cc.fillRect (x, y, w, h);
 };
 
-suit.Graphics.prototype.clip = function(x, y, w, h) {
+suit.Graphics.prototype.push_clip = function(x, y, w, h) {
+	this.cc.save();
 	this.cc.beginPath();
 	this.cc.rect (x, y, w, h);
 	this.cc.clip();
+	this.clip.push({x: x, y: y, width: w, height: h});
+};
+
+suit.Graphics.prototype.pop_clip = function() {
+	this.cc.restore();
+	this.clip.pop();
+};
+
+suit.Graphics.prototype.get_clip = function() {
+	return this.clip.length ? this.clip[this.clip.length-1] : null;
 };
 
 suit.Graphics.prototype.path = function(data, closepath, stroke, fill) {

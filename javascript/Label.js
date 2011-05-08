@@ -58,7 +58,7 @@ suit.Label.prototype.draw = function(context) {
 		x = this.allocation.x + this.allocation.width - 1;
 	}
 
-	this.layout.render(context.cc, x, y);
+	this.layout.render(context, x, y);
 };
 
 suit.Label.prototype.set_allocation = function(allocation) {
