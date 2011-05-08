@@ -88,6 +88,7 @@ suit.Screen.prototype.attach_dom_events = function() {
 		}
 		e.stopPropagation();
 		e.preventDefault();
+		return false;
 	}.bind(this), false);
 	
 	addEventListener("mouseup", function(e) {
@@ -104,6 +105,7 @@ suit.Screen.prototype.attach_dom_events = function() {
 		}
 		e.stopPropagation();
 		e.preventDefault();
+		return false;
 	}.bind(this), false);
 	
 	var mouse_scroll_func = function(e) {
@@ -134,6 +136,7 @@ suit.Screen.prototype.attach_dom_events = function() {
 		}
 		e.stopPropagation();
 		e.preventDefault();
+		return false;
 	}.bind(this);
 	
 	addEventListener("MozMousePixelScroll", mouse_scroll_func, false);
@@ -160,7 +163,14 @@ suit.Screen.prototype.attach_dom_events = function() {
 		}
 		e.stopPropagation();
 		e.preventDefault();
+		return false;
 	}.bind(this), false);
+	
+	addEventListener("contextmenu", function(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		return false;
+	}, false);
 };
 
 suit.Screen.prototype.attach_internal_events = function() {
