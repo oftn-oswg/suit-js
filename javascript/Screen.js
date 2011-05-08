@@ -3,94 +3,29 @@ suit.Screen = function(parentnode) {
 	
 	this.update_timer = null;
 	this.throttling = true;
-	this.lock = null; // When set to a widget object, events are channeled directly to the widget
 	
-	var w, h;
+	// When set to a widget object, events are channeled directly to the widget
+	this.lock = null;
 	
-	this.width = w = parentnode.offsetWidth;
-	this.height = h = parentnode.offsetHeight;
+	this.width = parentnode.offsetWidth;
+	this.height = parentnode.offsetHeight;
 	
 	this.canvas = document.createElement("canvas");
-	if (!this.canvas.getContext) {
-		alert("Your browser does not have canvas support.");
-		return false;
-	}
 	this.context = new suit.Graphics(this.canvas.getContext("2d"));
 	
-	while (parentnode.hasChildNodes()) {
-		parentnode.removeChild(parentnode.lastChild);
+	while (parentnode.firstChild) {
+		parentnode.removeChild(parentnode.firstChild);
 	}
 	parentnode.appendChild(this.canvas);
 	
-	this.canvas.width = w;
-	this.canvas.height = h;
+	this.canvas.width = this.width;
+	this.canvas.height = this.height;
 	
-	
-	this.canvas.onmousedown = function(e) {
-		var coords = this.get_mouse_coordinates(e);
-		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
-		if (widget) {
-			widget.register_event(
-				new suit.EventButton(
-					suit.Event.ButtonPress,
-					suit.Modifiers.None,
-					this.get_button(e),
-					coords[0], coords[1], 0
-				));
-		}
-	}.bind(this);
-	this.canvas.onmouseup = function(e) {
-		var coords = this.get_mouse_coordinates(e);
-		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
-		if (widget) {
-			widget.register_event(
-				new suit.EventButton(
-					suit.Event.ButtonRelease,
-					suit.Modifiers.None,
-					this.get_button(e),
-					coords[0], coords[1], 0
-				));
-		}
-	}.bind(this);
-	
-	this.canvas.onmousewheel = function(e) {
-		var coords = this.get_mouse_coordinates(e);
-		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
-		if (widget) {
-			widget.register_event(
-				new suit.EventScroll(
-					suit.Modifiers.None,
-					coords[0], coords[1],
-					e.wheelDeltaX, e.wheelDeltaY,
-					0
-				));
-		}
-		e.stopPropagation();
-	}.bind(this);
-	
-	var last_mouse_move_coords = [-1,-1];
-	this.canvas.onmousemove = function(e) {
-	
-		var coords = this.get_mouse_coordinates(e);
-		if (coords[0] === last_mouse_move_coords[0] &&
-			coords[1] === last_mouse_move_coords[1]) {
-			return;
-		}
-		last_mouse_move_coords = coords;
-		
-		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
-		if (widget) {
-			widget.register_event(
-				new suit.EventMotion(
-					suit.Modifiers.None,
-					coords[0], coords[1],
-					0
-				));
-		}
-	}.bind(this);
-
+	this.attach_events();
 };
+
 suit.Screen.prototype = suit.Bin.inherit();
+
 suit.Screen.prototype.set_child = function(widget) {
 	suit.Bin.prototype.set_child.call(this, widget);
 	//this.child.set_allocation (new suit.Allocation (5, 5, this.width-10, this.height-10));
@@ -113,13 +48,96 @@ suit.Screen.prototype.queue_redraw = function() {
 suit.Screen.prototype.draw = function() {
 	var context = this.context;
 	
-	//console.log("Executing redraw");
-	
 	context.save();
 	context.set_fill_stroke ("#191919");
 	context.rect (0, 0, this.width, this.height);
 	this.child.draw (context);
 	context.restore();
+};
+
+suit.Screen.prototype.attach_events = function() {
+
+	this.canvas.addEventListener("mousedown", function(e) {
+		var coords = this.get_mouse_coordinates(e);
+		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+		if (widget) {
+			widget.register_event(
+				new suit.EventButton(
+					suit.Event.ButtonPress,
+					suit.Modifiers.None,
+					this.get_button(e),
+					coords[0], coords[1], 0
+				));
+		}
+	}.bind(this), false);
+	
+	this.canvas.addEventListener("mouseup", function(e) {
+		var coords = this.get_mouse_coordinates(e);
+		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+		if (widget) {
+			widget.register_event(
+				new suit.EventButton(
+					suit.Event.ButtonRelease,
+					suit.Modifiers.None,
+					this.get_button(e),
+					coords[0], coords[1], 0
+				));
+		}
+	}.bind(this), false);
+	
+	var mouse_scroll_func = function(e) {
+		var coords = this.get_mouse_coordinates(e);
+		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+		
+		var deltaX = 0, deltaY = 0;
+		if (e.wheelDelta) {
+			if (e.wheelDeltaX || e.wheelDeltaY) {
+				deltaX = e.wheelDeltaX;
+				deltaY = e.wheelDeltaY;
+			} else {
+				deltaY = e.wheelDelta;
+			}
+		} else if (e.axis === e.HORIZONTAL_AXIS) {
+			deltaX = -e.detail;
+		} else if (e.axis === e.VERTICAL_AXIS) {
+			deltaY = -e.detail;
+		}
+		
+		if (widget) {
+			widget.register_event(
+				new suit.EventScroll(
+					suit.Modifiers.None,
+					coords[0], coords[1],
+					deltaX, deltaY, 0
+				));
+		}
+		e.stopPropagation();
+		e.preventDefault();
+	}.bind(this);
+	
+	this.canvas.addEventListener("MozMousePixelScroll", mouse_scroll_func, false);
+	this.canvas.addEventListener("mousewheel", mouse_scroll_func, false);
+	
+	var last_mousemove_coords = [-1,-1];
+	this.canvas.addEventListener("mousemove", function(e) {
+	
+		var coords = this.get_mouse_coordinates(e);
+		if (coords[0] === last_mousemove_coords[0] &&
+			coords[1] === last_mousemove_coords[1]) {
+			return;
+		}
+		last_mousemove_coords = coords;
+		
+		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+		if (widget) {
+			widget.register_event(
+				new suit.EventMotion(
+					suit.Modifiers.None,
+					coords[0], coords[1],
+					0
+				));
+		}
+	}.bind(this), false);
 };
 
 suit.Screen.prototype.get_button = function(e) {

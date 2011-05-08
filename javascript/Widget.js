@@ -29,6 +29,14 @@ suit.Widget.prototype.get_screen = function() {
 	return null;
 };
 
+suit.Widget.prototype.event_mask_add = function(bits) {
+	this.event_mask |= bits;
+};
+
+suit.Widget.prototype.event_mask_sub = function(bits) {
+	this.event_mask ^= bits;
+};
+
 suit.Widget.prototype.lock = function() {
 	var screen = this.get_screen();
 	if (screen.lock && screen.lock !== this) {

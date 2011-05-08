@@ -4,7 +4,7 @@ suit.Scroller = function(child) {
 	this.scrollY = 0; // Distance from top of child to top of scroller. <= 0
 	
 	this.event_mask =
-		suit.Event.ButtonPress | suit.Event.ButtonRelease | suit.Event.Scroll | suit.Event.Motion;
+		suit.Event.ButtonPress | suit.Event.ButtonRelease | suit.Event.Scroll;
 	
 	this.dragging = false;
 	this.startDragX = null;
@@ -75,11 +75,13 @@ suit.Scroller.prototype.on_event_button = function(e) {
 		this.startDragX = e.x;
 		this.startDragY = e.y;
 		this.dragging = true;
+		this.event_mask_add (suit.Event.Motion);
 		this.lock();
 		break;
 	case suit.Event.ButtonRelease:
 		if (this.dragging) {
 			this.dragging = false;
+			this.event_mask_sub (suit.Event.Motion);
 			this.unlock();
 		}
 	}

@@ -1,11 +1,12 @@
 {
 	"SUIT": false,
+	"Logging": ["SUIT"],
 	"Graphics": ["SUIT"],
 	"TextLayout": ["SUIT"],
 	"Object": ["SUIT"],
 	"Allocation": ["SUIT"],
 	"Event": ["SUIT"],
-	"Widget": ["Allocation", "Object", "Graphics", "Event"],
+	"Widget": ["Allocation", "Object", "Graphics", "Event", "Logging"],
 	"Bin": ["Widget"],
 	"Screen": ["Bin"],
 	"Label": ["Widget", "TextLayout"],
