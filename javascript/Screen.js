@@ -1,4 +1,4 @@
-suit.Screen = function(parentnode) {
+suit.Screen = function() {
 	suit.Bin.call(this);
 	
 	this.update_timer = null;
@@ -7,33 +7,24 @@ suit.Screen = function(parentnode) {
 	// When set to a widget object, events are channeled directly to the widget
 	this.lock = null;
 	
-	this.width = parentnode.offsetWidth;
-	this.height = parentnode.offsetHeight;
-	
 	this.canvas = document.createElement("canvas");
 	this.context = new suit.Graphics(this.canvas.getContext("2d"));
 	
-	while (parentnode.firstChild) {
-		parentnode.removeChild(parentnode.firstChild);
-	}
-	parentnode.appendChild(this.canvas);
+	this.container = document.createElement('div');
+	this.container.style.position = "absolute";
+	this.container.style.top = "0";
+	this.container.style.left = "0";
+	this.container.appendChild(this.canvas);
 	
-	this.canvas.width = this.width;
-	this.canvas.height = this.height;
+	document.body.style.overflow = "hidden";
+	document.body.appendChild(this.container);
 	
-	this.attach_events();
+	this.resize();
+	this.attach_dom_events();
+	this.attach_internal_events();
 };
 
 suit.Screen.prototype = suit.Bin.inherit();
-
-suit.Screen.prototype.set_child = function(widget) {
-	suit.Bin.prototype.set_child.call(this, widget);
-	//this.child.set_allocation (new suit.Allocation (5, 5, this.width-10, this.height-10));
-	var w = 200;
-	var h = 400;
-	this.child.set_allocation (new suit.Allocation (this.width/2-w/2, this.height/2-h/2, w, h));
-	this.queue_redraw();
-};
 
 suit.Screen.prototype.queue_redraw = function() {
 	if (this.update_timer) {
@@ -47,15 +38,41 @@ suit.Screen.prototype.queue_redraw = function() {
 
 suit.Screen.prototype.draw = function() {
 	var context = this.context;
+	var a = this.allocation;
 	
 	context.save();
 	context.set_fill_stroke ("#191919");
-	context.rect (0, 0, this.width, this.height);
-	this.child.draw (context);
+	context.rect (0, 0, a.width, a.height);
+	if (this.child) this.child.draw (context);
 	context.restore();
 };
 
-suit.Screen.prototype.attach_events = function() {
+suit.Screen.prototype.set_allocation = function(a) {
+	suit.Widget.prototype.set_allocation.call(this, a);
+	
+	this.container.style.width = a.width + "px";
+	this.container.style.height = a.height + "px";
+	this.canvas.width = a.width;
+	this.canvas.height = a.height;
+	
+	var w = 200;
+	var h = Math.min(400, a.height-50);
+	if (this.child) {
+		this.child.set_allocation (new suit.Allocation (a.width/2-w/2, a.height/2-h/2, w, h));
+	}
+};
+
+suit.Screen.prototype.resize = function() {
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+	
+	this.set_allocation(new suit.Allocation(0, 0, width, height));
+	this.draw(); // TODO: Change this to queue_resize
+};
+
+suit.Screen.prototype.attach_dom_events = function() {
+
+	addEventListener("resize", this.resize.bind(this), false);
 
 	addEventListener("mousedown", function(e) {
 		var coords = this.get_mouse_coordinates(e);
@@ -73,7 +90,7 @@ suit.Screen.prototype.attach_events = function() {
 		e.preventDefault();
 	}.bind(this), false);
 	
-	this.canvas.addEventListener("mouseup", function(e) {
+	addEventListener("mouseup", function(e) {
 		var coords = this.get_mouse_coordinates(e);
 		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
 		if (widget) {
@@ -119,11 +136,11 @@ suit.Screen.prototype.attach_events = function() {
 		e.preventDefault();
 	}.bind(this);
 	
-	this.canvas.addEventListener("MozMousePixelScroll", mouse_scroll_func, false);
-	this.canvas.addEventListener("mousewheel", mouse_scroll_func, false);
+	addEventListener("MozMousePixelScroll", mouse_scroll_func, false);
+	addEventListener("mousewheel", mouse_scroll_func, false);
 	
 	var last_mousemove_coords = [-1,-1];
-	window.addEventListener("mousemove", function(e) {
+	addEventListener("mousemove", function(e) {
 	
 		var coords = this.get_mouse_coordinates(e);
 		if (coords[0] === last_mousemove_coords[0] &&
@@ -144,6 +161,14 @@ suit.Screen.prototype.attach_events = function() {
 		e.stopPropagation();
 		e.preventDefault();
 	}.bind(this), false);
+};
+
+suit.Screen.prototype.attach_internal_events = function() {
+	this.connect("add", function() {
+		if (this.allocation) {
+			this.set_allocation(this.allocation);
+		}
+	});
 };
 
 suit.Screen.prototype.get_button = function(e) {

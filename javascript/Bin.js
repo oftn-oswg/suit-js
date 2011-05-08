@@ -14,8 +14,12 @@ suit.Bin.prototype.set_child = function(widget) {
 
 		this.emit('add');
 	} else {
-		throw new Error("Widget of type Bin already has child widget.");
+		suit.error("Widget of type Bin already has child widget.");
 	}
+};
+
+suit.Bin.prototype.clear_child = function() {
+	this.child = null;
 };
 
 suit.Bin.prototype.get_child_with_coords = function(x, y) {
