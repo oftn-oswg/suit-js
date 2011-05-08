@@ -40,7 +40,7 @@ suit.Widget.prototype.event_mask_sub = function(bits) {
 suit.Widget.prototype.lock = function() {
 	var screen = this.get_screen();
 	if (screen.lock && screen.lock !== this) {
-		console.error("Events are already locked by widget.");
+		suit.error("Events are already locked by another widget.");
 	}
 	screen.lock = this;
 };

@@ -19,8 +19,8 @@ suit.Scroller = function(child) {
 	this.connect("event_motion", this.on_event_motion);
 
 	this.style = {
-		padding_top: 10,
-		padding_bottom: 10,
+		padding_top: 0,
+		padding_bottom: 0,
 		padding_left: 10,
 		padding_right: 10
 	};
@@ -30,8 +30,19 @@ suit.Scroller.prototype = suit.Bin.inherit();
 suit.Scroller.prototype.draw = function(context) {
 	var a = this.allocation;
 	
+	context.set_shadow (0, 0, 5, "#000");
 	context.set_fill_stroke ("#fff");
 	context.rect(a.x, a.y, a.width, a.height);
+	context.set_shadow();
+	
+	var gradhei = Math.min(a.y+a.height, a.y+20);
+	context.set_fill_stroke (
+		context.create_linear_gradient (a.x, a.y, a.x, gradhei,
+		[
+			[0, "#eee"],
+			[1, "#fff"]
+		]));
+	context.rect(a.x, a.y+1, a.width, gradhei);
 	
 	context.clip(a.x, a.y, a.width, a.height);
 	this.child.draw(context);
@@ -52,10 +63,10 @@ suit.Scroller.prototype.update_child_position = function() {
 	this.scrollY = this.scrollY > 0 ? 0 : this.scrollY;
 	if (this.child) {
 		var allocation = new suit.Allocation(
-			this.allocation.x,
-			this.allocation.y + this.scrollY,
-			this.allocation.width,
-			this.allocation.height
+			this.allocation.x + this.style.padding_left,
+			this.allocation.y + this.style.padding_top + this.scrollY,
+			this.allocation.width - this.style.padding_left - this.style.padding_right - 1,
+			this.allocation.height - this.style.padding_top - this.style.padding_bottom - 1
 		);
 		this.child.set_allocation(allocation);
 		this.queue_redraw();
