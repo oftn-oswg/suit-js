@@ -25,3 +25,13 @@ suit.Bin.prototype.clear_child = function() {
 	this.child = null;
 	this.remove_all();
 };
+
+suit.Bin.prototype.add = function() {
+	suit.error("#%s is a Bin widget and can only hold one child, use set_child to add a child.", this.name);
+	return false;
+};
+
+suit.Bin.prototype.remove = function() {
+	suit.error("#%s is a Bin widget; use clear_child to remove its child.", this.name);
+	return false;
+};

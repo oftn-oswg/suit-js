@@ -20,6 +20,9 @@ suit.Widget.prototype.get_preferred_height_for_width = function() {};
 suit.Widget.prototype.queue_redraw = function() {
 	if (this.parent) this.parent.queue_redraw();
 };
+suit.Widget.prototype.queue_resize = function() {
+	if (this.parent) this.parent.queue_resize();
+};
 
 suit.Widget.prototype.get_screen = function() {
 	if (this.screen) return this.screen;

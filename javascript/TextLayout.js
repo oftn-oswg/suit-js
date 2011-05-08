@@ -73,9 +73,7 @@ suit.TextLayout.prototype.recalculate_layout = function() {
 			
 			var m, w;
 			
-			// FIXME: Change algorithm to wrap the last line of the paragraph as
-			// well, like it should.
-			while (m = line.substr(last_break_index).match(/. |-[^ ]/)) {
+			while (m = line.substr(last_break_index).match(/. |-[^ ]|.$/)) {
 				break_index += m.index+1;
 				
 				if ((w = this.text_width(line.substring(start_index, break_index)))

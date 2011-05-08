@@ -28,6 +28,7 @@ suit.Container.prototype.remove = function(widget) {
 suit.Container.prototype.remove_all = function() {
 	for (var i = 0, len = this.children.length; i < len; i++) {
 		this.children[i].parent = null;
+		this.children[i].screen = null;
 	}
 	this.children = [];
 };
