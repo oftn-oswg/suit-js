@@ -2,8 +2,8 @@ suit.TextLayout = function() {
 	this.text = "";
 	this.text_wrapped = [""];
 	
-	this.font_name = null;
-	this.font_size = null;
+	this.font_name = "sans-serif";
+	this.font_size = 14;
 	this.line_height = null;
 	
 	this.align = "left";
@@ -106,10 +106,10 @@ suit.TextLayout.prototype.recalculate_layout = function() {
 	}
 	
 	
-	var line_height = this.get_line_height();
+	var line_size = this.get_line_size();
 	
 	this.apparent_width = apparent_width;
-	this.apparent_height = line_height * text_wrapped.length;
+	this.apparent_height = line_size * text_wrapped.length;
 	
 	this.calculated = true;
 	this.text_wrapped = text_wrapped;
@@ -125,8 +125,8 @@ suit.TextLayout.prototype.get_apparent_width = function() {
 	return this.apparent_width;
 };
 
-suit.TextLayout.prototype.get_line_height = function() {
-	return (this.line_height !== null) ? this.line_height : this.font_size;
+suit.TextLayout.prototype.get_line_size = function() {
+	return (this.line_height !== null) ? this.font_size * this.line_height : this.font_size;
 }
 
 suit.TextLayout.prototype.render = function(context, x, y) {
@@ -137,11 +137,11 @@ suit.TextLayout.prototype.render = function(context, x, y) {
 	context.textBaseline = "top";
 	context.textAlign = this.align;
 	
-	var line_height = this.get_line_height();
+	var line_size = this.get_line_size();
 	
 	for (var i = 0, len = this.text_wrapped.length; i < len; i++) {
 		context.fillText(this.text_wrapped[i], x,
-			(y + i * line_height + (line_height/2-this.font_size/2)) | 0 );
+			(y + i * line_size + (line_size/2-this.font_size/2)) | 0 );
 	};
 	
 	context.restore();
