@@ -69,6 +69,8 @@ suit.Screen.prototype.attach_events = function() {
 					coords[0], coords[1], 0
 				));
 		}
+		e.stopPropagation();
+		e.preventDefault();
 	}.bind(this), false);
 	
 	this.canvas.addEventListener("mouseup", function(e) {
@@ -83,6 +85,8 @@ suit.Screen.prototype.attach_events = function() {
 					coords[0], coords[1], 0
 				));
 		}
+		e.stopPropagation();
+		e.preventDefault();
 	}.bind(this), false);
 	
 	var mouse_scroll_func = function(e) {
@@ -137,6 +141,8 @@ suit.Screen.prototype.attach_events = function() {
 					0
 				));
 		}
+		e.stopPropagation();
+		e.preventDefault();
 	}.bind(this), false);
 };
 

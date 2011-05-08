@@ -2,7 +2,8 @@ suit.Label = function(text) {
 	suit.Widget.call(this);
 	this.valign = "top"; // top, middle, bottom
 	this.layout = new suit.TextLayout();
-	this.layout.set_font("Droid Sans", 16);
+	//this.layout.set_font("Droid Sans", 16);
+	this.layout.set_font("Times New Roman", 16);
 	if (text) {
 		this.layout.set_text(text);
 	}
@@ -32,7 +33,7 @@ suit.Label.prototype.set_line_height = function(line_height) {
 suit.Label.prototype.draw = function(context) {
 
 	var height, x, y;
-	context.set_fill_stroke ("#fff");
+	context.set_fill_stroke ("#000");
 
 	switch (this.valign) {
 	case "top":

@@ -30,7 +30,7 @@ suit.Scroller.prototype = suit.Bin.inherit();
 suit.Scroller.prototype.draw = function(context) {
 	var a = this.allocation;
 	
-	context.set_fill_stroke ("#000");
+	context.set_fill_stroke ("#fff");
 	context.rect(a.x, a.y, a.width, a.height);
 	
 	context.clip(a.x, a.y, a.width, a.height);
