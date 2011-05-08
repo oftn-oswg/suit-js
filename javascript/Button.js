@@ -20,6 +20,7 @@ suit.Button = function(text) {
 	};
 };
 suit.Button.prototype = suit.Bin.inherit();
+suit.Button.prototype.name = "Button";
 
 suit.Button.prototype.draw = function(context) {
 	var a = this.allocation;

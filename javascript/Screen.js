@@ -25,6 +25,7 @@ suit.Screen = function() {
 };
 
 suit.Screen.prototype = suit.Bin.inherit();
+suit.Screen.prototype.name = "Screen";
 
 suit.Screen.prototype.queue_redraw = function() {
 	if (this.update_timer) {

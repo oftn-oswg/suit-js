@@ -5,6 +5,8 @@ suit.Widget = function() {
 	this.event_mask = suit.Event.None;
 };
 suit.Widget.prototype = suit.Object.inherit();
+suit.Widget.prototype.name = "Widget";
+
 suit.Widget.prototype.set_allocation = function(allocation) {
 	this.allocation = allocation;
 };

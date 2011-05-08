@@ -9,6 +9,7 @@ suit.Label = function(text) {
 	}
 };
 suit.Label.prototype = suit.Widget.inherit();
+suit.Label.prototype.name = "Label";
 
 suit.Label.prototype.set_text = function(text) {
 	this.layout.set_text(text);

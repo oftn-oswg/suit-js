@@ -26,6 +26,7 @@ suit.Scroller = function(child) {
 	};
 };
 suit.Scroller.prototype = suit.Bin.inherit();
+suit.Scroller.prototype.name = "Scroller";
 
 suit.Scroller.prototype.draw = function(context) {
 	var a = this.allocation;

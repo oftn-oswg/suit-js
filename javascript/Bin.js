@@ -1,35 +1,27 @@
 suit.Bin = function() {
-	suit.Widget.call(this);
+	suit.Container.call(this);
 	this.child = null;
 };
 
-suit.Bin.prototype = suit.Widget.inherit();
+suit.Bin.prototype = suit.Container.inherit();
+suit.Bin.prototype.name = "Bin";
 
 suit.Bin.prototype.set_child = function(widget) {
 
 	if (!this.child) {
 		this.child = widget;
-		this.child.parent = this;
-		this.child.screen = this.get_screen();
-
-		this.emit('add');
+		suit.Container.prototype.add.call(this, widget);
 	} else {
-		suit.error("Widget of type Bin already has child widget.");
+		suit.error("#%s already has child widget #%s.", this.name, this.child.name);
 	}
+};
+
+suit.Bin.prototype.get_child = function() {
+	if (this.child) return this.child;
+	return false;
 };
 
 suit.Bin.prototype.clear_child = function() {
 	this.child = null;
-};
-
-suit.Bin.prototype.get_child_with_coords = function(x, y) {
-	if (!this.child) return false;
-	if (!this.child.allocation) return false;
-	if (x >= this.child.allocation.x &&
-		x <= this.child.allocation.x + this.child.allocation.width &&
-		y >= this.child.allocation.y &&
-		y <= this.child.allocation.y + this.child.allocation.height) {
-			return this.child;
-	}
-	return false;
+	this.remove_all();
 };
