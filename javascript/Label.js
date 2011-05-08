@@ -3,7 +3,7 @@ suit.Label = function(text) {
 	this.valign = "top"; // top, middle, bottom
 	this.layout = new suit.TextLayout();
 	//this.layout.set_font("Droid Sans", 16);
-	this.layout.set_font("Times New Roman", 12);
+	this.layout.set_font("Times New Roman", 16);
 	if (text) {
 		this.layout.set_text(text);
 	}

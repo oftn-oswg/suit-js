@@ -56,7 +56,7 @@ suit.Screen.prototype.set_allocation = function(a) {
 	this.canvas.width = a.width;
 	this.canvas.height = a.height;
 	
-	var w = 200;
+	var w = Math.min(400, a.width-50);
 	var h = Math.min(400, a.height-50);
 	if (this.child) {
 		this.child.set_allocation (new suit.Allocation (a.width/2-w/2, a.height/2-h/2, w, h));

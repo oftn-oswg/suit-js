@@ -51,8 +51,34 @@ suit.TextLayout.prototype.get_css_font_string = function() {
 	return this.font_size + "px \""+this.font_name+"\"";
 };
 
-// TODO: Implement this function
-suit.TextLayout.prototype.get_index_at_pos = function() {};
+suit.TextLayout.prototype.get_index_at_pos = function(x, y) {
+	var line_size = this.get_line_size();
+	var line_nums = this.text_wrapped.length;
+	
+	var line_n = (y / line_size) | 0;
+	line_n = (line_n > line_nums ? line_nums : (line_n < 0 ? 0 : line_n));
+	
+	var line = this.text_wrapped[line_n];
+	
+	// TODO: Start with best guess and test on each side, 1 char at a time until found
+	// TODO: Support align center and right
+	var col_n = 0;
+	suit.TextLayout.canvas_context.font = this.get_css_font_string();
+	if (x <= 0 || line.length == 0) { col_n = 0; }
+	else if (x >= this.text_width(line)) { col_n = line.length; }
+	else {
+		for (var i = 0, len = line.length; i <= len; i++) {
+			var wi = (i == 0) ? 0 : this.text_width(line.substring(0, i));
+			wi += (this.text_width(line.charAt(i))/2) | 0;
+			if (wi >= x) {
+				col_n = i;
+				break;
+			}
+		}
+	}
+	
+	return [line_n, col_n, line.charAt(col_n)];
+};
 
 suit.TextLayout.prototype.recalculate_layout = function() {
 	var line_split = this.text.split("\n"); // TODO: Regex
@@ -73,6 +99,10 @@ suit.TextLayout.prototype.recalculate_layout = function() {
 			
 			var m, w;
 			
+			/* The regex is a |-seperated list of two points:
+			 * The first is a point (or char) before a possible break
+			 * The second is a point (or char) after the possible break
+			 */
 			while (m = line.substr(last_break_index).match(/. |-[^ ]|.$/)) {
 				break_index += m.index+1;
 				
@@ -80,6 +110,13 @@ suit.TextLayout.prototype.recalculate_layout = function() {
 					> this.width) {
 					
 					var wrap_line = line.substring(start_index, last_break_index);
+					
+					/*
+					 * TODO: 
+					 *  - Push wrapped line with whitespace
+					 *  - Test line width without whitespace
+					 *  - Render text without whitespace
+					 */
 					if (start_index !== 0) wrap_line = wrap_line.replace(/^\s+/, "");
 					
 					text_wrapped.push(wrap_line);
