@@ -6,6 +6,7 @@
 	"Object": ["SUIT"],
 	"Allocation": ["SUIT"],
 	"Event": ["SUIT"],
+	"Packer": ["Container"],
 	"Widget": ["Allocation", "Object", "Graphics", "Event", "Logging"],
 	"Container": ["Widget"],
 	"Bin": ["Container"],

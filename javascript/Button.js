@@ -64,12 +64,12 @@ suit.Button.prototype.draw = function(context) {
 	]);
 
 	// Demonstration purposes
-	context.set_shadow (1, 1, 1, "black");
+	//context.set_shadow (1, 1, 1, "black");
 	this.child.draw(context);
 	//context.set_font_style ("16px \"Droid Sans\", Cabin, sans-serif", "center", "middle");
 	//var top = a.y+((a.height-1)/2);
 	//context.text("Droid Sans", (a.x + (a.width-1)/2) |0, top+(this.pressed?1:0));
-	context.set_shadow ();
+	//context.set_shadow ();
 };
 
 suit.Button.prototype.set_allocation = function(allocation) {
@@ -114,39 +114,57 @@ suit.Button.prototype.get_request_mode = function() {
 	return SizeRequestMode.HEIGHT_FOR_WIDTH;
 };
 suit.Button.prototype.get_preferred_width = function() {
-	var padding_horiz = this.style.padding_left + this.style.padding_right;
-	var preferred = new RequestedSize(padding_horiz, padding_horiz);
+	var padding = this.style.padding_left + this.style.padding_right;
+	var preferred = {
+		minimum: padding,
+		natural: padding
+	};
+	
 	if (this.child) {
 		var childpref = this.child.get_preferred_width();
-		preferred.mininum += childpref.minimum;
+		preferred.minimum += childpref.minimum;
 		preferred.natural += childpref.natural;
 	}
 	return preferred;
 };
 suit.Button.prototype.get_preferred_height = function() {
-	var padding_vert = this.style.padding_top + this.style.padding_bottom;
-	var preferred = new suit.RequestedSize(padding_vert, padding_vert);
+	var padding = this.style.padding_top + this.style.padding_bottom;
+	var preferred = {
+		minimum: padding,
+		natural: padding
+	};
+	
 	if (this.child) {
 		var childpref = this.child.get_preferred_height();
-		preferred.mininum += childpref.minimum;
+		preferred.minimum += childpref.minimum;
 		preferred.natural += childpref.natural;
 	}
 	return preferred;
 };
 suit.Button.prototype.get_preferred_width_for_height = function(height) {
-	var preferred = new suit.RequestedSize(12, 12); // suit.Button padding * 2
+	var padding = this.style.padding_left + this.style.padding_right;
+	var preferred = {
+		minimum: padding,
+		natural: padding
+	};
+	
 	if (this.child) {
-		var childpref = this.child.get_preferred_height();
-		preferred.mininum += childpref.minimum;
+		var childpref = this.child.get_preferred_width_for_height(height);
+		preferred.minimum += childpref.minimum;
 		preferred.natural += childpref.natural;
 	}
 	return preferred;
 };
 suit.Button.prototype.get_preferred_height_for_width = function(width) {
-	var preferred = new suit.RequestedSize(12, 12); // suit.Button padding * 2
+	var padding = this.style.padding_top + this.style.padding_bottom;
+	var preferred = {
+		minimum: padding,
+		natural: padding
+	};
+	
 	if (this.child) {
-		var childpref = this.child.get_preferred_height();
-		preferred.mininum += childpref.minimum;
+		var childpref = this.child.get_preferred_height_for_width(width);
+		preferred.minimum += childpref.minimum;
 		preferred.natural += childpref.natural;
 	}
 	return preferred;

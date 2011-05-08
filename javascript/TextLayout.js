@@ -1,5 +1,6 @@
 suit.TextLayout = function() {
 	this.text = "";
+	this.text_split = [""]
 	this.text_wrapped = [""];
 	
 	this.font_name = "sans-serif";
@@ -9,9 +10,6 @@ suit.TextLayout = function() {
 	this.align = "left";
 	this.width = null; // Infinite
 	this.calculated = true;
-	
-	this.apparent_width = null;
-	this.apparent_height = null;
 };
 
 suit.TextLayout.canvas_context = (function() {
@@ -25,6 +23,7 @@ suit.TextLayout.prototype.text_width = function(string) {
 
 suit.TextLayout.prototype.set_text = function (text) {
 	this.text = text;
+	this.text_split = text.split("\n");
 	this.calculated = false;
 };
 
@@ -81,83 +80,96 @@ suit.TextLayout.prototype.get_index_at_pos = function(x, y) {
 };
 
 suit.TextLayout.prototype.recalculate_layout = function() {
-	var line_split = this.text.split("\n"); // TODO: Regex
-	var number_of_lines = line_split.length;
-	
-	suit.TextLayout.canvas_context.font = this.get_css_font_string();
-	
-	var text_wrapped = [];
-	
-	if (this.width) { // Constrained to width
-		for (var i = 0; i < number_of_lines; i++) {
-		
-			var line = line_split[i];
-		
-			var start_index = 0;
-			var break_index = 0;
-			var last_break_index = 0;
-			
-			var m, w;
-			
-			/* The regex is a |-seperated list of two points:
-			 * The first is a point (or char) before a possible break
-			 * The second is a point (or char) after the possible break
-			 */
-			while (m = line.substr(last_break_index).match(/. |-[^ ]|.$/)) {
-				break_index += m.index+1;
-				
-				if ((w = this.text_width(line.substring(start_index, break_index)))
-					> this.width) {
-					
-					var wrap_line = line.substring(start_index, last_break_index);
-					
-					/*
-					 * TODO: 
-					 *  - Push wrapped line with whitespace
-					 *  - Test line width without whitespace
-					 *  - Render text without whitespace
-					 */
-					if (start_index !== 0) wrap_line = wrap_line.replace(/^\s+/, "");
-					
-					text_wrapped.push(wrap_line);
-					start_index = last_break_index;
-					
-				}
-				last_break_index = break_index;
-			
-			}
-			
-			text_wrapped.push(line.substring(start_index).replace(/^\s+/, ""));
-			
-		}
+
+	var text_wrapped;
+
+	if (this.width) {
+		text_wrapped = [];
+		this.perform_text_wrap(this.text_split, this.width, function(line) {
+			text_wrapped.push(line);
+		});
 	} else {
-		text_wrapped = line_split;
+		text_wrapped = this.line_split;
 	}
-	
-	// FIXME: Avoid going through a second time to find longest line
-	var apparent_width = 0;
-	for (var i = 0, len = text_wrapped.length; i < len; i++) {
-		apparent_width = Math.max(apparent_width, this.text_width(text_wrapped[i]));
-	}
-	
-	
-	var line_size = this.get_line_size();
-	
-	this.apparent_width = apparent_width;
-	this.apparent_height = line_size * text_wrapped.length;
 	
 	this.calculated = true;
 	this.text_wrapped = text_wrapped;
 };
 
-suit.TextLayout.prototype.get_apparent_height = function() {
-	if (!this.calculated) this.recalculate_layout();
-	return this.apparent_height;
+suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callback) {
+	var number_of_lines = line_split.length;
+	
+	suit.TextLayout.canvas_context.font = this.get_css_font_string();
+	
+	for (var i = 0; i < number_of_lines; i++) {
+	
+		var line = line_split[i];
+	
+		var start_index = 0;
+		var break_index = 0;
+		var last_break_index = 0;
+		
+		var m, w;
+		
+		/* The regex is a |-seperated list of two points:
+		 * The first is a point (or char) before a possible break
+		 * The second is a point (or char) after the possible break
+		 */
+		while (m = line.substr(last_break_index).match(/. |-[^ ]|.$/)) {
+			break_index += m.index+1;
+			
+			if ((w = this.text_width(line.substring(start_index, break_index)))
+				> width) {
+				
+				var wrap_line = line.substring(start_index, last_break_index);
+				
+				/*
+				 * TODO: 
+				 *  - Push wrapped line with whitespace
+				 *  - Test line width without whitespace
+				 *  - Render text without whitespace
+				 */
+				if (start_index !== 0) wrap_line = wrap_line.replace(/^\s+/, "");
+				
+				callback.call(this, wrap_line);
+				start_index = last_break_index;
+				
+			}
+			last_break_index = break_index;
+		
+		}
+		
+		callback.call(this, line.substring(start_index).replace(/^\s+/, ""));
+		
+	}
 };
 
-suit.TextLayout.prototype.get_apparent_width = function() {
-	if (!this.calculated) this.recalculate_layout();
-	return this.apparent_width;
+suit.TextLayout.prototype.get_preferred_height = function() {
+	return this.text_split.length * this.get_line_size();
+};
+
+suit.TextLayout.prototype.get_preferred_width = function() {
+	var preferred_width = 0;
+
+	suit.TextLayout.canvas_context.font = this.get_css_font_string();
+	for (var i = 0, len = this.text_split.length; i < len; i++) {
+		preferred_width = Math.max(preferred_width, this.text_width(this.text_split[i]));
+	}
+	
+	return preferred_width + 1 | 0;
+};
+
+suit.TextLayout.prototype.get_preferred_height_for_width = function(width) {
+	var lines = 0, height = 0;
+	this.perform_text_wrap(this.text_split, width, function(line) {
+		lines++;
+	});
+	height = lines * this.get_line_size() + 1 | 0;
+	return height;
+};
+
+suit.TextLayout.prototype.get_preferred_width_for_height = function(height) {
+	return this.get_preferred_width();
 };
 
 suit.TextLayout.prototype.get_line_size = function() {

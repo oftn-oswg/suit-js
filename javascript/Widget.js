@@ -10,6 +10,9 @@ suit.Widget.prototype.name = "Widget";
 suit.Widget.prototype.set_allocation = function(allocation) {
 	this.allocation = allocation;
 };
+suit.Widget.prototype.get_allocation = function() {
+	return this.allocation;
+};
 suit.Widget.prototype.draw = function(context) {};
 suit.Widget.prototype.get_request_mode = function() {};
 suit.Widget.prototype.get_preferred_width = function() {};

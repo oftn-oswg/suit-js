@@ -40,11 +40,11 @@ suit.Label.prototype.draw = function(context) {
 	case "top":
 		y = this.allocation.y; break;
 	case "middle":
-		height = this.layout.get_apparent_height();
+		height = this.layout.get_preferred_height();
 		y = (this.allocation.y + (this.allocation.height/2) - (height/2) - 1) | 0;
 		break;
 	case "bottom":
-		height = this.layout.get_apparent_height();
+		height = this.layout.get_preferred_height();
 		y = this.allocation.y + this.allocation.height - height - 1;
 		break;
 	}
@@ -66,50 +66,35 @@ suit.Label.prototype.set_allocation = function(allocation) {
 	this.layout.set_width(allocation.width);
 };
 
-suit.Label.prototype.get_preferred_size = function(orientation) {
-	var m = 0, n;
-	if (orientation === SUIT.HORIZONTAL) {
-		for (var i = 0, len = this.word_sizes.length; i < len; i++) {
-			var lm = Math.max.apply(null, this.word_sizes[i]);
-			m = (lm > m) ? lm : m;
-		}
-		n = Math.max.apply(null, this.line_sizes);
-		return new suit.RequestedSize(m, n);
-	} else {
-		m = this.line_sizes.length * this.line_height;
-		n = m;
-		return new suit.RequestedSize(m, n);
-	}
-};
-
 suit.Label.prototype.get_request_mode = function() {
 	return SizeRequestMode.HEIGHT_FOR_WIDTH; // TODO: Rotatable text labels
 };
+
 suit.Label.prototype.get_preferred_width = function() {
-	return this.get_preferred_size (SUIT.HORIZONTAL);
+	var width = this.layout.get_preferred_width();
+	return {
+		mininum: width,
+		natural: width
+	};
 };
 suit.Label.prototype.get_preferred_height = function() {
-	return this.get_preferred_size (SUIT.VERTICAL);
+	var height = this.layout.get_preferred_height();
+	return {
+		mininum: height,
+		natural: height
+	};
 };
 suit.Label.prototype.get_preferred_height_for_width = function(width) {
-	var space_left = width;
-	var word_width;
-	var number_of_lines = 0;
-	for (var i = 0, len = this.word_sizes.length; i < len; i++) {
-		number_of_lines++;
-		for (var j = 0, jlen = this.word_sizes[i].length; j < jlen; j++) {
-			word_width = this.word_sizes[i][j];
-			if (word_width + this.space_width > space_left) {
-				number_of_lines++;
-				space_left = width - word_width;
-			} else {
-				space_left -= word_width + this.space_width;
-			}
-		}
-	}
-	var height = number_of_lines * this.line_height;
-	return new suit.RequestedSize(height, height);
+	var height = this.layout.get_preferred_height_for_width(width);
+	return {
+		mininum: height,
+		natural: height
+	};
 };
 suit.Label.prototype.get_preferred_width_for_height = function(height) {
-	return this.get_preferred_size (SUIT.HORIZONTAL);
+	var width = this.layout.get_preferred_width_for_height(height);
+	return {
+		mininum: width,
+		natural: width
+	};
 };

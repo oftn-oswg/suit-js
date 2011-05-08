@@ -1,6 +1,7 @@
 suit.Scroller = function(child) {
 	suit.Bin.call(this);
 	
+	this.scrollX = 0; // Distance from left of child to left of scroller. <= 0
 	this.scrollY = 0; // Distance from top of child to top of scroller. <= 0
 	
 	this.event_mask =
@@ -9,6 +10,9 @@ suit.Scroller = function(child) {
 	this.dragging = false;
 	this.startDragX = null;
 	this.startDragY = null;
+	
+	this.policyX = "never"; // "never", "always"
+	this.policyY = "always";
 	
 	if (child) {
 		this.set_child(child);
@@ -45,32 +49,73 @@ suit.Scroller.prototype.draw = function(context) {
 		]));
 	context.rect(a.x, a.y+1, a.width, gradhei);
 	
-	context.push_clip(a.x, a.y, a.width, a.height);
-	this.child.draw(context);
-	context.pop_clip();
+	if (this.child) {
+		context.push_clip(a.x, a.y, a.width, a.height);
+		this.child.draw(context);
+	
+		var ca = this.child.get_allocation();
+		context.set_stroke_style (3, "round");
+		context.set_fill_stroke (null, "#333");
+		var x = a.x + a.width - 6;
+		var y = 6 + a.y + ((-this.scrollY) / ca.height * a.height);
+		var h = a.height/ca.height*(a.height-12) - 12;
+		context.path([
+			[x, y],
+			[x, y+h]
+		]);
+		
+		context.pop_clip();
+	}
 };
 
 suit.Scroller.prototype.set_allocation = function(allocation) {
 	suit.Widget.prototype.set_allocation.call(this, allocation);
-	this.update_child_position();
+	
+	var cw, ch;
+	if (this.child) {
+		if (this.policyX === "never" && this.policyY === "always") {
+			cw = allocation.width - this.style.padding_left - this.style.padding_right - 1;
+			ch = this.child.get_preferred_height_for_width(cw).natural;
+		} else if (this.policyX === "never" && this.policyY === "never") {
+			cw = allocation.width - this.style.padding_left - this.style.padding_right - 1;
+			ch = allocation.height - this.style.padding_top - this.style.padding_bottom - 1;
+		} else if (this.policyX === "always" && this.policyY === "always") {
+			cw = this.child.get_preferred_width().natural;
+			ch = this.child.get_preferred_height().natural;
+		} else if (this.policyX === "always" && this.policyY === "never") {
+			ch = allocation.height - this.style.padding_top - this.style.padding_bottom - 1;
+			cw = this.child.get_preferred_width_for_height(ch).natural;
+		}
+		this.child.set_allocation(new suit.Allocation(0, 0, cw, ch));
+		this.update_scroll_position();
+	}
 };
 
 suit.Scroller.prototype.on_event_add = function(widget) {
 	if (this.allocation) {
-		this.update_child_position();
+		this.set_allocation(this.allocation);
 	}
 };
 
-suit.Scroller.prototype.update_child_position = function() {
-	this.scrollY = this.scrollY > 0 ? 0 : this.scrollY;
+suit.Scroller.prototype.update_scroll_position = function() {
 	if (this.child) {
-		var allocation = new suit.Allocation(
-			this.allocation.x + this.style.padding_left,
-			this.allocation.y + this.style.padding_top + this.scrollY,
-			this.allocation.width - this.style.padding_left - this.style.padding_right - 1,
-			this.allocation.height - this.style.padding_top - this.style.padding_bottom - 1
-		);
-		this.child.set_allocation(allocation);
+		var ca = this.child.get_allocation();
+		var a = this.get_allocation();
+		
+		var max_scrollX = a.width - ca.width - this.style.padding_left - this.style.padding_right;
+		var max_scrollY = a.height - ca.height - this.style.padding_bottom - this.style.padding_top;
+		
+		this.scrollX = this.scrollX > 0 ? 0 :
+			(this.scrollX < max_scrollX ? max_scrollX : this.scrollX);
+		this.scrollY = this.scrollY > 0 ? 0 :
+			(this.scrollY < max_scrollY ? max_scrollY : this.scrollY);
+		
+		if (this.policyX === "never") this.scrollX = 0;
+		if (this.policyY === "never") this.scrollY = 0;
+		
+		ca.x = a.x + this.style.padding_left + this.scrollX;
+		ca.y = a.y + this.style.padding_top + this.scrollY;
+		this.child.set_allocation(ca);
 		this.queue_redraw();
 	}
 };
@@ -78,7 +123,7 @@ suit.Scroller.prototype.update_child_position = function() {
 suit.Scroller.prototype.on_event_scroll = function(e) {
 	if (e.deltaY) {
 		this.scrollY += e.deltaY;
-		this.update_child_position();
+		this.update_scroll_position();
 	}
 };
 
@@ -104,7 +149,7 @@ suit.Scroller.prototype.on_event_motion = function(e) {
 	if (this.dragging) {
 		this.scrollY -= this.startDragY - e.y;
 		this.startDragY = e.y;
-		this.update_child_position();
+		this.update_scroll_position();
 	}
 };
 
