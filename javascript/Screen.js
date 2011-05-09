@@ -44,8 +44,24 @@ suit.Screen.prototype.draw = function() {
 	context.save();
 	context.set_fill_stroke ("#191919");
 	context.rect (0, 0, a.width, a.height);
-	if (this.child) this.child.draw (context);
+	if (this.child) {
+		this.draw_recursive(this.child, context);
+	}
 	context.restore();
+};
+
+suit.Screen.prototype.draw_recursive = function(widget, context) {
+	var allocation = widget.get_allocation();
+	if (allocation) {
+		context.push_clip.apply(context, allocation.args());
+		widget.draw(context);
+		if (widget.children) {
+			for (var i = 0, len = widget.children.length; i < len; i++) {
+				this.draw_recursive (widget.children[i], context);
+			}
+		}
+		context.pop_clip();
+	}
 };
 
 suit.Screen.prototype.set_allocation = function(a) {
@@ -61,6 +77,9 @@ suit.Screen.prototype.set_allocation = function(a) {
 	if (this.child) {
 		this.child.set_allocation (new suit.Allocation (a.width/2-w/2, a.height/2-h/2, w, h));
 	}
+	/*if (this.child) {
+		this.child.set_allocation (a);
+	}*/
 };
 
 suit.Screen.prototype.resize = function() {

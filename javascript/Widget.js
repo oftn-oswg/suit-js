@@ -48,9 +48,11 @@ suit.Widget.prototype.event_mask_sub = function(bits) {
 suit.Widget.prototype.lock = function() {
 	var screen = this.get_screen();
 	if (screen.lock && screen.lock !== this) {
-		suit.error("Events are already locked by another widget.");
+		suit.error("Events are already locked by #%s.", screen.lock.name);
+		return false;
 	}
 	screen.lock = this;
+	return true;
 };
 
 suit.Widget.prototype.unlock = function() {
@@ -58,10 +60,38 @@ suit.Widget.prototype.unlock = function() {
 };
 
 suit.Widget.prototype.register_event = function(e) {
-	// First check if the event mask includes the event
-	if (this.event_mask & e.type) {
-		this.emit(e.name, e);
+
+	var coordinate_mask = suit.Event.ButtonPress |
+		suit.Event.ButtonRelease |
+		suit.Event.ButtonDblPress |
+		suit.Event.Scroll |
+		suit.Event.Motion;
+		
+	var isown = true;
+	
+	// First scan children
+	if (this.children) {
+	
+		var child, ca;
+		if (e.type & coordinate_mask) {
+			child = this.get_child_with_coords(e.x, e.y);
+			if (child) {
+				isown = child.register_event(e);
+			}
+		}
+	
 	}
+	
+	if (isown) {
+		// First check if the event mask includes the event
+		if (this.event_mask & e.type) {
+			this.emit(e.name, e);
+			return false;
+		}
+		return true;
+	}
+	
+	return false;
 };
 
 suit.SizeRequestMode = {

@@ -28,7 +28,9 @@ suit.TextLayout.prototype.set_text = function (text) {
 };
 
 suit.TextLayout.prototype.set_font = function (font_name, font_size) {
-	this.font_name = font_name;
+	this.font_name = Array.isArray(font_name) ?
+		"\""+font_name.join("\", \"")+"\"":
+		"\""+font_name+"\"";
 	this.font_size = font_size;
 	this.calculated = false;
 };
@@ -47,7 +49,7 @@ suit.TextLayout.prototype.set_width = function (width) {
 };
 
 suit.TextLayout.prototype.get_css_font_string = function() {
-	return this.font_size + "px \""+this.font_name+"\"";
+	return this.font_size + "px "+this.font_name;
 };
 
 suit.TextLayout.prototype.get_index_at_pos = function(x, y) {
@@ -97,19 +99,14 @@ suit.TextLayout.prototype.recalculate_layout = function() {
 };
 
 suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callback) {
-	var number_of_lines = line_split.length;
-	
 	suit.TextLayout.canvas_context.font = this.get_css_font_string();
 	
-	for (var i = 0; i < number_of_lines; i++) {
-	
+	for (var i = 0, len = line_split.length; i < len; i++) {
+		var m, w;
 		var line = line_split[i];
-	
 		var start_index = 0;
 		var break_index = 0;
 		var last_break_index = 0;
-		
-		var m, w;
 		
 		/* The regex is a |-seperated list of two points:
 		 * The first is a point (or char) before a possible break
@@ -117,12 +114,9 @@ suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callba
 		 */
 		while (m = line.substr(last_break_index).match(/. |-[^ ]|.$/)) {
 			break_index += m.index+1;
-			
 			if ((w = this.text_width(line.substring(start_index, break_index)))
 				> width) {
-				
 				var wrap_line = line.substring(start_index, last_break_index);
-				
 				/*
 				 * TODO: 
 				 *  - Push wrapped line with whitespace
@@ -130,17 +124,12 @@ suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callba
 				 *  - Render text without whitespace
 				 */
 				if (start_index !== 0) wrap_line = wrap_line.replace(/^\s+/, "");
-				
 				callback.call(this, wrap_line);
 				start_index = last_break_index;
-				
 			}
 			last_break_index = break_index;
-		
 		}
-		
 		callback.call(this, line.substring(start_index).replace(/^\s+/, ""));
-		
 	}
 };
 

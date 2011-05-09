@@ -5,7 +5,7 @@ suit.Packer = function(orientation) {
 
 	this.orientation = orientation || "horizontal"; // "horizontal" or "vertical"
 	this.align = "start"; // "start", "end" or "middle"
-	this.spacing = 6;
+	this.spacing = 20;
 	this.style = {
 		padding_top: 0,
 		padding_bottom: 0,
@@ -17,13 +17,13 @@ suit.Packer = function(orientation) {
 suit.Packer.prototype = suit.Container.inherit();
 suit.Packer.prototype.name = "Packer";
 
-suit.Packer.prototype.draw = function(context) {
+/*suit.Packer.prototype.draw = function(context) {
 	var a = this.allocation;
 	
 	for (var i = 0, len = this.children.length; i < len; i++) {
 		this.children[i].draw(context);
 	};
-};
+};*/
 
 suit.Packer.prototype.set_allocation = function(allocation) {
 	suit.Widget.prototype.set_allocation.call(this, allocation);
@@ -51,6 +51,7 @@ suit.Packer.prototype.set_allocation = function(allocation) {
 			child.get_preferred_height_for_width(majorsize).natural
 
 		childsize += majchild;
+		if (i !== 0) { childsize += this.spacing; }
 		childsize_parts.push(majchild);
 	}
 	
@@ -66,6 +67,7 @@ suit.Packer.prototype.set_allocation = function(allocation) {
 	for (var i = 0, len = this.children.length; i < len; i++) {
 		var child = this.children[i];
 		var ca;
+		if (i !== 0) { majpos += this.spacing; }
 		if (this.orientation === "horizontal") {
 			ca = new suit.Allocation(
 				majpos, allocation.y, childsize_parts[i], allocation.height);
@@ -92,12 +94,15 @@ suit.Packer.prototype.get_preferred_width = function() {
 	var minimum = 0;
 	var natural = 0;
 	
-	for (var i = 0, len = this.children; i < len; i++) {
+	for (var i = 0, len = this.children.length; i < len; i++) {
 		var child = this.children[i];
 		var size = child.get_preferred_width();
-		minimum_width += size.minimum;
-		natural_width += size.natural;
+		minimum += size.minimum;
+		natural += size.natural;
 	}
+	
+	minimum += this.spacing * (len-1);
+	natural += this.spacing * (len-1);
 	
 	return {
 		minimum: minimum,
@@ -109,12 +114,15 @@ suit.Packer.prototype.get_preferred_height = function() {
 	var minimum = 0;
 	var natural = 0;
 	
-	for (var i = 0, len = this.children; i < len; i++) {
+	for (var i = 0, len = this.children.length; i < len; i++) {
 		var child = this.children[i];
 		var size = child.get_preferred_height();
-		minimum_width += size.minimum;
-		natural_width += size.natural;
+		minimum += size.minimum;
+		natural += size.natural;
 	}
+	
+	minimum += this.spacing * (len-1);
+	natural += this.spacing * (len-1);
 	
 	return {
 		minimum: minimum,
@@ -123,35 +131,41 @@ suit.Packer.prototype.get_preferred_height = function() {
 };
 
 suit.Packer.prototype.get_preferred_width_for_height = function(height) {
-	var minimum_width = 0;
-	var natural_width = 0;
+	var minimum = 0;
+	var natural = 0;
 	
-	for (var i = 0, len = this.children; i < len; i++) {
+	for (var i = 0, len = this.children.length; i < len; i++) {
 		var child = this.children[i];
 		var size = child.get_preferred_width_for_height(height);
-		minimum_width += size.minimum;
-		natural_width += size.natural;
+		minimum += size.minimum;
+		natural += size.natural;
 	}
 	
+	minimum += this.spacing * (len-1);
+	natural += this.spacing * (len-1);
+	
 	return {
-		minimum: minimum_width,
-		natural: natural_width
+		minimum: minimum,
+		natural: natural
 	};
 };
 
 suit.Packer.prototype.get_preferred_height_for_width = function(width) {
-	var minimum_height = 0;
-	var natural_height = 0;
+	var minimum = 0;
+	var natural = 0;
 	
 	for (var i = 0, len = this.children.length; i < len; i++) {
 		var child = this.children[i];
 		var size = child.get_preferred_height_for_width(width);
-		minimum_height += size.minimum;
-		natural_height += size.natural;
+		minimum += size.minimum;
+		natural += size.natural;
 	}
 	
+	minimum += this.spacing * (len-1);
+	natural += this.spacing * (len-1);
+	
 	return {
-		minimum: minimum_height,
-		natural: natural_height
+		minimum: minimum,
+		natural: natural
 	};
 };

@@ -35,7 +35,7 @@ suit.Scroller.prototype.name = "Scroller";
 suit.Scroller.prototype.draw = function(context) {
 	var a = this.allocation;
 	
-	context.set_shadow (0, 0, 5, "#000");
+	/*context.set_shadow (0, 0, 5, "#000");
 	context.set_fill_stroke ("#fff");
 	context.rect(a.x, a.y, a.width, a.height);
 	context.set_shadow();
@@ -47,16 +47,19 @@ suit.Scroller.prototype.draw = function(context) {
 			[0, "#eee"],
 			[1, "#fff"]
 		]));
-	context.rect(a.x, a.y+1, a.width, gradhei);
+	context.rect(a.x, a.y+1, a.width, gradhei); */
+	
+	context.set_fill_stroke ("#000");
+	context.rect(a.x, a.y, a.width, a.height);
 	
 	if (this.child) {
-		context.push_clip(a.x, a.y, a.width, a.height);
-		this.child.draw(context);
+		//context.push_clip(a.x, a.y, a.width, a.height);
+		//this.child.draw(context);
 	
 		var ca = this.child.get_allocation();
-		context.set_stroke_style (3, "round");
+		context.set_stroke_style (4, "round");
 		context.set_fill_stroke (null, "#333");
-		var x = a.x + a.width - 6;
+		var x = a.x + a.width - 5.5;
 		var y = 6 + a.y + ((-this.scrollY) / ca.height * a.height);
 		var h = a.height/ca.height*(a.height-12) - 12;
 		context.path([
@@ -64,7 +67,7 @@ suit.Scroller.prototype.draw = function(context) {
 			[x, y+h]
 		]);
 		
-		context.pop_clip();
+		//context.pop_clip();
 	}
 };
 
