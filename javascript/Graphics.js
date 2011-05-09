@@ -8,7 +8,7 @@ suit.Graphics.prototype.rect = function(x, y, w, h, stroke, fill) {
 	if (typeof fill === "undefined" || fill === null) fill = true;
 
 	if (fill) this.cc.fillRect (x, y, w, h);
-	if (stroke) this.cc.fillRect (x, y, w, h);
+	if (stroke) this.cc.strokeRect (x, y, w, h);
 };
 
 suit.Graphics.prototype.push_clip = function(x, y, w, h) {
@@ -84,18 +84,6 @@ suit.Graphics.prototype.set_font_style = function(font, align, baseline) {
 	if (typeof align !== "undefined" && align !== null) this.cc.textAlign = align;
 	// top, hanging, middle, alphabetic, ideographic, bottom
 	if (typeof baseline !== "undefined" && baseline !== null) this.cc.textBaseline = baseline;
-};
-
-suit.Graphics.prototype.text = function(text, x, y, stroke, fill) {
-	if (typeof stroke === "undefined" || stroke === null) stroke = false;
-	if (typeof fill === "undefined" || fill === null) fill = true;
-
-	if (fill) this.cc.fillText (text, x, y);
-	if (stroke) this.cc.strokeText (text, x, y);
-};
-
-suit.Graphics.prototype.text_width = function(text) {
-	return this.cc.measureText(text).width;
 };
 
 suit.Graphics.prototype.set_fill_stroke = function(fill, stroke) {
