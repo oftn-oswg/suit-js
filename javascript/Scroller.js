@@ -53,12 +53,18 @@ suit.Scroller.prototype.draw = function(context) {
 	context.rect(a.x, a.y, a.width, a.height);
 	
 	if (this.child) {
-		//context.push_clip(a.x, a.y, a.width, a.height);
-		//this.child.draw(context);
+		this.draw_scrollbars(context);
+	}
+};
+
+suit.Scroller.prototype.draw_scrollbars = function(context) {
+	var a = this.allocation;
+	var ca = this.child.get_allocation();
 	
-		var ca = this.child.get_allocation();
-		context.set_stroke_style (4, "round");
-		context.set_fill_stroke (null, "#333");
+	context.set_stroke_style (4, "round");
+	context.set_fill_stroke (null, "#333");
+	
+	if (this.policyY === "always") {
 		var x = a.x + a.width - 5.5;
 		var y = 6 + a.y + ((-this.scrollY) / ca.height * a.height);
 		var h = a.height/ca.height*(a.height-12) - 12;
@@ -66,10 +72,18 @@ suit.Scroller.prototype.draw = function(context) {
 			[x, y],
 			[x, y+h]
 		]);
-		
-		//context.pop_clip();
 	}
-};
+	
+	if (this.policyX === "always") {
+		var y = a.y + a.height - 5.5;
+		var x = 6 + a.x + ((-this.scrollX) / ca.width * a.width);
+		var w = a.width/ca.width*(a.width-12) - 12;
+		context.path([
+			[x, y],
+			[x+w, y]
+		]);
+	}
+}
 
 suit.Scroller.prototype.set_allocation = function(allocation) {
 	suit.Widget.prototype.set_allocation.call(this, allocation);
@@ -124,8 +138,12 @@ suit.Scroller.prototype.update_scroll_position = function() {
 };
 
 suit.Scroller.prototype.on_event_scroll = function(e) {
-	if (e.deltaY) {
+	if (e.deltaY && this.policyY === "always") {
 		this.scrollY += e.deltaY;
+		this.update_scroll_position();
+	}
+	if (e.deltaX && this.policyX === "always") {
+		this.scrollX += e.deltaX;
 		this.update_scroll_position();
 	}
 };
@@ -150,8 +168,14 @@ suit.Scroller.prototype.on_event_button = function(e) {
 
 suit.Scroller.prototype.on_event_motion = function(e) {
 	if (this.dragging) {
-		this.scrollY -= this.startDragY - e.y;
-		this.startDragY = e.y;
+		if (this.policyY === "always") {
+			this.scrollY -= this.startDragY - e.y;
+			this.startDragY = e.y;
+		}
+		if (this.policyX === "always") {
+			this.scrollX -= this.startDragX - e.x;
+			this.startDragX = e.x;
+		}
 		this.update_scroll_position();
 	}
 };

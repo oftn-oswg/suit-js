@@ -73,28 +73,28 @@ suit.Label.prototype.get_request_mode = function() {
 suit.Label.prototype.get_preferred_width = function() {
 	var width = this.layout.get_preferred_width();
 	return {
-		mininum: width,
+		minimum: width,
 		natural: width
 	};
 };
 suit.Label.prototype.get_preferred_height = function() {
 	var height = this.layout.get_preferred_height();
 	return {
-		mininum: height,
+		minimum: height,
 		natural: height
 	};
 };
 suit.Label.prototype.get_preferred_height_for_width = function(width) {
 	var height = this.layout.get_preferred_height_for_width(width);
 	return {
-		mininum: height,
+		minimum: height,
 		natural: height
 	};
 };
 suit.Label.prototype.get_preferred_width_for_height = function(height) {
 	var width = this.layout.get_preferred_width_for_height(height);
 	return {
-		mininum: width,
+		minimum: width,
 		natural: width
 	};
 };

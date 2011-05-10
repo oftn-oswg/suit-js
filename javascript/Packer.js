@@ -25,6 +25,15 @@ suit.Packer.prototype.name = "Packer";
 	};
 };*/
 
+suit.Packer.prototype.set_spacing = function(spacing) {
+	this.spacing = spacing;
+	if (this.allocation) this.set_allocation (this.allocation);
+};
+
+suit.Packer.prototype.get_spacing = function() {
+	return this.spacing;
+};
+
 suit.Packer.prototype.set_allocation = function(allocation) {
 	suit.Widget.prototype.set_allocation.call(this, allocation);
 	
@@ -134,15 +143,24 @@ suit.Packer.prototype.get_preferred_width_for_height = function(height) {
 	var minimum = 0;
 	var natural = 0;
 	
-	for (var i = 0, len = this.children.length; i < len; i++) {
-		var child = this.children[i];
-		var size = child.get_preferred_width_for_height(height);
-		minimum += size.minimum;
-		natural += size.natural;
-	}
+	if (this.orientation === "horizontal") {
+		for (var i = 0, len = this.children.length; i < len; i++) {
+			var child = this.children[i];
+			var size = child.get_preferred_width_for_height(height);
+			minimum += size.minimum;
+			natural += size.natural;
+		}
 	
-	minimum += this.spacing * (len-1);
-	natural += this.spacing * (len-1);
+		minimum += this.spacing * (len-1);
+		natural += this.spacing * (len-1);
+	} else {
+		for (var i = 0, len = this.children.length; i < len; i++) {
+			var child = this.children[i];
+			var size = child.get_preferred_width_for_height(height);
+			minimum = (size.minimum > minimum) ? size.minimum : minimum;
+			natural = (size.natural > natural) ? size.natural : natural;
+		}
+	}
 	
 	return {
 		minimum: minimum,
@@ -154,15 +172,24 @@ suit.Packer.prototype.get_preferred_height_for_width = function(width) {
 	var minimum = 0;
 	var natural = 0;
 	
-	for (var i = 0, len = this.children.length; i < len; i++) {
-		var child = this.children[i];
-		var size = child.get_preferred_height_for_width(width);
-		minimum += size.minimum;
-		natural += size.natural;
-	}
+	if (this.orientation === "horizontal") {
+		for (var i = 0, len = this.children.length; i < len; i++) {
+			var child = this.children[i];
+			var size = child.get_preferred_height_for_width(width);
+			minimum = (size.minimum > minimum) ? size.minimum : minimum;
+			natural = (size.natural > natural) ? size.natural : natural;
+		}
+	} else {
+		for (var i = 0, len = this.children.length; i < len; i++) {
+			var child = this.children[i];
+			var size = child.get_preferred_height_for_width(width);
+			minimum += size.minimum;
+			natural += size.natural;
+		}
 	
-	minimum += this.spacing * (len-1);
-	natural += this.spacing * (len-1);
+		minimum += this.spacing * (len-1);
+		natural += this.spacing * (len-1);
+	}
 	
 	return {
 		minimum: minimum,

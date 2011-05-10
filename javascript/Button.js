@@ -13,10 +13,10 @@ suit.Button = function(text) {
 	this.connect("event_button", this.on_event_button);
 
 	this.style = {
-		padding_top: 10,
-		padding_bottom: 10,
-		padding_left: 10,
-		padding_right: 10
+		padding_top: 6,
+		padding_bottom: 6,
+		padding_left: 8,
+		padding_right: 8
 	};
 };
 suit.Button.prototype = suit.Bin.inherit();
@@ -77,7 +77,7 @@ suit.Button.prototype.set_allocation = function(allocation) {
 	if (this.child) {
 		this.child.set_allocation(new suit.Allocation(
 			allocation.x + this.style.padding_left,
-			allocation.y + this.style.padding_top,
+			allocation.y + this.style.padding_top + this.pressed,
 			allocation.width - this.style.padding_left - this.style.padding_right - 1,
 			allocation.height - this.style.padding_top - this.style.padding_bottom - 1
 		));
@@ -96,6 +96,7 @@ suit.Button.prototype.on_event_button = function(e) {
 		this.pressed = true;
 		this.event_mask_add(suit.Event.ButtonRelease);
 		this.lock();
+		this.set_allocation(this.allocation);
 		this.queue_redraw();
 		break;
 	case suit.Event.ButtonRelease:
@@ -104,6 +105,7 @@ suit.Button.prototype.on_event_button = function(e) {
 			this.emit("activate");
 			this.pressed = false;
 			this.unlock();
+			this.set_allocation(this.allocation);
 			this.queue_redraw();
 		}
 	}
