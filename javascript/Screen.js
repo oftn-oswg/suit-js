@@ -2,7 +2,7 @@ suit.Screen = function() {
 	suit.Bin.call(this);
 	
 	this.update_timer = null;
-	this.throttling = true;
+	this.throttling = false;
 	
 	// When set to a widget object, events are channeled directly to the widget
 	this.lock = null;

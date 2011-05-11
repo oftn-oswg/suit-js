@@ -131,6 +131,11 @@ suit.Scroller.prototype.update_scroll_position = function() {
 	}
 };
 
+suit.Scroller.prototype.set_policy = function(horizontal, vertical) {
+	this.policyX = horizontal || "never";
+	this.policyY = vertical || "always";
+};
+
 suit.Scroller.prototype.on_event_scroll = function(e) {
 	if (e.deltaY && this.policyY === "always") {
 		this.scrollY += e.deltaY;

@@ -134,7 +134,7 @@ suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callba
 };
 
 suit.TextLayout.prototype.get_preferred_height = function() {
-	return this.text_split.length * this.get_line_size();
+	return this.text_split.length * this.get_line_size() + 1;
 };
 
 suit.TextLayout.prototype.get_preferred_width = function() {

@@ -65,22 +65,28 @@ suit.Widget.prototype.unlock = function() {
 
 suit.Widget.prototype.register_event = function(e) {
 
-	var coordinate_mask = suit.Event.ButtonPress |
+	var has_coords = e.type & (suit.Event.ButtonPress |
 		suit.Event.ButtonRelease |
 		suit.Event.ButtonDblPress |
 		suit.Event.Scroll |
-		suit.Event.Motion;
+		suit.Event.Motion);
 		
 	var isown = true;
+	if (has_coords) {
+		e.x -= this.allocation.x;
+		e.y -= this.allocation.y;
+	}
 	
 	// First scan children
 	if (this.children) {
 	
 		var child, ca;
-		if (e.type & coordinate_mask) {
+		if (has_coords) {
 			child = this.get_child_with_coords(e.x, e.y);
 			if (child) {
 				isown = child.register_event(e);
+				e.x += child.allocation.x;
+				e.y += child.allocation.y;
 			}
 		}
 	
