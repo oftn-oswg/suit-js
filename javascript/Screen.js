@@ -21,7 +21,7 @@ suit.Screen = function() {
 	
 	this.resize();
 	this.attach_dom_events();
-	this.attach_internal_events();
+	//this.attach_internal_events();
 };
 
 suit.Screen.prototype = suit.Bin.inherit();
@@ -55,6 +55,7 @@ suit.Screen.prototype.draw_recursive = function(widget, context) {
 	if (allocation) {
 		context.push_clip.apply(context, allocation.args());
 		widget.draw(context);
+		context.cc.translate(allocation.x, allocation.y);
 		if (widget.children) {
 			for (var i = 0, len = widget.children.length; i < len; i++) {
 				this.draw_recursive (widget.children[i], context);
@@ -64,8 +65,8 @@ suit.Screen.prototype.draw_recursive = function(widget, context) {
 	}
 };
 
-suit.Screen.prototype.set_allocation = function(a) {
-	suit.Widget.prototype.set_allocation.call(this, a);
+suit.Screen.prototype.size_allocate = function(a) {
+	suit.Widget.prototype.size_allocate.call(this, a);
 	
 	this.container.style.width = a.width + "px";
 	this.container.style.height = a.height + "px";
@@ -75,11 +76,11 @@ suit.Screen.prototype.set_allocation = function(a) {
 	var w = Math.min(600, a.width-50);
 	var h = Math.min(400, a.height-50);
 	if (this.child) {
-		this.child.set_allocation (new suit.Allocation (a.width/2-w/2, a.height/2-h/2, w, h));
+		this.child.size_allocate (new suit.Allocation (a.width/2-w/2, a.height/2-h/2, w, h));
 	}
 	//*/
 	/*if (this.child) {
-		this.child.set_allocation (a);
+		this.child.size_allocate (a);
 	}
 	//*/
 };
@@ -88,7 +89,7 @@ suit.Screen.prototype.resize = function() {
 	var width = window.innerWidth;
 	var height = window.innerHeight;
 	
-	this.set_allocation(new suit.Allocation(0, 0, width, height));
+	this.size_allocate(new suit.Allocation(0, 0, width, height));
 	this.draw(); // TODO: Change this to queue_resize
 };
 
@@ -195,13 +196,7 @@ suit.Screen.prototype.attach_dom_events = function() {
 	}, false);
 };
 
-suit.Screen.prototype.attach_internal_events = function() {
-	this.connect("add", function() {
-		if (this.allocation) {
-			this.set_allocation(this.allocation);
-		}
-	});
-};
+//suit.Screen.prototype.attach_internal_events = function() {};
 
 suit.Screen.prototype.get_button = function(e) {
 	var right_click = false;

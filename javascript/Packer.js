@@ -1,7 +1,5 @@
 suit.Packer = function(orientation) {
 	suit.Container.call(this);
-	
-	this.connect("add", this.on_event_add);
 
 	this.orientation = orientation || "horizontal"; // "horizontal" or "vertical"
 	this.align = "start"; // "start", "end" or "middle"
@@ -27,15 +25,15 @@ suit.Packer.prototype.name = "Packer";
 
 suit.Packer.prototype.set_spacing = function(spacing) {
 	this.spacing = spacing;
-	if (this.allocation) this.set_allocation (this.allocation);
+	if (this.allocation) this.size_allocate (this.allocation);
 };
 
 suit.Packer.prototype.get_spacing = function() {
 	return this.spacing;
 };
 
-suit.Packer.prototype.set_allocation = function(allocation) {
-	suit.Widget.prototype.set_allocation.call(this, allocation);
+suit.Packer.prototype.size_allocate = function(allocation) {
+	suit.Widget.prototype.size_allocate.call(this, allocation);
 	
 	var majorsize, minorsize;
 	if (this.orientation === "horizontal") {
@@ -70,8 +68,7 @@ suit.Packer.prototype.set_allocation = function(allocation) {
 		}
 	}*/
 	
-	var majpos = (this.orientation === "horizontal") ? 
-		allocation.x : allocation.y;
+	var majpos = 0;
 	
 	for (var i = 0, len = this.children.length; i < len; i++) {
 		var child = this.children[i];
@@ -79,19 +76,13 @@ suit.Packer.prototype.set_allocation = function(allocation) {
 		if (i !== 0) { majpos += this.spacing; }
 		if (this.orientation === "horizontal") {
 			ca = new suit.Allocation(
-				majpos, allocation.y, childsize_parts[i], allocation.height);
+				majpos, 0, childsize_parts[i], allocation.height);
 		} else {
 			ca = new suit.Allocation(
-				allocation.x, majpos, allocation.width, childsize_parts[i]);
+				0, majpos, allocation.width, childsize_parts[i]);
 		}
-		child.set_allocation(ca);
+		child.size_allocate(ca);
 		majpos += childsize_parts[i];
-	}
-};
-
-suit.Packer.prototype.on_event_add = function(widget) {
-	if (this.allocation) {
-		this.set_allocation(this.allocation);
 	}
 };
 

@@ -1,6 +1,11 @@
 suit.Container = function() {
 	suit.Widget.call(this);
 	this.children = [];
+	this.connect("add", function() {
+		if (this.allocation) {
+			this.size_allocate(this.allocation);
+		}
+	});
 };
 
 suit.Container.prototype = suit.Widget.inherit();

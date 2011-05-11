@@ -10,6 +10,10 @@ suit.Widget.prototype.name = "Widget";
 suit.Widget.prototype.set_allocation = function(allocation) {
 	this.allocation = allocation;
 };
+suit.Widget.prototype.size_allocate = function(allocation) {
+	this.set_allocation(allocation);
+};
+
 suit.Widget.prototype.get_allocation = function() {
 	return this.allocation;
 };
@@ -94,13 +98,16 @@ suit.Widget.prototype.register_event = function(e) {
 	return false;
 };
 
-suit.SizeRequestMode = {
-	HEIGHT_FOR_WIDTH: 1,
-	WIDTH_FOR_HEIGHT: 2
+suit.Widget.prototype.get_local_coordinates = function(x, y) {
+	if (!this.allocation) return false;
+	x -= this.allocation.x;
+	y -= this.allocation.y;
+	return [x, y];
 };
 
-suit.RequestedSize = function(minimum, natural) {
-	this.minimum = minimum;
-	this.natural = natural;
+suit.Widget.prototype.get_absolute_coordinates = function(x, y) {
+	if (!this.allocation) return false;
+	x += this.allocation.x;
+	y += this.allocation.y;
+	return [x, y];
 };
-

@@ -9,7 +9,6 @@ suit.Button = function(text) {
 		this.child.set_align ("center");
 		this.child.set_valign ("middle");
 	}
-	this.connect("add", this.on_event_add);
 	this.connect("event_button", this.on_event_button);
 
 	this.style = {
@@ -72,21 +71,15 @@ suit.Button.prototype.draw = function(context) {
 	//context.set_shadow ();
 };
 
-suit.Button.prototype.set_allocation = function(allocation) {
-	suit.Widget.prototype.set_allocation.call(this, allocation);
+suit.Button.prototype.size_allocate = function(allocation) {
+	suit.Widget.prototype.size_allocate.call(this, allocation);
 	if (this.child) {
-		this.child.set_allocation(new suit.Allocation(
-			allocation.x + this.style.padding_left,
-			allocation.y + this.style.padding_top + this.pressed,
+		this.child.size_allocate(new suit.Allocation(
+			this.style.padding_left,
+			this.style.padding_top + this.pressed,
 			allocation.width - this.style.padding_left - this.style.padding_right - 1,
 			allocation.height - this.style.padding_top - this.style.padding_bottom - 1
 		));
-	}
-};
-
-suit.Button.prototype.on_event_add = function(widget) {
-	if (this.allocation) {
-		suit.Button.prototype.set_allocation(this.allocation);
 	}
 };
 
@@ -96,7 +89,7 @@ suit.Button.prototype.on_event_button = function(e) {
 		this.pressed = true;
 		this.event_mask_add(suit.Event.ButtonRelease);
 		this.lock();
-		this.set_allocation(this.allocation);
+		this.size_allocate(this.allocation);
 		this.queue_redraw();
 		break;
 	case suit.Event.ButtonRelease:
@@ -105,7 +98,7 @@ suit.Button.prototype.on_event_button = function(e) {
 			this.emit("activate");
 			this.pressed = false;
 			this.unlock();
-			this.set_allocation(this.allocation);
+			this.size_allocate(this.allocation);
 			this.queue_redraw();
 		}
 	}

@@ -17,7 +17,6 @@ suit.Scroller = function(child) {
 	if (child) {
 		this.set_child(child);
 	}
-	this.connect("add", this.on_event_add);
 	this.connect("event_button", this.on_event_button);
 	this.connect("event_scroll", this.on_event_scroll);
 	this.connect("event_motion", this.on_event_motion);
@@ -85,8 +84,8 @@ suit.Scroller.prototype.draw_scrollbars = function(context) {
 	}
 }
 
-suit.Scroller.prototype.set_allocation = function(allocation) {
-	suit.Widget.prototype.set_allocation.call(this, allocation);
+suit.Scroller.prototype.size_allocate = function(allocation) {
+	suit.Widget.prototype.size_allocate.call(this, allocation);
 	
 	var cw, ch;
 	if (this.child) {
@@ -103,14 +102,8 @@ suit.Scroller.prototype.set_allocation = function(allocation) {
 			ch = allocation.height - this.style.padding_top - this.style.padding_bottom - 1;
 			cw = this.child.get_preferred_width_for_height(ch).natural;
 		}
-		this.child.set_allocation(new suit.Allocation(0, 0, cw, ch));
+		this.child.size_allocate(new suit.Allocation(0, 0, cw, ch));
 		this.update_scroll_position();
-	}
-};
-
-suit.Scroller.prototype.on_event_add = function(widget) {
-	if (this.allocation) {
-		this.set_allocation(this.allocation);
 	}
 };
 
@@ -130,9 +123,10 @@ suit.Scroller.prototype.update_scroll_position = function() {
 		if (this.policyX === "never") this.scrollX = 0;
 		if (this.policyY === "never") this.scrollY = 0;
 		
-		ca.x = a.x + this.style.padding_left + this.scrollX;
-		ca.y = a.y + this.style.padding_top + this.scrollY;
-		this.child.set_allocation(ca);
+		ca.x = this.style.padding_left + this.scrollX;
+		ca.y = this.style.padding_top + this.scrollY;
+		
+		this.child.set_allocation(ca); // Use set_allocation here because we don't need to recalculate layout.
 		this.queue_redraw();
 	}
 };

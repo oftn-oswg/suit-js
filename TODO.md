@@ -3,15 +3,14 @@ SUIT To-Do List
 
 The following is a list of features and bugs and ideas that need to be fixed or implemented, in addition to the many widgets that need to be added. When the item is complete, move the item to the bottom section labeled "Completed".
 
-* Make Allocation coordinates relative to parent widget, so they don't have to updated when parent's allocation changes.
 * Seperate themeing code from widget logic to a ThemeEngine class
 * Rework drawing system to only draw what is necessary (only the widgets that called queue_redraw)
-* Rename set_allocation to size_allocate; seperate drawing from allocating
 * Make Label widgets selectable with set_selectable
 * Create easy tooltip API (set_tooltip_text/get_tooltip_text)
 * Create easy context menu API
 * Allow widget focusing for keyboard events, with <Tab> to go to the next widget and <Shift>+<Tab> to go to the previous
 * Allow all widgets to be insensitive
+* Create interface designer and builder which uses JSON format to describe the layout and widgets of the entire screen
 
 
 Widgets
@@ -41,4 +40,5 @@ Widgets
 Completed
 ---------
 
-Nothing has been completed from this list so far.
+* Make Allocation coordinates relative to parent widget, so they don't have to updated when parent's allocation changes.
+* Rename set_allocation to size_allocate; seperate drawing from allocating
