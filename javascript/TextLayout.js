@@ -126,13 +126,13 @@ suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callba
 				 *  - Test line width without whitespace
 				 *  - Render text without whitespace
 				 */
-				if (start_index !== 0) wrap_line = wrap_line.replace(/^\s+/, "");
+				//if (start_index !== 0) wrap_line = wrap_line.replace(/^\s+/, "");
 				callback.call(this, wrap_line);
 				start_index = last_break_index;
 			}
 			last_break_index = break_index;
 		}
-		callback.call(this, line.substring(start_index).replace(/^\s+/, ""));
+		callback.call(this, line.substring(start_index))//.replace(/^\s+/, ""));
 	}
 };
 

@@ -169,6 +169,8 @@ suit.Screen.prototype.attach_dom_events = function() {
 			deltaY = -e.detail;
 		}
 		
+		if (deltaX === 0 && deltaY === 0) return false;
+		
 		if (widget) {
 			widget.register_event(
 				new suit.EventScroll(

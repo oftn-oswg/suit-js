@@ -3,6 +3,8 @@ SUIT To-Do List
 
 The following is a list of features and bugs and ideas that need to be fixed or implemented, in addition to the many widgets that need to be added. When the item is complete, move the item to the bottom section labeled "Completed".
 
+* Fix Firefox speed problems
+* Fix text clipping issue and Firefox's alignment issue.
 * Add `suit.Container.prototype.insert(widget, index)` and `suit.Container.prototype.replace(widget||index, widget)`
 * Add `suit.Widget.prototype.clone()` so widgets can be cloned easy to have identical widgets in different places.
 * Allow widgets to be set to expand in Packer, so that all available space can be used.

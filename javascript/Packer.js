@@ -15,14 +15,6 @@ suit.Packer = function(orientation) {
 suit.Packer.prototype = suit.Container.inherit();
 suit.Packer.prototype.name = "Packer";
 
-/*suit.Packer.prototype.draw = function(context) {
-	var a = this.allocation;
-	
-	for (var i = 0, len = this.children.length; i < len; i++) {
-		this.children[i].draw(context);
-	};
-};*/
-
 suit.Packer.prototype.set_spacing = function(spacing) {
 	this.spacing = spacing;
 	if (this.allocation) this.size_allocate (this.allocation);
