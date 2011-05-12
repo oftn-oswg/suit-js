@@ -1,4 +1,3 @@
-
 <!DOCTYPE html> 
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US"> 
 <head> 
@@ -21,6 +20,7 @@
 <script src="javascript/Graphics.js" type="application/ecmascript"></script> 
 <script src="javascript/Logging.js" type="application/ecmascript"></script> 
 <script src="javascript/Widget.js" type="application/ecmascript"></script> 
+<script src="javascript/Image.js" type="application/ecmascript"></script> 
 <script src="javascript/Label.js" type="application/ecmascript"></script> 
 <script src="javascript/Container.js" type="application/ecmascript"></script> 
 <script src="javascript/Bin.js" type="application/ecmascript"></script> 
@@ -39,10 +39,13 @@ var counter = 1;
  
 var suit_screen = new suit.Screen();
 var packer = new suit.Packer("vertical");
+packer.set_spacing (18);
  
 var button = new suit.Button("Test button");
 button.connect("activate", function() {
-	this.get_child().set_text(new Date()+"");
+	var a = [], i = 50;
+	while (i--) a.push(97+Math.random()*26|0);
+	this.get_child().set_text(String.fromCharCode.apply(null, a));
 });
  
 var label = new suit.Label(demo_text);
@@ -52,15 +55,33 @@ var another_label = new suit.Label("This is just some more text placed after the
 another_label.set_line_height(1.6);
 another_label.set_align("right");
  
+var hpacker = new suit.Packer("horizontal");
+hpacker.set_spacing (18);
+hpacker.add(new suit.Button("Button 1"));
+hpacker.add(new suit.Button("Button 2"));
+hpacker.add(new suit.Button("Button 3"));
+ 
+var vpacker = new suit.Packer("vertical");
+vpacker.set_spacing (18);
+vpacker.add(new suit.Button("Button 4"));
+vpacker.add(new suit.Button("Button 5"));
+ 
+hpacker.add(vpacker);
+ 
+var logo = new suit.Image("./images/suit-logo.png");
+logo.set_align("left");
+ 
+ 
+packer.add(logo);
 packer.add(label);
 packer.add(button);
+packer.add(hpacker);
 packer.add(another_label);
  
 var scroller = new suit.Scroller(packer);
 suit_screen.set_child (scroller);
  
 //------------------------------------
- 
 </script> 
 </body> 
 </html>

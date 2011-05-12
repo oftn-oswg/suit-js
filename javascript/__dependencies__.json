@@ -13,5 +13,6 @@
 	"Screen": ["Bin"],
 	"Label": ["Widget", "TextLayout"],
 	"Button": ["Bin", "Label"],
-	"Scroller": ["Bin"]
+	"Scroller": ["Bin"],
+	"Image": ["Widget"]
 }

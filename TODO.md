@@ -3,12 +3,15 @@ SUIT To-Do List
 
 The following is a list of features and bugs and ideas that need to be fixed or implemented, in addition to the many widgets that need to be added. When the item is complete, move the item to the bottom section labeled "Completed".
 
+* Add `suit.Container.prototype.insert(widget, index)` and `suit.Container.prototype.replace(widget||index, widget)`
+* Add `suit.Widget.prototype.clone()` so widgets can be cloned easy to have identical widgets in different places.
+* Allow widgets to be set to expand in Packer, so that all available space can be used.
 * Seperate themeing code from widget logic to a ThemeEngine class
-* Rework drawing system to only draw what is necessary (only the widgets that called queue_redraw)
+* Rework drawing system to only draw what is necessary (only the widgets that called queue_redraw), and not being clipped.
 * Make Label widgets selectable with set_selectable
 * Create easy tooltip API (set_tooltip_text/get_tooltip_text)
 * Create easy context menu API
-* Allow widget focusing for keyboard events, with <Tab> to go to the next widget and <Shift>+<Tab> to go to the previous
+* Allow widget focusing for keyboard events, with `<Tab>` to go to the next widget and `<Shift> + <Tab>` to go to the previous
 * Allow all widgets to be insensitive
 * Create interface designer and builder which uses JSON format to describe the layout and widgets of the entire screen
 

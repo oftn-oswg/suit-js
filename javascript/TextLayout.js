@@ -28,10 +28,14 @@ suit.TextLayout.prototype.set_text = function (text) {
 };
 
 suit.TextLayout.prototype.set_font = function (font_name, font_size) {
-	this.font_name = Array.isArray(font_name) ?
-		"\""+font_name.join("\", \"")+"\"":
-		"\""+font_name+"\"";
-	this.font_size = font_size;
+	if (font_name) {
+		this.font_name = Array.isArray(font_name) ?
+			"\""+font_name.join("\", \"")+"\"":
+			"\""+font_name+"\"";
+	}
+	if (font_size) {
+		this.font_size = font_size;
+	}
 	this.calculated = false;
 };
 
@@ -102,7 +106,7 @@ suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callba
 	suit.TextLayout.canvas_context.font = this.get_css_font_string();
 	
 	for (var i = 0, len = line_split.length; i < len; i++) {
-		var m, w;
+		var m;
 		var line = line_split[i];
 		var start_index = 0;
 		var break_index = 0;
@@ -114,8 +118,7 @@ suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callba
 		 */
 		while (m = line.substr(last_break_index).match(/. |-[^ ]|.$/)) {
 			break_index += m.index+1;
-			if ((w = this.text_width(line.substring(start_index, break_index)))
-				> width) {
+			if (this.text_width(line.substring(start_index, break_index)) > width) {
 				var wrap_line = line.substring(start_index, last_break_index);
 				/*
 				 * TODO: 

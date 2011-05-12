@@ -37,6 +37,10 @@ suit.Screen.prototype.queue_redraw = function() {
 		this.draw();
 };
 
+suit.Screen.prototype.queue_resize = function() {
+	this.resize();
+};
+
 suit.Screen.prototype.draw = function() {
 	var context = this.context;
 	var a = this.allocation;
@@ -53,14 +57,30 @@ suit.Screen.prototype.draw = function() {
 suit.Screen.prototype.draw_recursive = function(widget, context) {
 	var allocation = widget.get_allocation();
 	if (allocation) {
+		// Start with clipping the canvas to the allocation, so it doesn't spill
 		context.push_clip.apply(context, allocation.args());
+		// Draw the widget
 		widget.draw(context);
+		// Translate the coordinates to the widgets to the widgets top-left point
 		context.cc.translate(allocation.x, allocation.y);
+		// If the widget is a container
 		if (widget.children) {
+			// For each child:
 			for (var i = 0, len = widget.children.length; i < len; i++) {
-				this.draw_recursive (widget.children[i], context);
+				// Check the bounds of the child
+				var ca = widget.get_allocation();
+				if (!ca) continue;
+				if (ca.y + ca.height >= 0 &&
+					ca.x + ca.width >= 0 //&&
+					//ca.y <= allocation.height &&
+					//ca.x <= allocation.width
+				) {
+					// Draw the child widget
+					this.draw_recursive (widget.children[i], context);
+				}
 			}
 		}
+		// Remove the clipping and translation
 		context.pop_clip();
 	}
 };
