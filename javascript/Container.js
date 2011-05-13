@@ -12,6 +12,13 @@ suit.Container.prototype = suit.Widget.inherit();
 
 suit.Container.prototype.name = "Container";
 
+suit.Container.prototype.index_of = function(widget) {
+	if( (index = this.children.indexOf(widget)) > -1 ) {
+		return index;
+	}
+	return false;
+};
+
 suit.Container.prototype.add = function(widget) {
 	this.children.push(widget);
 	widget.parent = this;
@@ -23,7 +30,7 @@ suit.Container.prototype.add = function(widget) {
 
 suit.Container.prototype.remove = function(widget) {
 	var index;
-	if( (index = this.children.indexOf(widget)) > -1 ) {
+	if (index = this.index_of(widget)) {
 		this.children.splice(index, 1);
 		return true;
 	}
@@ -36,6 +43,32 @@ suit.Container.prototype.remove_all = function() {
 		this.children[i].screen = null;
 	}
 	this.children = [];
+};
+
+suit.Container.prototype.replace = function(widget_or_index, new_widget) {
+	var index;
+	if (typeof widget_or_index === "number") {
+		index = widget_or_index;
+	} else {
+		index = this.index_of(widget_or_index);
+	}
+	if (index >= this.children.length) {
+		return this.add(new_widget);
+	}
+	new_widget.parent = this;
+	new_widget.screen = this.get_screen();
+	this.children[index] = new_widget;
+	return true;
+};
+
+suit.Container.prototype.insert = function(index, new_widget) {
+	if (index >= this.children.length) {
+		return this.add(new_widget);
+	}
+	new_widget.parent = this;
+	new_widget.screen = this.get_screen();
+	this.children.splice(index, 0, new_widget);
+	return true;
 };
 
 suit.Container.prototype.get_child_with_coords = function(x, y) {

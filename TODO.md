@@ -5,7 +5,6 @@ The following is a list of features and bugs and ideas that need to be fixed or 
 
 * Fix Firefox speed problems
 * Fix text clipping issue and Firefox's alignment issue.
-* Add `suit.Container.prototype.insert(widget, index)` and `suit.Container.prototype.replace(widget||index, widget)`
 * Add `suit.Widget.prototype.clone()` so widgets can be cloned easy to have identical widgets in different places.
 * Allow widgets to be set to expand in Packer, so that all available space can be used.
 * Seperate themeing code from widget logic to a ThemeEngine class
@@ -47,3 +46,4 @@ Completed
 
 * Make Allocation coordinates relative to parent widget, so they don't have to updated when parent's allocation changes.
 * Rename set_allocation to size_allocate; seperate drawing from allocating
+* Add `suit.Container.prototype.insert(widget, index)` and `suit.Container.prototype.replace(widget||index, widget)`

@@ -1,4 +1,6 @@
 suit.TextLayout = function() {
+	suit.Object.call(this);
+
 	this.text = "";
 	this.text_split = [""]
 	this.text_wrapped = [""];
@@ -17,6 +19,8 @@ suit.TextLayout.canvas_context = (function() {
 	return c.getContext('2d');
 })();
 
+suit.TextLayout.prototype = suit.Object.inherit();
+
 suit.TextLayout.prototype.text_width = function(string) {
 	return suit.TextLayout.canvas_context.measureText(string).width;
 };
@@ -25,6 +29,7 @@ suit.TextLayout.prototype.set_text = function (text) {
 	this.text = text;
 	this.text_split = text.split("\n");
 	this.calculated = false;
+	this.emit('resize');
 };
 
 suit.TextLayout.prototype.set_font = function (font_name, font_size) {
@@ -37,10 +42,12 @@ suit.TextLayout.prototype.set_font = function (font_name, font_size) {
 		this.font_size = font_size;
 	}
 	this.calculated = false;
+	this.emit('resize');
 };
 
 suit.TextLayout.prototype.set_line_height = function (line_height) {
 	this.line_height = line_height;
+	this.emit('resize');
 };
 
 suit.TextLayout.prototype.set_align = function (align) {
