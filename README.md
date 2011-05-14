@@ -12,7 +12,7 @@ SUIT will eventually provide many widgets of which to create your applications.
 
 ## Building
 
-This project uses [Node.js](http://nodejs.org/) to calculate the dependencies in `javascript/` and combine them in `build/suit-uncompressed.js`. To use, navigate to `build/` and run:
+This project uses [Node.js](http://nodejs.org/) to calculate the dependencies in `javascript/` and combine them in `build/suit-uncompressed.js`. If you have [UglifyJS](https://github.com/mishoo/UglifyJS) for Node.js installed, code will be compressed and saved to `build/suit-min.js`. To use, navigate to `build/` and run:
 
 ```
 node make.js

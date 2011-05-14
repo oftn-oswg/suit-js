@@ -1,6 +1,12 @@
 var Path = require("path");
 var File = require("fs");
 
+try {
+	var Uglify = require("uglify-js");
+} catch (e) {
+	process.stdout.write("\033[31;1mUglifyJS not found. Not compressing.\033[0m\n");
+}
+
 var Maker = function() {
 	this.build_directory = Path.join(__dirname, "../javascript/");
 	this.dependency_file = Path.join(this.build_directory, "__dependencies__.json");
@@ -17,7 +23,8 @@ Maker.prototype.init = function() {
 		var json;
 		try {
 			json = JSON.parse(data);
-			self.calculate_deps(json);
+			self.dependency_data = json;
+			self.begin();
 		} catch (e) {
 			self.log_error("There was an error parsing the dependencies file: ", e);
 		}
@@ -33,6 +40,22 @@ Maker.prototype.log_info = function() {
 Maker.prototype.log_error = function() {
 	for (var i = 0, len = arguments.length; i < len; i++) {
 		process.stderr.write("\033[31;1m"+arguments[i]+"\033[0m\n");
+	}
+};
+
+Maker.prototype.begin = function() {
+	try {
+		this.calculate_deps(this.dependency_data);
+		this.read_files();
+		this.preprocess_files();
+		this.compress_files();
+		this.log_info("Done!");
+	} catch(e) {
+		if (Array.isArray(e)) {
+			this.log_error.apply(this, e);
+		} else {
+			this.log_error(e);
+		}
 	}
 };
 
@@ -80,8 +103,6 @@ Maker.prototype.calculate_deps = function(obj) {
 	this.build_order = L.map(function(n) {
 		return Path.join(self.build_directory, n+".js");
 	});
-	
-	this.preprocess_files();
 };
 
 Maker.prototype.scan_dependencies_error = function(obj) {
@@ -109,22 +130,47 @@ Maker.prototype.scan_dependencies_error = function(obj) {
 		errors.push(" * Item '"+unknown[i].found+"' depends on unknown dependency '"+unknown[i].item+"'.");
 	}
 	
-	this.log_error.apply(this, errors);
+	throw errors;
 };
 
-Maker.prototype.preprocess_files = function() {
-	this.combine_files();
-};
-
-Maker.prototype.combine_files = function() {
-	var build = File.openSync(Path.join(__dirname, "suit-uncompressed.js"), "w");
+Maker.prototype.read_files = function() {
+	this.buffer = [];
 	for (var i = 0, len = this.build_order.length; i < len; i++) {
-		this.log_info("Writing "+this.build_order[i]+" to build file...");
-		var buffer = File.readFileSync(this.build_order[i])
-		File.writeSync(build, buffer, 0, buffer.length);
+		this.log_info("Reading "+this.build_order[i]+"...");
+		this.buffer.push(File.readFileSync(this.build_order[i], "utf-8"));
 	}
-	File.closeSync(build);
-	this.log_info("Done!");
+};
+
+Maker.prototype.preprocess_files = function() {};
+
+Maker.prototype.compress_files = function() {
+	
+	var combined = this.buffer.join("\n");
+
+	if (typeof Uglify === "undefined") {
+
+		var output_file = Path.join(__dirname, "suit-uncompressed.js");
+		this.log_info("Creating \033[32m"+output_file+"\033[0m...");
+		File.writeFileSync(output_file, combined);
+		
+	} else {
+	
+		this.log_info("Now compressing code...");
+	
+		var jsp = Uglify.parser;
+		var pro = Uglify.uglify;
+
+		var orig_code = combined;
+		var ast = jsp.parse(orig_code); // parse code and get the initial AST
+		ast = pro.ast_mangle(ast); // get a new AST with mangled names
+		ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
+		var final_code = pro.gen_code(ast); // compressed code here
+	
+		var output_file = Path.join(__dirname, "suit-min.js");
+		this.log_info("Creating \033[32m"+output_file+"\033[0m...");
+		File.writeFileSync(output_file, final_code);
+		
+	}
 };
 
 (new Maker()).init();
