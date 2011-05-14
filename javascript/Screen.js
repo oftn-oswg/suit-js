@@ -68,16 +68,16 @@ suit.Screen.prototype.draw_recursive = function(widget, context) {
 			// For each child:
 			for (var i = 0, len = widget.children.length; i < len; i++) {
 				// Check the bounds of the child
-				var ca = widget.get_allocation();
-				if (!ca) continue;
-				if (ca.y + ca.height >= 0 &&
-					ca.x + ca.width >= 0 //&&
+				//var ca = widget.get_allocation();
+				//if (!ca) continue;
+				//if (ca.y + ca.height >= 0 &&
+				//	ca.x + ca.width >= 0 //&&
 					//ca.y <= allocation.height &&
 					//ca.x <= allocation.width
-				) {
+				//) {
 					// Draw the child widget
 					this.draw_recursive (widget.children[i], context);
-				}
+				//}
 			}
 		}
 		// Remove the clipping and translation
@@ -115,9 +115,8 @@ suit.Screen.prototype.resize = function() {
 
 suit.Screen.prototype.attach_dom_events = function() {
 
-	addEventListener("resize", this.resize.bind(this), false);
-
-	addEventListener("mousedown", function(e) {
+	var on_resize = this.resize.bind(this);
+	var on_mousedown = function(e) {
 		var coords = this.get_mouse_coordinates(e);
 		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
 		if (widget) {
@@ -132,9 +131,32 @@ suit.Screen.prototype.attach_dom_events = function() {
 		e.stopPropagation();
 		e.preventDefault();
 		return false;
-	}.bind(this), false);
+	}.bind(this);
 	
-	addEventListener("mouseup", function(e) {
+	var on_mousemove_coords = [-1,-1];
+	var on_mousemove = function(e) {
+		var coords = this.get_mouse_coordinates(e);
+		if (coords[0] === on_mousemove_coords[0] &&
+			coords[1] === on_mousemove_coords[1]) {
+			return;
+		}
+		on_mousemove_coords = coords;
+		
+		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+		if (widget) {
+			widget.register_event(
+				new suit.EventMotion(
+					suit.Modifiers.None,
+					coords[0], coords[1],
+					0
+				));
+		}
+		e.stopPropagation();
+		e.preventDefault();
+		return false;
+	}.bind(this);
+	
+	var on_mouseup = function(e) {
 		var coords = this.get_mouse_coordinates(e);
 		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
 		if (widget) {
@@ -149,9 +171,9 @@ suit.Screen.prototype.attach_dom_events = function() {
 		e.stopPropagation();
 		e.preventDefault();
 		return false;
-	}.bind(this), false);
+	}.bind(this);
 	
-	var mouse_scroll_func = function(e) {
+	var on_mousewheel = function(e) {
 		var coords = this.get_mouse_coordinates(e);
 		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
 		
@@ -184,38 +206,19 @@ suit.Screen.prototype.attach_dom_events = function() {
 		return false;
 	}.bind(this);
 	
-	addEventListener("MozMousePixelScroll", mouse_scroll_func, false);
-	addEventListener("mousewheel", mouse_scroll_func, false);
-	
-	var last_mousemove_coords = [-1,-1];
-	addEventListener("mousemove", function(e) {
-	
-		var coords = this.get_mouse_coordinates(e);
-		if (coords[0] === last_mousemove_coords[0] &&
-			coords[1] === last_mousemove_coords[1]) {
-			return;
-		}
-		last_mousemove_coords = coords;
-		
-		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
-		if (widget) {
-			widget.register_event(
-				new suit.EventMotion(
-					suit.Modifiers.None,
-					coords[0], coords[1],
-					0
-				));
-		}
+	var on_contextmenu = function(e) {
 		e.stopPropagation();
 		e.preventDefault();
 		return false;
-	}.bind(this), false);
+	};
 	
-	addEventListener("contextmenu", function(e) {
-		e.stopPropagation();
-		e.preventDefault();
-		return false;
-	}, false);
+	addEventListener("resize", on_resize, false);
+	addEventListener("mousedown", on_mousedown, false);
+	addEventListener("mouseup", on_mouseup, false);
+	addEventListener("MozMousePixelScroll", on_mousewheel, false);
+	addEventListener("mousewheel", on_mousewheel, false);
+	addEventListener("mousemove", on_mousemove, false);
+	addEventListener("contextmenu", on_contextmenu, false);
 };
 
 //suit.Screen.prototype.attach_internal_events = function() {};

@@ -6,4 +6,18 @@ The project is nowhere near being fully-featured, but work is continuing at a ve
 
 SUIT will eventually provide many widgets of which to create your applications.
 
+## Demo
+
+`index.html` is a demo file which you can use to play around with SUIT.
+
+## Building
+
+This project uses [Node.js](http://nodejs.org/) to calculate the dependencies in `javascript/` and combine them in `build/suit-uncompressed.js`. To use, navigate to `build/` and run:
+
+```
+node make.js
+```
+
+This will take care of everything.
+
 © The ΩF:∅ Foundation
