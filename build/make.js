@@ -99,9 +99,13 @@ Maker.prototype.calculate_deps = function(obj) {
 		return;
 	}
 	
-	var self = this;
+	for (var i = 1, len = L.length; i <= len; i++) {
+		this.log_info((i<10?"  ":" ")+i+") "+L[i-1]+".js");
+	}
+	
+	var dir = this.build_directory;
 	this.build_order = L.map(function(n) {
-		return Path.join(self.build_directory, n+".js");
+		return Path.join(dir, n+".js");
 	});
 };
 
@@ -136,7 +140,6 @@ Maker.prototype.scan_dependencies_error = function(obj) {
 Maker.prototype.read_files = function() {
 	this.buffer = [];
 	for (var i = 0, len = this.build_order.length; i < len; i++) {
-		this.log_info("Reading "+this.build_order[i]+"...");
 		this.buffer.push(File.readFileSync(this.build_order[i], "utf-8"));
 	}
 };
@@ -150,7 +153,7 @@ Maker.prototype.compress_files = function() {
 	if (typeof Uglify === "undefined") {
 
 		var output_file = Path.join(__dirname, "suit-uncompressed.js");
-		this.log_info("Creating \033[32m"+output_file+"\033[0m...");
+		this.log_info("Creating \033[32;1m"+output_file+"\033[0m...");
 		File.writeFileSync(output_file, combined);
 		
 	} else {
@@ -167,7 +170,7 @@ Maker.prototype.compress_files = function() {
 		var final_code = pro.gen_code(ast); // compressed code here
 	
 		var output_file = Path.join(__dirname, "suit-min.js");
-		this.log_info("Creating \033[32m"+output_file+"\033[0m...");
+		this.log_info("Creating \033[32;1m"+output_file+"\033[0m...");
 		File.writeFileSync(output_file, final_code);
 		
 	}

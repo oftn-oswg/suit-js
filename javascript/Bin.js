@@ -35,3 +35,66 @@ suit.Bin.prototype.remove = function() {
 	suit.error("#%s is a Bin widget; use clear_child to remove its child.", this.name);
 	return false;
 };
+
+suit.Bin.prototype.get_request_mode = function() {
+	if (this.child) {
+		return this.child.get_request_mode ();
+	}
+	return SizeRequestMode.HEIGHT_FOR_WIDTH;
+};
+suit.Bin.prototype.get_preferred_width = function() {
+	var padding = this.style ? this.style.padding_left + this.style.padding_right : 0;
+	var preferred = {
+		minimum: padding,
+		natural: padding
+	};
+	
+	if (this.child) {
+		var childpref = this.child.get_preferred_width();
+		preferred.minimum += childpref.minimum;
+		preferred.natural += childpref.natural;
+	}
+	return preferred;
+};
+suit.Bin.prototype.get_preferred_height = function() {
+	var padding = this.style ? this.style.padding_top + this.style.padding_bottom : 0;
+	var preferred = {
+		minimum: padding,
+		natural: padding
+	};
+	
+	if (this.child) {
+		var childpref = this.child.get_preferred_height();
+		preferred.minimum += childpref.minimum;
+		preferred.natural += childpref.natural;
+	}
+	return preferred;
+};
+suit.Bin.prototype.get_preferred_width_for_height = function(height) {
+	var padding = this.style ? this.style.padding_left + this.style.padding_right : 0;
+	var preferred = {
+		minimum: padding,
+		natural: padding
+	};
+	
+	if (this.child) {
+		var childpref = this.child.get_preferred_width_for_height(height);
+		preferred.minimum += childpref.minimum;
+		preferred.natural += childpref.natural;
+	}
+	return preferred;
+};
+suit.Bin.prototype.get_preferred_height_for_width = function(width) {
+	var padding = this.style ? this.style.padding_top + this.style.padding_bottom : 0;
+	var preferred = {
+		minimum: padding,
+		natural: padding
+	};
+	
+	if (this.child) {
+		var childpref = this.child.get_preferred_height_for_width(width);
+		preferred.minimum += childpref.minimum;
+		preferred.natural += childpref.natural;
+	}
+	return preferred;
+};
