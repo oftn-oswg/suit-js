@@ -12,6 +12,8 @@ suit.TextLayout = function() {
 	this.align = "left";
 	this.width = null; // Infinite
 	this.calculated = true;
+	
+	this.em_width = this.text_width("M");
 };
 
 suit.TextLayout.canvas_context = (function() {
@@ -22,6 +24,7 @@ suit.TextLayout.canvas_context = (function() {
 suit.TextLayout.prototype = suit.Object.inherit();
 
 suit.TextLayout.prototype.text_width = function(string) {
+	suit.TextLayout.canvas_context.font = this.get_css_font_string();
 	return suit.TextLayout.canvas_context.measureText(string).width;
 };
 
@@ -42,6 +45,7 @@ suit.TextLayout.prototype.set_font = function (font_name, font_size) {
 		this.font_size = font_size;
 	}
 	this.calculated = false;
+	this.em_width = this.text_width("M");
 	this.emit('resize');
 };
 
@@ -75,7 +79,6 @@ suit.TextLayout.prototype.get_index_at_pos = function(x, y) {
 	// TODO: Start with best guess and test on each side, 1 char at a time until found
 	// TODO: Support align center and right
 	var col_n = 0;
-	suit.TextLayout.canvas_context.font = this.get_css_font_string();
 	if (x <= 0 || line.length == 0) { col_n = 0; }
 	else if (x >= this.text_width(line)) { col_n = line.length; }
 	else {
@@ -110,8 +113,6 @@ suit.TextLayout.prototype.recalculate_layout = function() {
 };
 
 suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callback) {
-	suit.TextLayout.canvas_context.font = this.get_css_font_string();
-	
 	for (var i = 0, len = line_split.length; i < len; i++) {
 		var m;
 		var line = line_split[i];
@@ -125,16 +126,12 @@ suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callba
 		 */
 		while (m = line.substr(last_break_index).match(/. |-[^ ]|.$/)) {
 			break_index += m.index+1;
-			if (this.text_width(line.substring(start_index, break_index)) > width) {
-				var wrap_line = line.substring(start_index, last_break_index);
-				/*
-				 * TODO: 
-				 *  - Push wrapped line with whitespace
-				 *  - Test line width without whitespace
-				 *  - Render text without whitespace
-				 */
-				//if (start_index !== 0) wrap_line = wrap_line.replace(/^\s+/, "");
-				callback.call(this, wrap_line);
+			
+			var wrap_line = line.substring(start_index, break_index);
+			if (start_index !== 0) wrap_line = wrap_line.replace(/^\s+/, "");
+			
+			if (this.text_width(wrap_line) > width) {
+				callback.call(this, line.substring(start_index, last_break_index));
 				start_index = last_break_index;
 			}
 			last_break_index = break_index;
@@ -150,7 +147,6 @@ suit.TextLayout.prototype.get_preferred_height = function() {
 suit.TextLayout.prototype.get_preferred_width = function() {
 	var preferred_width = 0;
 
-	suit.TextLayout.canvas_context.font = this.get_css_font_string();
 	for (var i = 0, len = this.text_split.length; i < len; i++) {
 		preferred_width = Math.max(preferred_width, this.text_width(this.text_split[i]));
 	}
@@ -198,9 +194,19 @@ suit.TextLayout.prototype.render = function(context, x, y) {
 		len = i + ((clip.height/line_size) | 0) + 2;
 		len = len > lines_n ? lines_n : len;
 	}
+	var text;
 	
+	/*
+	 * TODO: Render tab characters
+	 */
 	for (;i < len; i++) {
-		context.cc.fillText(this.text_wrapped[i], x,
+		text = this.text_wrapped[i].replace(/^\s+/, "");
+		/*// TODO: Do tab calculations in word-wrapping code
+		var firsttab = this.text_wrapped[i].match(/^\t+/);
+		if (firsttab) {
+			firsttab = firsttab[0].length * this.em_width * 4;
+		}*/
+		context.cc.fillText(text, x,
 			(y + i * line_size + (line_size/2-this.font_size/2)) | 0 );
 	};
 	

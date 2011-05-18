@@ -125,7 +125,7 @@ suit.Screen.prototype.attach_dom_events = function() {
 					suit.Event.ButtonPress,
 					suit.Modifiers.None,
 					this.get_button(e),
-					coords[0], coords[1], 0
+					coords[0], coords[1], -1
 				));
 		}
 		e.stopPropagation();
@@ -147,8 +147,7 @@ suit.Screen.prototype.attach_dom_events = function() {
 			widget.register_event(
 				new suit.EventMotion(
 					suit.Modifiers.None,
-					coords[0], coords[1],
-					0
+					coords[0], coords[1], -1
 				));
 		}
 		e.stopPropagation();
@@ -165,7 +164,7 @@ suit.Screen.prototype.attach_dom_events = function() {
 					suit.Event.ButtonRelease,
 					suit.Modifiers.None,
 					this.get_button(e),
-					coords[0], coords[1], 0
+					coords[0], coords[1], -1
 				));
 		}
 		e.stopPropagation();
@@ -198,7 +197,7 @@ suit.Screen.prototype.attach_dom_events = function() {
 				new suit.EventScroll(
 					suit.Modifiers.None,
 					coords[0], coords[1],
-					deltaX, deltaY, 0
+					deltaX, deltaY, -1
 				));
 		}
 		e.stopPropagation();
@@ -212,6 +211,65 @@ suit.Screen.prototype.attach_dom_events = function() {
 		return false;
 	};
 	
+	var on_touchstart = function(e) {
+		var ch = e.changedTouches;
+		for (var i = 0, len = ch.length; i < len; i++) {
+			var coords = this.get_mouse_coordinates(ch[i]);
+			var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+			if (widget) {
+				widget.register_event(
+					new suit.EventButton(
+						suit.Event.ButtonPress,
+						suit.Modifiers.None,
+						this.get_button(ch[i]),
+						coords[0], coords[1], ch[i].identifier
+					));
+			}
+		}
+		e.stopPropagation();
+		e.preventDefault();
+		return false;
+	}.bind(this);
+	
+	var on_touchmove = function(e) {
+		var ch = e.changedTouches;
+		for (var i = 0, len = ch.length; i < len; i++) {
+			var coords = this.get_mouse_coordinates(ch[i]).reverse();
+			var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+			if (widget) {
+				widget.register_event(
+					new suit.EventMotion(
+						suit.Modifiers.None,
+						this.get_button(ch[i]),
+						coords[0], coords[1], ch[i].identifier
+					));
+			}
+		}
+		e.stopPropagation();
+		e.preventDefault();
+		return false;
+	}.bind(this);
+	
+	var on_touchend = function(e) {
+		var ch = e.changedTouches;
+		for (var i = 0, len = ch.length; i < len; i++) {
+			var coords = this.get_mouse_coordinates(ch[i]);
+			var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
+			if (widget) {
+				widget.register_event(
+					new suit.EventButton(
+						suit.Event.ButtonRelease,
+						suit.Modifiers.None,
+						this.get_button(ch[i]),
+						coords[0], coords[1], ch[i].identifier
+					));
+			}
+		}
+		e.stopPropagation();
+		e.preventDefault();
+		return false;
+	}.bind(this);
+	
 	addEventListener("resize", on_resize, false);
 	addEventListener("mousedown", on_mousedown, false);
 	addEventListener("mouseup", on_mouseup, false);
@@ -219,6 +277,10 @@ suit.Screen.prototype.attach_dom_events = function() {
 	addEventListener("mousewheel", on_mousewheel, false);
 	addEventListener("mousemove", on_mousemove, false);
 	addEventListener("contextmenu", on_contextmenu, false);
+	
+	addEventListener("touchstart", on_touchstart, false);
+	addEventListener("touchmove", on_touchmove, false);
+	addEventListener("touchend", on_touchend, false);
 };
 
 //suit.Screen.prototype.attach_internal_events = function() {};
@@ -241,7 +303,7 @@ suit.Screen.prototype.get_mouse_coordinates = function(e) {
 		y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
 	}
 	
-	var obj = this.canvas;
+	/*var obj = this.canvas;
 	var offsetLeft = obj.offsetLeft;
 	var offsetTop = obj.offsetTop;
 	while (obj.offsetParent) {
@@ -251,7 +313,7 @@ suit.Screen.prototype.get_mouse_coordinates = function(e) {
 		obj = obj.offsetParent;
 	}
 	x -= offsetLeft;
-	y -= offsetTop;
+	y -= offsetTop; //*/
 
 	return [x, y];
 }

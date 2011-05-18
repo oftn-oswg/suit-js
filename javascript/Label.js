@@ -3,7 +3,7 @@ suit.Label = function(text) {
 	this.valign = "top"; // top, middle, bottom
 	this.layout = new suit.TextLayout();
 	//this.layout.set_font("Droid Sans", 16);
-	this.layout.set_font(["Droid Sans", "sans-serif"], 16);
+	this.layout.set_font(["Droid Sans", "Segoe UI", "sans-serif"], 16);
 	
 	var self = this;
 	this.layout.connect("resize", function() {

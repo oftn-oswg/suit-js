@@ -10,7 +10,7 @@
 <script type="application/ecmascript" id="source">
 //------------------------------------
 
-var demo_text = "This is text from a Label widget that has been added as the child of a Packer widget. The Packer widget lines up widgets in a row or column with optional spacing. It's the child of the Scroller widget which allows you to use your mouse wheel to scroll text. Scroll bars will be added when it becomes more developed. As a fallback, you can use your mouse to click-and-drag inside the Scroller to pan around. \n\nYou can set preferences to the Label widget to make it suit your needs. Currently you can set the font face, font size, line-height, and alignment (horizontal and vertical).\n\nAnother widget currently developed is the Button, which is underneath this Label text. It is added alongside this Label in the Packer.\n\nLorem Ipsum is simply dummy text of the printing and typesetting industry. Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.\n\nThere are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text.";
+var demo_text = "\tThis is text from a Label widget that has been added as the child of a Packer widget. The Packer widget lines up widgets in a row or column with optional spacing. It's the child of the Scroller widget which allows you to use your mouse wheel to scroll text. Scroll bars will be added when it becomes more developed. As a fallback, you can use your mouse to click-and-drag inside the Scroller to pan around. \n\n\tYou can set preferences to the Label widget to make it suit your needs. Currently you can set the font face, font size, line-height, and alignment (horizontal and vertical).\n\n\tAnother widget currently developed is the Button, which is underneath this Label text. It is added alongside this Label in the Packer.\n\n\tLorem Ipsum is simply dummy text of the printing and typesetting industry. Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.\n\n\tThere are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text.";
 
 var suit_screen = new suit.Screen();
 var packer = new suit.Packer("vertical");
@@ -58,8 +58,8 @@ packer.add(another_label);
 var scriptel = document.getElementById('source');
 var thistext = scriptel.textContent || scriptel.innerText;
 var sourceview = new suit.Label(thistext);
-sourceview.layout.set_font("monospace", 14);
-sourceview.set_line_height(1.2);
+sourceview.layout.set_font(["DejaVu Sans Mono", "Courier New", "monospace"], 14);
+sourceview.set_line_height(1.4);
 packer.add(sourceview);
 
 var scroller = new suit.Scroller(packer);

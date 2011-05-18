@@ -4,18 +4,34 @@ suit.Error = function(msg) {
 suit.Error.prototype.name = "SUITError";
 
 suit.log = function() {
-	console.log.apply(console, arguments);
+	if (console.log.apply) {
+		console.log.apply(console, arguments);
+	} else {
+		console.log(arguments[0]);
+	}
 };
 
 suit.info = function() {
-	console.info.apply(console, arguments);
+	if (console.info.apply) {
+		console.info.apply(console, arguments);
+	} else {
+		console.info(arguments[0]);
+	}
 };
 
 suit.warn = function() {
-	console.warn.apply(console, arguments);
+	if (console.warn.apply) {
+		console.warn.apply(console, arguments);
+	} else {
+		console.warn(arguments[0]);
+	}
 };
 
 suit.error = function() {
-	console.error.apply(console, arguments);
+	if (console.error.apply) {
+		console.error.apply(console, arguments);
+	} else {
+		console.error(arguments[0]);
+	}
 	throw new suit.Error(Array.prototype.join.call(arguments, " "));
 };
