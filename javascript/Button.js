@@ -5,6 +5,8 @@ suit.Button = function(text) {
 	
 	this.pressed = false;
 	if (text) {
+		suit.ensure(text, "string");
+		
 		this.set_child(new suit.Label(text));
 		this.child.set_align ("center");
 		this.child.set_valign ("middle");
@@ -22,6 +24,8 @@ suit.Button.prototype = suit.Bin.inherit();
 suit.Button.prototype.name = "Button";
 
 suit.Button.prototype.draw = function(context) {
+	suit.ensure(context, suit.Graphics);
+	
 	var a = this.allocation;
 
 	// TODO: Move this into a theme class

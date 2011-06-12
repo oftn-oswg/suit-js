@@ -5,6 +5,8 @@ suit.ProgressBar = function(text) {
 	this.fraction = 0;
 	
 	if (text) {
+		suit.ensure(text, "string");
+		
 		this.set_child(new suit.Label(text));
 		this.child.set_align ("center");
 		this.child.set_valign ("middle");
@@ -22,6 +24,8 @@ suit.ProgressBar.prototype = suit.Bin.inherit();
 suit.ProgressBar.prototype.name = "ProgressBar";
 
 suit.ProgressBar.prototype.draw = function(context) {
+	suit.ensure(context, suit.Graphics);
+	
 	var a = this.allocation;
 	
 	context.set_fill_stroke ("#191919");
@@ -37,6 +41,8 @@ suit.ProgressBar.prototype.draw = function(context) {
 };
 
 suit.ProgressBar.prototype.set_fraction = function(fraction) {
+	suit.ensure(fraction, "number");
+	
 	this.fraction = fraction;
 	this.queue_redraw();
 };

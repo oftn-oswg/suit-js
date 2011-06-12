@@ -7,6 +7,7 @@ suit.Bin.prototype = suit.Container.inherit();
 suit.Bin.prototype.name = "Bin";
 
 suit.Bin.prototype.set_child = function(widget) {
+	suit.ensure(widget, suit.Widget);
 
 	if (!this.child) {
 		this.child = widget;
@@ -71,6 +72,8 @@ suit.Bin.prototype.get_preferred_height = function() {
 	return preferred;
 };
 suit.Bin.prototype.get_preferred_width_for_height = function(height) {
+	suit.ensure(height, "number");
+	
 	var padding = this.style ? this.style.padding_left + this.style.padding_right : 0;
 	var preferred = {
 		minimum: padding,
@@ -85,6 +88,8 @@ suit.Bin.prototype.get_preferred_width_for_height = function(height) {
 	return preferred;
 };
 suit.Bin.prototype.get_preferred_height_for_width = function(width) {
+	suit.ensure(width, "number");
+	
 	var padding = this.style ? this.style.padding_top + this.style.padding_bottom : 0;
 	var preferred = {
 		minimum: padding,

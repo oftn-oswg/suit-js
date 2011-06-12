@@ -3,6 +3,8 @@ suit.Object = function() {
 };
 
 suit.Object.prototype.connect = function( signal, fn ) {
+	suit.ensure(signal, "string");
+	suit.ensure(fn, "function");
 
 	if( typeof this.signals[signal] == 'undefined' ) {
 		this.signals[signal] = [];
@@ -15,6 +17,8 @@ suit.Object.prototype.connect = function( signal, fn ) {
 };
 
 suit.Object.prototype.disconnect = function( signal, fn ) {
+	suit.ensure(signal, "string");
+	suit.ensure(fn, "function");
 
 	if( typeof this.signals[signal] == 'undefined' )
 		return false;
@@ -31,6 +35,7 @@ suit.Object.prototype.disconnect = function( signal, fn ) {
 };
 
 suit.Object.prototype.emit = function( signal ) {
+	suit.ensure(signal, "string");
 
 	if( typeof this.signals[signal] == 'undefined' )
 		return false;

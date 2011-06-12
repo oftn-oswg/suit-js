@@ -1,6 +1,15 @@
 var suit = {};
 
-Function.prototype.inherit = function() {
+suit.ensure = function(a, b) {
+    var c = typeof a;
+    if (!Array.isArray(b)) if (typeof b == "string") {
+        if (c !== b) throw new Error("Failed type check. Was expecting `" + b + "` but got `" + c + "`.");
+    } else if (typeof b == "function") {
+        var d = c;
+        c === "object" && (d = "object of " + (a.constructor.name ? a.constructor.name : "[object Function]"));
+        if (!(a instanceof b)) throw new Error("Failed type check. Was expecting instance of `" + (b.name ? b.name : "[object Function]") + "` but got `" + d + "`.");
+    }
+}, Function.prototype.inherit = function() {
     var a = function() {};
     a.prototype = this.prototype;
     return new a;
@@ -29,26 +38,27 @@ Function.prototype.inherit = function() {
     Alt: 8,
     Super: 16
 }, suit.EventKey = function(a, b, c) {
-    this.type = a, this.state = b, this.keycode = c;
+    suit.ensure(a, "number"), suit.ensure(b, "number"), suit.ensure(c, "number"), this.type = a, this.state = b, this.keycode = c;
 }, suit.EventKey.prototype.name = "event_key", suit.EventButton = function(a, b, c, d, e, f) {
-    this.type = a, this.state = b, this.button = c, this.x = d, this.y = e, this.id = f;
+    suit.ensure(a, "number"), suit.ensure(b, "number"), suit.ensure(c, "number"), suit.ensure(d, "number"), suit.ensure(e, "number"), suit.ensure(f, "number"), this.type = a, this.state = b, this.button = c, this.x = d, this.y = e, this.id = f;
 }, suit.EventButton.prototype.name = "event_button", suit.EventScroll = function(a, b, c, d, e, f) {
-    this.type = suit.Event.Scroll, this.state = a, this.x = b, this.y = c, this.deltaX = d, this.deltaY = e, this.id = f;
+    suit.ensure(a, "number"), suit.ensure(b, "number"), suit.ensure(c, "number"), suit.ensure(d, "number"), suit.ensure(e, "number"), suit.ensure(f, "number"), this.type = suit.Event.Scroll, this.state = a, this.x = b, this.y = c, this.deltaX = d, this.deltaY = e, this.id = f;
 }, suit.EventScroll.prototype.name = "event_scroll", suit.EventMotion = function(a, b, c, d) {
-    this.type = suit.Event.Motion, this.state = a, this.x = b, this.y = c, this.id = d;
+    suit.ensure(a, "number"), suit.ensure(b, "number"), suit.ensure(c, "number"), suit.ensure(d, "number"), this.type = suit.Event.Motion, this.state = a, this.x = b, this.y = c, this.id = d;
 }, suit.EventMotion.prototype.name = "event_motion", suit.Allocation = function(a, b, c, d) {
-    this.x = a | 0, this.y = b | 0, this.width = c > 1 ? c | 0 : 1, this.height = d > 1 ? d | 0 : 1;
+    suit.ensure(a, "number"), suit.ensure(b, "number"), suit.ensure(c, "number"), suit.ensure(d, "number"), this.x = a | 0, this.y = b | 0, this.width = c > 1 ? c | 0 : 1, this.height = d > 1 ? d | 0 : 1;
 }, suit.Allocation.prototype.args = function() {
     return [ this.x, this.y, this.width, this.height ];
 }, suit.Object = function() {
     this.signals = {};
 }, suit.Object.prototype.connect = function(a, b) {
-    typeof this.signals[a] == "undefined" && (this.signals[a] = []), this.signals[a].push({
+    suit.ensure(a, "string"), suit.ensure(b, "function"), typeof this.signals[a] == "undefined" && (this.signals[a] = []), this.signals[a].push({
         callback: b,
         extras: Array.prototype.slice.call(arguments, 2)
     });
     return !0;
 }, suit.Object.prototype.disconnect = function(a, b) {
+    suit.ensure(a, "string"), suit.ensure(b, "function");
     if (typeof this.signals[a] == "undefined") return !1;
     for (var c = 0, d = this.signals[a].length; c < d; c++) if (this.signals[a][c].callback === b) {
         this.signals[a].splice(c, 1);
@@ -56,6 +66,7 @@ Function.prototype.inherit = function() {
     }
     return !0;
 }, suit.Object.prototype.emit = function(a) {
+    suit.ensure(a, "string");
     if (typeof this.signals[a] == "undefined") return !1;
     var b = Array.prototype.slice.call(arguments, 1);
     for (var c = 0, d = this.signals[a].length; c < d; c++) this.signals[a][c].callback.apply(this, b.concat(this.signals[a][c].extras));
@@ -65,25 +76,26 @@ Function.prototype.inherit = function() {
     var a = document.createElement("canvas");
     return a.getContext("2d");
 }(), suit.TextLayout.prototype = suit.Object.inherit(), suit.TextLayout.prototype.text_width = function(a) {
-    suit.TextLayout.canvas_context.font = this.get_css_font_string();
+    suit.ensure(a, "string"), suit.TextLayout.canvas_context.font = this.get_css_font_string();
     return suit.TextLayout.canvas_context.measureText(a).width;
 }, suit.TextLayout.prototype.set_text = function(a) {
-    this.text = a, this.text_split = a.split("\n"), this.calculated = !1, this.emit("resize");
+    suit.ensure(a, "string"), this.text = a, this.text_split = a.split("\n"), this.calculated = !1, this.emit("resize");
 }, suit.TextLayout.prototype.set_font = function(a, b) {
-    a && (this.font_name = Array.isArray(a) ? '"' + a.join('", "') + '"' : '"' + a + '"'), b && (this.font_size = b), this.calculated = !1, this.em_width = this.text_width("M"), this.emit("resize");
+    suit.ensure(a, [ "string", "undefined" ]), suit.ensure(b, [ "number", "undefined" ]), a && (this.font_name = Array.isArray(a) ? '"' + a.join('", "') + '"' : '"' + a + '"'), b && (this.font_size = b), this.calculated = !1, this.em_width = this.text_width("M"), this.emit("resize");
 }, suit.TextLayout.prototype.set_line_height = function(a) {
-    this.line_height = a, this.emit("resize");
+    suit.ensure(a, "number"), this.line_height = a, this.emit("resize");
 }, suit.TextLayout.prototype.set_align = function(a) {
-    this.align = a;
+    suit.ensure(a, "string"), this.align = a;
 }, suit.TextLayout.prototype.set_width = function(a) {
-    this.width = a, this.calculated = !1;
+    suit.ensure(a, "number"), this.width = a, this.calculated = !1;
 }, suit.TextLayout.prototype.get_css_font_string = function() {
     return this.font_size + "px " + this.font_name;
 }, suit.TextLayout.prototype.get_index_at_pos = function(a, b) {
+    suit.ensure(a, "number"), suit.ensure(b, "number");
     var c = this.get_line_size(), d = this.text_wrapped.length, e = b / c | 0;
     e = e > d ? d : e < 0 ? 0 : e;
     var f = this.text_wrapped[e], g = 0;
-    if (a <= 0 || f.length == 0) g = 0; else if (a >= this.text_width(f)) g = f.length; else for (var h = 0, i = f.length; h <= i; h++) {
+    if (a <= 0 || f.length === 0) g = 0; else if (a >= this.text_width(f)) g = f.length; else for (var h = 0, i = f.length; h <= i; h++) {
         var j = h == 0 ? 0 : this.text_width(f.substring(0, h));
         j += this.text_width(f.charAt(h)) / 2 | 0;
         if (j >= a) {
@@ -98,6 +110,7 @@ Function.prototype.inherit = function() {
         a.push(b);
     })) : a = this.line_split, this.calculated = !0, this.text_wrapped = a;
 }, suit.TextLayout.prototype.perform_text_wrap = function(a, b, c) {
+    suit.ensure(a, "object"), suit.ensure(b, "number"), suit.ensure(c, "function");
     for (var d = 0, e = a.length; d < e; d++) {
         var f, g = a[d], h = 0, i = 0, j = 0;
         while (f = g.substr(j).match(/. |-[^ ]|.$/)) {
@@ -114,17 +127,19 @@ Function.prototype.inherit = function() {
     for (var b = 0, c = this.text_split.length; b < c; b++) a = Math.max(a, this.text_width(this.text_split[b]));
     return a + 1 | 0;
 }, suit.TextLayout.prototype.get_preferred_height_for_width = function(a) {
+    suit.ensure(a, "number");
     var b = 0, c = 0;
     this.perform_text_wrap(this.text_split, a, function(a) {
         b++;
     }), c = b * this.get_line_size() + 1 | 0;
     return c;
 }, suit.TextLayout.prototype.get_preferred_width_for_height = function(a) {
+    suit.ensure(a, "number");
     return this.get_preferred_width();
 }, suit.TextLayout.prototype.get_line_size = function() {
     return this.line_height !== null ? this.font_size * this.line_height : this.font_size;
 }, suit.TextLayout.prototype.render = function(a, b, c) {
-    this.calculated || this.recalculate_layout(), a.cc.save(), a.cc.font = this.get_css_font_string(), a.cc.textBaseline = "top", a.cc.textAlign = this.align;
+    suit.ensure(a, suit.Graphics), suit.ensure(b, "number"), suit.ensure(c, "number"), this.calculated || this.recalculate_layout(), a.cc.save(), a.cc.font = this.get_css_font_string(), a.cc.textBaseline = "top", a.cc.textAlign = this.align;
     var d = this.get_line_size(), e = 0, f, g;
     f = g = this.text_wrapped.length;
     var h = a.get_clip();
@@ -186,9 +201,9 @@ Function.prototype.inherit = function() {
 }, suit.Widget = function() {
     suit.Object.call(this), this.parent = null, this.screen = null, this.event_mask = suit.Event.None;
 }, suit.Widget.prototype = suit.Object.inherit(), suit.Widget.prototype.name = "Widget", suit.Widget.prototype.set_allocation = function(a) {
-    this.allocation = a;
+    suit.ensure(a, suit.Allocation), this.allocation = a;
 }, suit.Widget.prototype.size_allocate = function(a) {
-    this.set_allocation(a);
+    suit.ensure(a, suit.Allocation), this.set_allocation(a);
 }, suit.Widget.prototype.get_allocation = function() {
     return this.allocation;
 }, suit.Widget.prototype.draw = function(a) {}, suit.Widget.prototype.get_request_mode = function() {}, suit.Widget.prototype.get_preferred_width = function() {}, suit.Widget.prototype.get_preferred_height = function() {}, suit.Widget.prototype.get_preferred_width_for_height = function() {}, suit.Widget.prototype.get_preferred_height_for_width = function() {}, suit.Widget.prototype.queue_redraw = function() {
@@ -204,9 +219,9 @@ Function.prototype.inherit = function() {
     }
     return null;
 }, suit.Widget.prototype.event_mask_add = function(a) {
-    this.event_mask |= a;
+    suit.ensure(a, "number"), this.event_mask |= a;
 }, suit.Widget.prototype.event_mask_sub = function(a) {
-    this.event_mask ^= a;
+    suit.ensure(a, "number"), this.event_mask ^= a;
 }, suit.Widget.prototype.lock = function() {
     var a = this.get_screen();
     if (a.lock && a.lock !== this) {
@@ -233,15 +248,60 @@ Function.prototype.inherit = function() {
     }
     return !1;
 }, suit.Widget.prototype.get_local_coordinates = function(a, b) {
+    suit.ensure(a, "number"), suit.ensure(b, "number");
     if (!this.allocation) return !1;
     a -= this.allocation.x, b -= this.allocation.y;
     return [ a, b ];
 }, suit.Widget.prototype.get_absolute_coordinates = function(a, b) {
+    suit.ensure(a, "number"), suit.ensure(b, "number");
     if (!this.allocation) return !1;
     a += this.allocation.x, b += this.allocation.y;
     return [ a, b ];
+}, suit.Scrollbar = function(a) {
+    suit.Widget.call(this), this.orientation = a || "vertical", this.style = {
+        track_size: 16
+    }, this.scroll = 0, this.scroll_size = 0;
+}, suit.Scrollbar.prototype = suit.Widget.inherit(), suit.Scrollbar.prototype.name = "Scrollbar", suit.Scrollbar.prototype.draw = function(a) {
+    suit.ensure(a, suit.Graphics);
+    var b = this.allocation;
+    a.set_stroke_style(4, "round"), a.set_fill_stroke(null, "#333");
+    if (this.orientation === "horizontal") {
+        var c = b.height / 2 | 0, d = 6 + -this.scroll / this.scroll_size * b.width, e = b.width / this.scroll_size * (b.width - 12) - 12;
+        a.path([ [ d, c ], [ d + e, c ] ]);
+    } else {
+        var d = b.width / 2 | 0, c = 6 + -this.scroll / this.scroll_size * b.height, f = b.height / this.scroll_size * (b.height - 12) - 12;
+        a.path([ [ d, c ], [ d, c + f ] ]);
+    }
+}, suit.Scrollbar.prototype.get_request_mode = function() {
+    return SizeRequestMode.HEIGHT_FOR_WIDTH;
+}, suit.Scrollbar.prototype.get_preferred_width = function() {
+    var a = {
+        minimum: 6,
+        natural: 6
+    };
+    return a;
+}, suit.Scrollbar.prototype.get_preferred_height = function() {
+    var a = {
+        minimum: 6,
+        natural: 6
+    };
+    return a;
+}, suit.Scrollbar.prototype.get_preferred_width_for_height = function(a) {
+    suit.ensure(a, "number");
+    var b = {
+        minimum: 6,
+        natural: 6
+    };
+    return b;
+}, suit.Scrollbar.prototype.get_preferred_height_for_width = function(a) {
+    suit.ensure(a, "number");
+    var b = {
+        minimum: 6,
+        natural: 6
+    };
+    return b;
 }, suit.Image = function(a) {
-    suit.Widget.call(this), this.filename = a, this.loaded = !1, this.usedimage = suit.Image.broken_image;
+    suit.ensure(a, "string"), suit.Widget.call(this), this.filename = a, this.loaded = !1, this.usedimage = suit.Image.broken_image;
     var b = new Image;
     b.src = a, this.align = "center", this.valign = "middle";
     var c = this;
@@ -253,6 +313,7 @@ Function.prototype.inherit = function() {
     a.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAN8SURBVEiJtZXNa1xVGMZ/99xzP2YyY4pJNUFbQ40iZOXGjcuuhoK4k+7digSjbkQX4toJ+Be4E0FELHTtH6AgHZWxM8wkaTshk69Ocud+nfO6aO7NTBqhaekL7+Jc3vM893ne95zjiAjPM/TkwnGcAPCfETMVkaRciQgiQrvdXo3jeGiMkWfJOI6H7XZ7tcB1RATHcSpRFG0qpeastZOKnuiXJ21WSmGt3a1Wq1dEZFxYFHieN5em6RTo0/THGIPv+3NAAJQEjoiwtrZGq9W6MOhkrKyssL6+DuDAaZMdEaHValGv1x+zpvCzsE8pheM459a1Wq1C+RSBAtBaEwTB1EZjDG8Hwnt1l6s2BWBD+fwyMvyROLiuO0UwHo+ZwpxU4Hkevu+XBFmWcTPMuTHcgjvbDB2FweENMXyy+DK35l/lx1zjeV5J4HneuQoeI7DWspwecf3fv0hGRxyFId8sLnM3Fa4eHfLZ1oDr+w+5s7RCT1dQSl2MII5j3r3XI9s7ZEdpLo+O+fzSLt/Nv8bfvs/XScK3ewPeoc1vtQW01hhjGI1GGGNKAnWWIAiCsg8Lu0MGBj598Qp3Dehunw+32iykYzZqs2wZeOXgEBFBa43v+/i+XwzDFIGanPkoitje3mZ8HBPhEoUVvphdpGMUXv8+H+/dZ0mDQZGMEyYPZ9GLArtUYK0liiK63S6dToeDgwNa1qUejXnTyYmrM3x56SU6BvTmA1YHm1SPx7SsS5ZlxHFMHMckSXKuAscYQ7/fZ3d3lziOyfOcn4IqcZJxc6PPsmREYchXs5e5lwvOgx3i9FFNnuclQZqm5zfZGEOSJOUhEhG6lSrf+xU+GOzw0eiIw9oMKrfMWGGcG36YqdGtVAnyHGMMIkKaplMK9KRFaZqiVCEKrLX8Wp/lT0dx4/iY5YcRAL9rza3aC2zU6vjWkiSnt/P/EaiC/eR2nWpYN6zQ9Pxi/HBd91Ge7JmszbLs/CYDNBoNsiwjTdMysywrp6QALtSdV9toNJjELN6Da4PBoFOtVtFaP/E7cDZEhDzPiaKIhYWF10WkW1hke73ecGlpaf6pkM9Er9cbAhZOLRo0m83b/X5/33VdtNZorcurw/d9giAgDEPCMCQIgvK753llveu69Pv9/WazeRsYwIlFAI7jrADvA29NEF80LPAP8LOItKYInlf8BwLjX+eOMfEfAAAAAElFTkSuQmCC";
     return a;
 }(), suit.Image.prototype = suit.Widget.inherit(), suit.Image.prototype.name = "Image", suit.Image.prototype.draw = function(a) {
+    suit.ensure(a, suit.Graphics);
     var b = 0, c = 0;
     switch (this.align) {
       case "center":
@@ -270,9 +331,9 @@ Function.prototype.inherit = function() {
     }
     a.cc.drawImage(this.usedimage, b | 0, c | 0), suit.log("Drew image");
 }, suit.Image.prototype.set_align = function(a) {
-    this.align = a, this.queue_redraw();
+    suit.ensure(a, "string"), this.align = a, this.queue_redraw();
 }, suit.Image.prototype.set_valign = function(a) {
-    this.valign = a, this.queue_redraw();
+    suit.ensure(a, "string"), this.valign = a, this.queue_redraw();
 }, suit.Image.prototype.get_request_mode = function() {
     return SizeRequestMode.HEIGHT_FOR_WIDTH;
 }, suit.Image.prototype.get_preferred_width = function() {
@@ -306,16 +367,17 @@ Function.prototype.inherit = function() {
     var b = this;
     this.layout.connect("resize", function() {
         b.queue_resize();
-    }), a && this.layout.set_text(a);
+    }), a && (suit.ensure(a, "string"), this.layout.set_text(a));
 }, suit.Label.prototype = suit.Widget.inherit(), suit.Label.prototype.name = "Label", suit.Label.prototype.set_text = function(a) {
-    this.layout.set_text(a), this.queue_redraw();
+    suit.ensure(a, "string"), this.layout.set_text(a), this.queue_redraw();
 }, suit.Label.prototype.set_align = function(a) {
-    this.layout.set_align(a), this.queue_redraw();
+    suit.ensure(a, "string"), this.layout.set_align(a), this.queue_redraw();
 }, suit.Label.prototype.set_valign = function(a) {
-    this.valign = a, this.queue_redraw();
+    suit.ensure(a, "string"), this.valign = a, this.queue_redraw();
 }, suit.Label.prototype.set_line_height = function(a) {
     this.layout.set_line_height(a), this.queue_redraw();
 }, suit.Label.prototype.draw = function(a) {
+    suit.ensure(a, suit.Graphics);
     var b, c, d;
     a.set_fill_stroke("#fff");
     switch (this.valign) {
@@ -340,7 +402,7 @@ Function.prototype.inherit = function() {
     }
     this.layout.render(a, c, d);
 }, suit.Label.prototype.size_allocate = function(a) {
-    suit.Widget.prototype.size_allocate.call(this, a), this.layout.set_width(a.width);
+    suit.ensure(a, suit.Allocation), suit.Widget.prototype.size_allocate.call(this, a), this.layout.set_width(a.width);
 }, suit.Label.prototype.get_request_mode = function() {
     return SizeRequestMode.HEIGHT_FOR_WIDTH;
 }, suit.Label.prototype.get_preferred_width = function() {
@@ -372,12 +434,14 @@ Function.prototype.inherit = function() {
         this.allocation && this.size_allocate(this.allocation);
     });
 }, suit.Container.prototype = suit.Widget.inherit(), suit.Container.prototype.name = "Container", suit.Container.prototype.index_of = function(a) {
+    suit.ensure(a, suit.Widget);
     if ((index = this.children.indexOf(a)) > -1) return index;
     return !1;
 }, suit.Container.prototype.add = function(a) {
-    this.children.push(a), a.parent = this, a.screen = this.get_screen(), this.emit("add");
+    suit.ensure(a, suit.Widget), this.children.push(a), a.parent = this, a.screen = this.get_screen(), this.emit("add");
     return !0;
 }, suit.Container.prototype.remove = function(a) {
+    suit.ensure(a, suit.Widget);
     var b;
     if (b = this.index_of(a)) {
         this.children.splice(b, 1);
@@ -388,16 +452,19 @@ Function.prototype.inherit = function() {
     for (var a = 0, b = this.children.length; a < b; a++) this.children[a].parent = null, this.children[a].screen = null;
     this.children = [];
 }, suit.Container.prototype.replace = function(a, b) {
+    suit.ensure(a, [ suit.Widget, "number" ]), suit.ensure(b, suit.Widget);
     var c;
     typeof a == "number" ? c = a : c = this.index_of(a);
     if (c >= this.children.length) return this.add(b);
     b.parent = this, b.screen = this.get_screen(), this.children[c] = b;
     return !0;
 }, suit.Container.prototype.insert = function(a, b) {
+    suit.ensure(a, "number"), suit.ensure(b, suit.Widget);
     if (a >= this.children.length) return this.add(b);
     b.parent = this, b.screen = this.get_screen(), this.children.splice(a, 0, b);
     return !0;
 }, suit.Container.prototype.get_child_with_coords = function(a, b) {
+    suit.ensure(a, "number"), suit.ensure(b, "number");
     if (!this.children.length) return !1;
     var c;
     for (var d = 0, e = this.children.length; d < e; d++) {
@@ -409,7 +476,7 @@ Function.prototype.inherit = function() {
 }, suit.Bin = function() {
     suit.Container.call(this), this.child = null;
 }, suit.Bin.prototype = suit.Container.inherit(), suit.Bin.prototype.name = "Bin", suit.Bin.prototype.set_child = function(a) {
-    this.child ? suit.error("#%s already has child widget #%s.", this.name, this.child.name) : (this.child = a, suit.Container.prototype.add.call(this, a));
+    suit.ensure(a, suit.Widget), this.child ? suit.error("#%s already has child widget #%s.", this.name, this.child.name) : (this.child = a, suit.Container.prototype.add.call(this, a));
 }, suit.Bin.prototype.get_child = function() {
     if (this.child) return this.child;
     return !1;
@@ -445,6 +512,7 @@ Function.prototype.inherit = function() {
     }
     return b;
 }, suit.Bin.prototype.get_preferred_width_for_height = function(a) {
+    suit.ensure(a, "number");
     var b = this.style ? this.style.padding_left + this.style.padding_right : 0, c = {
         minimum: b,
         natural: b
@@ -455,6 +523,7 @@ Function.prototype.inherit = function() {
     }
     return c;
 }, suit.Bin.prototype.get_preferred_height_for_width = function(a) {
+    suit.ensure(a, "number");
     var b = this.style ? this.style.padding_top + this.style.padding_bottom : 0, c = {
         minimum: b,
         natural: b
@@ -465,30 +534,33 @@ Function.prototype.inherit = function() {
     }
     return c;
 }, suit.ProgressBar = function(a) {
-    suit.Bin.call(this), this.orientation = "horizontal", this.fraction = 0, a && (this.set_child(new suit.Label(a)), this.child.set_align("center"), this.child.set_valign("middle")), this.style = {
+    suit.Bin.call(this), this.orientation = "horizontal", this.fraction = 0, a && (suit.ensure(a, "string"), this.set_child(new suit.Label(a)), this.child.set_align("center"), this.child.set_valign("middle")), this.style = {
         padding_top: 6,
         padding_bottom: 6,
         padding_left: 8,
         padding_right: 8
     };
 }, suit.ProgressBar.prototype = suit.Bin.inherit(), suit.ProgressBar.prototype.name = "ProgressBar", suit.ProgressBar.prototype.draw = function(a) {
+    suit.ensure(a, suit.Graphics);
     var b = this.allocation;
     a.set_fill_stroke("#191919"), a.rect(b.x, b.y, b.width, b.height), a.set_fill_stroke("#333333"), this.orientation === "horizontal" ? a.rect(b.x, b.y, b.width * this.fraction | 0, b.height) : a.rect(b.x, b.y, b.width, b.height * this.fraction | 0);
 }, suit.ProgressBar.prototype.set_fraction = function(a) {
-    this.fraction = a, this.queue_redraw();
+    suit.ensure(a, "number"), this.fraction = a, this.queue_redraw();
 }, suit.ProgressBar.prototype.get_fraction = function() {
     return this.fraction;
 }, suit.Scroller = function(a) {
-    suit.Bin.call(this), this.scrollX = 0, this.scrollY = 0, this.event_mask = suit.Event.ButtonPress | suit.Event.ButtonRelease | suit.Event.Scroll, this.dragging = !1, this.startDragX = null, this.startDragY = null, this.policyX = "never", this.policyY = "always", a && this.set_child(a), this.connect("event_button", this.on_event_button), this.connect("event_scroll", this.on_event_scroll), this.connect("event_motion", this.on_event_motion), this.style = {
+    suit.Bin.call(this), this.scrollX = 0, this.scrollY = 0, this.event_mask = suit.Event.ButtonPress | suit.Event.ButtonRelease | suit.Event.Scroll, this.dragging = !1, this.startDragX = null, this.startDragY = null, this.policyX = "never", this.policyY = "always", a && (suit.ensure(a, suit.Widget), this.set_child(a)), this.connect("event_button", this.on_event_button), this.connect("event_scroll", this.on_event_scroll), this.connect("event_motion", this.on_event_motion), this.style = {
         padding_top: 5,
         padding_bottom: 5,
         padding_left: 8,
         padding_right: 8
     };
 }, suit.Scroller.prototype = suit.Bin.inherit(), suit.Scroller.prototype.name = "Scroller", suit.Scroller.prototype.draw = function(a) {
+    suit.ensure(a, suit.Graphics);
     var b = this.allocation;
     a.set_fill_stroke("#000"), a.rect(b.x, b.y, b.width, b.height), this.child && this.draw_scrollbars(a);
 }, suit.Scroller.prototype.draw_scrollbars = function(a) {
+    suit.ensure(a, suit.Graphics);
     var b = this.allocation, c = this.child.get_allocation();
     a.set_stroke_style(4, "round"), a.set_fill_stroke(null, "#333");
     if (this.policyY === "always") {
@@ -500,7 +572,7 @@ Function.prototype.inherit = function() {
         a.path([ [ d, e ], [ d + g, e ] ]);
     }
 }, suit.Scroller.prototype.size_allocate = function(a) {
-    suit.Widget.prototype.size_allocate.call(this, a);
+    suit.ensure(a, suit.Allocation), suit.Widget.prototype.size_allocate.call(this, a);
     var b, c;
     this.child && (this.policyX === "never" && this.policyY === "always" ? (b = a.width - this.style.padding_left - this.style.padding_right - 1, c = this.child.get_preferred_height_for_width(b).natural) : this.policyX === "never" && this.policyY === "never" ? (b = a.width - this.style.padding_left - this.style.padding_right - 1, c = a.height - this.style.padding_top - this.style.padding_bottom - 1) : this.policyX === "always" && this.policyY === "always" ? (b = this.child.get_preferred_width().natural, c = this.child.get_preferred_height().natural) : this.policyX === "always" && this.policyY === "never" && (c = a.height - this.style.padding_top - this.style.padding_bottom - 1, b = this.child.get_preferred_width_for_height(c).natural), this.child.size_allocate(new suit.Allocation(0, 0, b, c)), this.update_scroll_position());
 }, suit.Scroller.prototype.update_scroll_position = function() {
@@ -509,7 +581,7 @@ Function.prototype.inherit = function() {
         this.scrollX = this.scrollX > 0 ? 0 : this.scrollX < c ? c : this.scrollX, this.scrollY = this.scrollY > 0 ? 0 : this.scrollY < d ? d : this.scrollY, this.policyX === "never" && (this.scrollX = 0), this.policyY === "never" && (this.scrollY = 0), a.x = this.style.padding_left + this.scrollX, a.y = this.style.padding_top + this.scrollY, this.child.set_allocation(a), this.queue_redraw();
     }
 }, suit.Scroller.prototype.set_policy = function(a, b) {
-    this.policyX = a || "never", this.policyY = b || "always";
+    suit.ensure(a, [ "string", "undefined" ]), suit.ensure(b, [ "string", "undefined" ]), this.policyX = a || "never", this.policyY = b || "always";
 }, suit.Scroller.prototype.on_event_scroll = function(a) {
     a.deltaY && this.policyY === "always" && (this.scrollY += a.deltaY, this.update_scroll_position()), a.deltaX && this.policyX === "always" && (this.scrollX += a.deltaX, this.update_scroll_position());
 }, suit.Scroller.prototype.on_event_button = function(a) {
@@ -534,21 +606,24 @@ Function.prototype.inherit = function() {
     this.child && (a = this.child.get_preferred_height());
     return a;
 }, suit.Scroller.prototype.get_preferred_width_for_height = function(a) {
+    suit.ensure(a, "number");
     var b = new suit.RequestedSize(1, 1);
     this.child && (b = this.child.get_preferred_width_for_height());
     return b;
 }, suit.Scroller.prototype.get_preferred_height_for_width = function(a) {
+    suit.ensure(a, "number");
     var b = new suit.RequestedSize(1, 1);
     this.child && (b = this.child.get_preferred_height_for_width(a));
     return b;
 }, suit.Button = function(a) {
-    suit.Bin.call(this), this.event_mask = suit.Event.ButtonPress, this.pressed = !1, a && (this.set_child(new suit.Label(a)), this.child.set_align("center"), this.child.set_valign("middle")), this.connect("event_button", this.on_event_button), this.style = {
+    suit.Bin.call(this), this.event_mask = suit.Event.ButtonPress, this.pressed = !1, a && (suit.ensure(a, "string"), this.set_child(new suit.Label(a)), this.child.set_align("center"), this.child.set_valign("middle")), this.connect("event_button", this.on_event_button), this.style = {
         padding_top: 6,
         padding_bottom: 6,
         padding_left: 8,
         padding_right: 8
     };
 }, suit.Button.prototype = suit.Bin.inherit(), suit.Button.prototype.name = "Button", suit.Button.prototype.draw = function(a) {
+    suit.ensure(a, suit.Graphics);
     var b = this.allocation, c;
     this.pressed ? c = [ [ 0, "#2e2e2e" ], [ 1, "#3f3f3f" ] ] : c = [ [ 0, "#3f3f3f" ], [ 1, "#2e2e2e" ] ], a.set_fill_stroke(a.create_linear_gradient(b.x, b.y, b.x, b.y + b.height, c), "#575757"), a.rect(b.x, b.y, b.width, b.height), a.set_stroke_style(1, "butt", "miter"), a.path([ [ b.x, b.y + b.height - 1 ], [ b.x, b.y ], [ b.x + b.width - 1, b.y ], [ b.x + b.width - 1, b.y + b.height - 1 ] ]), a.set_fill_stroke("#ffffff", "#0b0b0b"), a.path([ [ b.x + b.width - 1, b.y + b.height - 1 ], [ b.x, b.y + b.height - 1 ] ]);
 }, suit.Button.prototype.size_allocate = function(a) {
@@ -571,6 +646,7 @@ Function.prototype.inherit = function() {
     var a = this.context, b = this.allocation;
     a.save(), a.set_fill_stroke("#191919"), a.rect(0, 0, b.width, b.height), this.child && this.draw_recursive(this.child, a), a.restore();
 }, suit.Screen.prototype.draw_recursive = function(a, b) {
+    suit.ensure(a, suit.Widget), suit.ensure(b, suit.Graphics);
     var c = a.get_allocation();
     if (c) {
         b.push_clip.apply(b, c.args()), a.draw(b), b.cc.translate(c.x, c.y);
@@ -578,7 +654,7 @@ Function.prototype.inherit = function() {
         b.pop_clip();
     }
 }, suit.Screen.prototype.size_allocate = function(a) {
-    suit.Widget.prototype.size_allocate.call(this, a), this.container.style.width = a.width + "px", this.container.style.height = a.height + "px", this.canvas.width = a.width, this.canvas.height = a.height;
+    suit.ensure(a, suit.Allocation), suit.Widget.prototype.size_allocate.call(this, a), this.container.style.width = a.width + "px", this.container.style.height = a.height + "px", this.canvas.width = a.width, this.canvas.height = a.height;
     var b = Math.min(600, a.width - 50), c = Math.min(400, a.height - 50);
     this.child && this.child.size_allocate(new suit.Allocation(a.width / 2 - b / 2, a.height / 2 - c / 2, b, c));
 }, suit.Screen.prototype.resize = function() {
@@ -645,18 +721,18 @@ Function.prototype.inherit = function() {
     a.pageX || a.pageY ? (b = a.pageX, c = a.pageY) : (b = a.clientX + document.body.scrollLeft + document.documentElement.scrollLeft, c = a.clientY + document.body.scrollTop + document.documentElement.scrollTop);
     return [ b, c ];
 }, suit.Packer = function(a) {
-    suit.Container.call(this), this.orientation = a || "horizontal", this.align = "start", this.spacing = 20, this.style = {
+    suit.ensure(a, "string"), suit.Container.call(this), this.orientation = a || "horizontal", this.align = "start", this.spacing = 20, this.style = {
         padding_top: 0,
         padding_bottom: 0,
         padding_left: 0,
         padding_right: 0
     };
 }, suit.Packer.prototype = suit.Container.inherit(), suit.Packer.prototype.name = "Packer", suit.Packer.prototype.set_spacing = function(a) {
-    this.spacing = a, this.allocation && this.size_allocate(this.allocation);
+    suit.ensure(a, "number"), this.spacing = a, this.allocation && this.size_allocate(this.allocation);
 }, suit.Packer.prototype.get_spacing = function() {
     return this.spacing;
 }, suit.Packer.prototype.size_allocate = function(a) {
-    suit.Widget.prototype.size_allocate.call(this, a);
+    suit.ensure(a, suit.Allocation), suit.Widget.prototype.size_allocate.call(this, a);
     var b, c;
     this.orientation === "horizontal" ? (b = this.orientation === "horizontal" ? a.width : a.height, c = this.orientation === "horizontal" ? a.height : a.width) : (b = this.orientation === "horizontal" ? a.height : a.width, c = this.orientation === "horizontal" ? a.width : a.height);
     var d = 0, e = [];
@@ -694,6 +770,7 @@ Function.prototype.inherit = function() {
         natural: b
     };
 }, suit.Packer.prototype.get_preferred_width_for_height = function(a) {
+    suit.ensure(a, "number");
     var b = 0, c = 0;
     if (this.orientation === "horizontal") {
         for (var d = 0, e = this.children.length; d < e; d++) {
@@ -710,6 +787,7 @@ Function.prototype.inherit = function() {
         natural: c
     };
 }, suit.Packer.prototype.get_preferred_height_for_width = function(a) {
+    suit.ensure(a, "number");
     var b = 0, c = 0;
     if (this.orientation === "horizontal") for (var d = 0, e = this.children.length; d < e; d++) {
         var f = this.children[d], g = f.get_preferred_height_for_width(a);

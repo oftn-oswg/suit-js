@@ -15,6 +15,7 @@ suit.Scroller = function(child) {
 	this.policyY = "always";
 	
 	if (child) {
+		suit.ensure(child, suit.Widget);
 		this.set_child(child);
 	}
 	this.connect("event_button", this.on_event_button);
@@ -32,6 +33,8 @@ suit.Scroller.prototype = suit.Bin.inherit();
 suit.Scroller.prototype.name = "Scroller";
 
 suit.Scroller.prototype.draw = function(context) {
+	suit.ensure(context, suit.Graphics);
+	
 	var a = this.allocation;
 	
 	/*context.set_shadow (0, 0, 5, "#000");
@@ -57,6 +60,8 @@ suit.Scroller.prototype.draw = function(context) {
 };
 
 suit.Scroller.prototype.draw_scrollbars = function(context) {
+	suit.ensure(context, suit.Graphics);
+	
 	var a = this.allocation;
 	var ca = this.child.get_allocation();
 	
@@ -85,6 +90,8 @@ suit.Scroller.prototype.draw_scrollbars = function(context) {
 }
 
 suit.Scroller.prototype.size_allocate = function(allocation) {
+	suit.ensure(allocation, suit.Allocation);
+	
 	suit.Widget.prototype.size_allocate.call(this, allocation);
 	
 	var cw, ch;
@@ -132,6 +139,9 @@ suit.Scroller.prototype.update_scroll_position = function() {
 };
 
 suit.Scroller.prototype.set_policy = function(horizontal, vertical) {
+	suit.ensure(horizontal, ["string", "undefined"]);
+	suit.ensure(vertical, ["string", "undefined"]);
+	
 	this.policyX = horizontal || "never";
 	this.policyY = vertical || "always";
 };
@@ -200,6 +210,8 @@ suit.Scroller.prototype.get_preferred_height = function() {
 	return preferred;
 };
 suit.Scroller.prototype.get_preferred_width_for_height = function(height) {
+	suit.ensure(height, "number");
+	
 	var preferred = new suit.RequestedSize(1, 1);
 	if (this.child) {
 		preferred = this.child.get_preferred_width_for_height();
@@ -207,6 +219,8 @@ suit.Scroller.prototype.get_preferred_width_for_height = function(height) {
 	return preferred;
 };
 suit.Scroller.prototype.get_preferred_height_for_width = function(width) {
+	suit.ensure(width, "number");
+	
 	var preferred = new suit.RequestedSize(1, 1);
 	if (this.child) {
 		preferred = this.child.get_preferred_height_for_width(width);

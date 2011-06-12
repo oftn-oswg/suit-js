@@ -15,5 +15,6 @@
 	"Button": ["Bin", "Label"],
 	"Scroller": "Bin",
 	"Image": "Widget",
-	"ProgressBar": "Bin"
+	"ProgressBar": "Bin",
+	"Scrollbar": "Widget"
 }

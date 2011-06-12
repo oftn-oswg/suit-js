@@ -8,9 +8,13 @@ suit.Widget.prototype = suit.Object.inherit();
 suit.Widget.prototype.name = "Widget";
 
 suit.Widget.prototype.set_allocation = function(allocation) {
+	suit.ensure(allocation, suit.Allocation);
+	
 	this.allocation = allocation;
 };
 suit.Widget.prototype.size_allocate = function(allocation) {
+	suit.ensure(allocation, suit.Allocation);
+	
 	this.set_allocation(allocation);
 };
 
@@ -44,10 +48,14 @@ suit.Widget.prototype.get_screen = function() {
 };
 
 suit.Widget.prototype.event_mask_add = function(bits) {
+	suit.ensure(bits, "number");
+	
 	this.event_mask |= bits;
 };
 
 suit.Widget.prototype.event_mask_sub = function(bits) {
+	suit.ensure(bits, "number");
+	
 	this.event_mask ^= bits;
 };
 
@@ -107,6 +115,9 @@ suit.Widget.prototype.register_event = function(e) {
 };
 
 suit.Widget.prototype.get_local_coordinates = function(x, y) {
+	suit.ensure(x, "number");
+	suit.ensure(y, "number");
+	
 	if (!this.allocation) return false;
 	x -= this.allocation.x;
 	y -= this.allocation.y;
@@ -114,6 +125,9 @@ suit.Widget.prototype.get_local_coordinates = function(x, y) {
 };
 
 suit.Widget.prototype.get_absolute_coordinates = function(x, y) {
+	suit.ensure(x, "number");
+	suit.ensure(y, "number");
+	
 	if (!this.allocation) return false;
 	x += this.allocation.x;
 	y += this.allocation.y;

@@ -24,6 +24,10 @@ suit.Modifiers = {
 
 // Keyboard button events
 suit.EventKey = function(type, state, keycode) {
+	suit.ensure(type, "number");
+	suit.ensure(state, "number");
+	suit.ensure(keycode, "number");
+
 	this.type = type; // KeyPress | KeyRelease
 	//this.time = new Date(); // Time the event was generated
 	this.state = state; // (Modifiers -- shift, ctrl, capslock, alt)
@@ -33,6 +37,13 @@ suit.EventKey.prototype.name = "event_key";
 
 // Mouse button events
 suit.EventButton = function(type, state, button, x, y, id) {
+	suit.ensure(type, "number");
+	suit.ensure(state, "number");
+	suit.ensure(button, "number");
+	suit.ensure(x, "number");
+	suit.ensure(y, "number");
+	suit.ensure(id, "number");
+	
 	this.type = type; // ButtonPress | ButtonRelease | ButtonDblPress
 	//this.time = new Date(); // Time the event was generated
 	this.state = state; // (Modifiers -- shift, ctrl, capslock, alt)
@@ -45,6 +56,13 @@ suit.EventButton.prototype.name = "event_button";
 
 // Mouse wheel scroll events
 suit.EventScroll = function(state, x, y, deltax, deltay, id) {
+	suit.ensure(state, "number");
+	suit.ensure(x, "number");
+	suit.ensure(y, "number");
+	suit.ensure(deltax, "number");
+	suit.ensure(deltay, "number");
+	suit.ensure(id, "number");
+	
 	this.type = suit.Event.Scroll;
 	//this.time = new Date(); // Time the event was generated
 	this.state = state; // (Modifiers -- shift, ctrl, capslock, alt)
@@ -58,6 +76,11 @@ suit.EventScroll.prototype.name = "event_scroll";
 
 // Move move events
 suit.EventMotion = function(state, x, y, id) {
+	suit.ensure(state, "number");
+	suit.ensure(x, "number");
+	suit.ensure(y, "number");
+	suit.ensure(id, "number");
+	
 	this.type = suit.Event.Motion;
 	//this.time = new Date(); // Time the event was generated
 	this.state = state; // (Modifiers -- shift, ctrl, capslock, alt)

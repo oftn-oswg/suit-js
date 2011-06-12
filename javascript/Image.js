@@ -1,4 +1,6 @@
 suit.Image = function(filename) {
+	suit.ensure(filename, "string");
+	
 	suit.Widget.call(this);
 	this.filename = filename;
 	
@@ -31,6 +33,8 @@ suit.Image.prototype = suit.Widget.inherit();
 suit.Image.prototype.name = "Image";
 
 suit.Image.prototype.draw = function(context) {
+	suit.ensure(context, suit.Graphics);
+	
 	var middlex = 0;
 	var middley = 0;
 	switch (this.align) {
@@ -50,11 +54,15 @@ suit.Image.prototype.draw = function(context) {
 };
 
 suit.Image.prototype.set_align = function(align) {
+	suit.ensure(align, "string");
+	
 	this.align = align;
 	this.queue_redraw();
 };
 
 suit.Image.prototype.set_valign = function(valign) {
+	suit.ensure(valign, "string");
+	
 	this.valign = valign;
 	this.queue_redraw();
 };

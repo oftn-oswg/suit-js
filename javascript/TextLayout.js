@@ -2,7 +2,7 @@ suit.TextLayout = function() {
 	suit.Object.call(this);
 
 	this.text = "";
-	this.text_split = [""]
+	this.text_split = [""];
 	this.text_wrapped = [""];
 	
 	this.font_name = "sans-serif";
@@ -24,11 +24,15 @@ suit.TextLayout.canvas_context = (function() {
 suit.TextLayout.prototype = suit.Object.inherit();
 
 suit.TextLayout.prototype.text_width = function(string) {
+	suit.ensure(string, "string");
+
 	suit.TextLayout.canvas_context.font = this.get_css_font_string();
 	return suit.TextLayout.canvas_context.measureText(string).width;
 };
 
 suit.TextLayout.prototype.set_text = function (text) {
+	suit.ensure(text, "string");
+	
 	this.text = text;
 	this.text_split = text.split("\n");
 	this.calculated = false;
@@ -36,6 +40,9 @@ suit.TextLayout.prototype.set_text = function (text) {
 };
 
 suit.TextLayout.prototype.set_font = function (font_name, font_size) {
+	suit.ensure(font_name, ["string", "undefined"]);
+	suit.ensure(font_size, ["number", "undefined"]);
+	
 	if (font_name) {
 		this.font_name = Array.isArray(font_name) ?
 			"\""+font_name.join("\", \"")+"\"":
@@ -50,15 +57,21 @@ suit.TextLayout.prototype.set_font = function (font_name, font_size) {
 };
 
 suit.TextLayout.prototype.set_line_height = function (line_height) {
+	suit.ensure(line_height, "number");
+	
 	this.line_height = line_height;
 	this.emit('resize');
 };
 
 suit.TextLayout.prototype.set_align = function (align) {
+	suit.ensure(align, "string");
+	
 	this.align = align;
 };
 
 suit.TextLayout.prototype.set_width = function (width) {
+	suit.ensure(width, "number");
+	
 	this.width = width;
 	this.calculated = false;
 };
@@ -68,6 +81,9 @@ suit.TextLayout.prototype.get_css_font_string = function() {
 };
 
 suit.TextLayout.prototype.get_index_at_pos = function(x, y) {
+	suit.ensure(x, "number");
+	suit.ensure(y, "number");
+
 	var line_size = this.get_line_size();
 	var line_nums = this.text_wrapped.length;
 	
@@ -79,7 +95,7 @@ suit.TextLayout.prototype.get_index_at_pos = function(x, y) {
 	// TODO: Start with best guess and test on each side, 1 char at a time until found
 	// TODO: Support align center and right
 	var col_n = 0;
-	if (x <= 0 || line.length == 0) { col_n = 0; }
+	if (x <= 0 || line.length === 0) { col_n = 0; }
 	else if (x >= this.text_width(line)) { col_n = line.length; }
 	else {
 		for (var i = 0, len = line.length; i <= len; i++) {
@@ -113,6 +129,10 @@ suit.TextLayout.prototype.recalculate_layout = function() {
 };
 
 suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callback) {
+	suit.ensure(line_split, "object"); // Array/Array-like
+	suit.ensure(width, "number");
+	suit.ensure(callback, "function");
+	
 	for (var i = 0, len = line_split.length; i < len; i++) {
 		var m;
 		var line = line_split[i];
@@ -155,6 +175,8 @@ suit.TextLayout.prototype.get_preferred_width = function() {
 };
 
 suit.TextLayout.prototype.get_preferred_height_for_width = function(width) {
+	suit.ensure(width, "number");
+	
 	var lines = 0, height = 0;
 	this.perform_text_wrap(this.text_split, width, function(line) {
 		lines++;
@@ -164,6 +186,8 @@ suit.TextLayout.prototype.get_preferred_height_for_width = function(width) {
 };
 
 suit.TextLayout.prototype.get_preferred_width_for_height = function(height) {
+	suit.ensure(height, "number");
+	
 	return this.get_preferred_width();
 };
 
@@ -172,6 +196,10 @@ suit.TextLayout.prototype.get_line_size = function() {
 }
 
 suit.TextLayout.prototype.render = function(context, x, y) {
+	suit.ensure(context, suit.Graphics);
+	suit.ensure(x, "number");
+	suit.ensure(y, "number");
+	
 	if (!this.calculated) this.recalculate_layout();
 	
 	context.cc.save();

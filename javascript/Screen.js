@@ -55,6 +55,9 @@ suit.Screen.prototype.draw = function() {
 };
 
 suit.Screen.prototype.draw_recursive = function(widget, context) {
+	suit.ensure(widget, suit.Widget);
+	suit.ensure(context, suit.Graphics);
+	
 	var allocation = widget.get_allocation();
 	if (allocation) {
 		// Start with clipping the canvas to the allocation, so it doesn't spill
@@ -86,6 +89,8 @@ suit.Screen.prototype.draw_recursive = function(widget, context) {
 };
 
 suit.Screen.prototype.size_allocate = function(a) {
+	suit.ensure(a, suit.Allocation);
+	
 	suit.Widget.prototype.size_allocate.call(this, a);
 	
 	this.container.style.width = a.width + "px";

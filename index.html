@@ -40,8 +40,7 @@ var vpacker = new suit.Packer("vertical");
 vpacker.set_spacing (18);
 vpacker.add(new suit.Button("Button 4"));
 
-var progress = new suit.ProgressBar("This is a progress bar... Please wait...");
-progress.set_fraction(0.25);
+var progress = new suit.Scrollbar("horizontal");
 vpacker.add(progress);
 
 hpacker.add(vpacker);

@@ -1,4 +1,5 @@
 suit.Packer = function(orientation) {
+	suit.ensure(orientation, "string");
 	suit.Container.call(this);
 
 	this.orientation = orientation || "horizontal"; // "horizontal" or "vertical"
@@ -16,6 +17,7 @@ suit.Packer.prototype = suit.Container.inherit();
 suit.Packer.prototype.name = "Packer";
 
 suit.Packer.prototype.set_spacing = function(spacing) {
+	suit.ensure(spacing, "number");
 	this.spacing = spacing;
 	if (this.allocation) this.size_allocate (this.allocation);
 };
@@ -25,6 +27,7 @@ suit.Packer.prototype.get_spacing = function() {
 };
 
 suit.Packer.prototype.size_allocate = function(allocation) {
+	suit.ensure(allocation, suit.Allocation);
 	suit.Widget.prototype.size_allocate.call(this, allocation);
 	
 	var majorsize, minorsize;
@@ -123,6 +126,8 @@ suit.Packer.prototype.get_preferred_height = function() {
 };
 
 suit.Packer.prototype.get_preferred_width_for_height = function(height) {
+	suit.ensure(height, "number");
+	
 	var minimum = 0;
 	var natural = 0;
 	
@@ -152,6 +157,8 @@ suit.Packer.prototype.get_preferred_width_for_height = function(height) {
 };
 
 suit.Packer.prototype.get_preferred_height_for_width = function(width) {
+	suit.ensure(width, "number");
+	
 	var minimum = 0;
 	var natural = 0;
 	
