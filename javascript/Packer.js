@@ -20,6 +20,7 @@ suit.Packer.prototype.set_spacing = function(spacing) {
 	suit.ensure(spacing, "number");
 	this.spacing = spacing;
 	if (this.allocation) this.size_allocate (this.allocation);
+	return this;
 };
 
 suit.Packer.prototype.get_spacing = function() {
@@ -79,6 +80,7 @@ suit.Packer.prototype.size_allocate = function(allocation) {
 		child.size_allocate(ca);
 		majpos += childsize_parts[i];
 	}
+	return this;
 };
 
 suit.Packer.prototype.get_request_mode = function() {

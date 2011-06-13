@@ -29,7 +29,7 @@ suit.Container.prototype.add = function(widget) {
 	widget.screen = this.get_screen();
 
 	this.emit('add');
-	return true;
+	return this;
 };
 
 suit.Container.prototype.remove = function(widget) {
@@ -38,9 +38,8 @@ suit.Container.prototype.remove = function(widget) {
 	var index;
 	if (index = this.index_of(widget)) {
 		this.children.splice(index, 1);
-		return true;
 	}
-	return false;
+	return this;
 };
 
 suit.Container.prototype.remove_all = function() {
@@ -49,6 +48,7 @@ suit.Container.prototype.remove_all = function() {
 		this.children[i].screen = null;
 	}
 	this.children = [];
+	return this;
 };
 
 suit.Container.prototype.replace = function(widget_or_index, new_widget) {
@@ -67,7 +67,7 @@ suit.Container.prototype.replace = function(widget_or_index, new_widget) {
 	new_widget.parent = this;
 	new_widget.screen = this.get_screen();
 	this.children[index] = new_widget;
-	return true;
+	return this;
 };
 
 suit.Container.prototype.insert = function(index, new_widget) {
@@ -80,7 +80,7 @@ suit.Container.prototype.insert = function(index, new_widget) {
 	new_widget.parent = this;
 	new_widget.screen = this.get_screen();
 	this.children.splice(index, 0, new_widget);
-	return true;
+	return this;
 };
 
 suit.Container.prototype.get_child_with_coords = function(x, y) {

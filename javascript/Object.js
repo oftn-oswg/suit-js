@@ -13,7 +13,7 @@ suit.Object.prototype.connect = function( signal, fn ) {
 		'callback': fn,
 		'extras': Array.prototype.slice.call(arguments, 2)
 	});
-	return true;
+	return this;
 };
 
 suit.Object.prototype.disconnect = function( signal, fn ) {
@@ -21,16 +21,16 @@ suit.Object.prototype.disconnect = function( signal, fn ) {
 	suit.ensure(fn, "function");
 
 	if( typeof this.signals[signal] == 'undefined' )
-		return false;
+		return this;
 
 	for( var i = 0, len = this.signals[signal].length; i < len; i++ ) {
 		if( this.signals[signal][i]['callback'] === fn ) {
 			this.signals[signal].splice(i, 1);
-			return true;
+			return this;
 		}
 	}
 
-	return true;
+	return this;
 
 };
 
@@ -46,5 +46,6 @@ suit.Object.prototype.emit = function( signal ) {
 		this.signals[signal][i]['callback'].apply(this,
 			args.concat(this.signals[signal][i]['extras']));
 	}
+	return this;
 
 };

@@ -9,6 +9,7 @@ suit.Screen = function() {
 	
 	this.canvas = document.createElement("canvas");
 	this.context = new suit.Graphics(this.canvas.getContext("2d"));
+	this.context.mozImageSmoothingEnabled = false;
 	
 	this.container = document.createElement('div');
 	this.container.style.position = "absolute";
@@ -35,10 +36,12 @@ suit.Screen.prototype.queue_redraw = function() {
 		this.update_timer = setTimeout(this.draw.bind(this), 10);
 	else
 		this.draw();
+	return this;
 };
 
 suit.Screen.prototype.queue_resize = function() {
 	this.resize();
+	return this;
 };
 
 suit.Screen.prototype.draw = function() {
@@ -52,6 +55,7 @@ suit.Screen.prototype.draw = function() {
 		this.draw_recursive(this.child, context);
 	}
 	context.restore();
+	return this;
 };
 
 suit.Screen.prototype.draw_recursive = function(widget, context) {
@@ -86,6 +90,7 @@ suit.Screen.prototype.draw_recursive = function(widget, context) {
 		// Remove the clipping and translation
 		context.pop_clip();
 	}
+	return this;
 };
 
 suit.Screen.prototype.size_allocate = function(a) {
@@ -108,6 +113,7 @@ suit.Screen.prototype.size_allocate = function(a) {
 		this.child.size_allocate (a);
 	}
 	//*/
+	return this;
 };
 
 suit.Screen.prototype.resize = function() {
@@ -116,6 +122,7 @@ suit.Screen.prototype.resize = function() {
 	
 	this.size_allocate(new suit.Allocation(0, 0, width, height));
 	this.draw(); // TODO: Change this to queue_resize
+	return this;
 };
 
 suit.Screen.prototype.attach_dom_events = function() {
@@ -177,6 +184,9 @@ suit.Screen.prototype.attach_dom_events = function() {
 		return false;
 	}.bind(this);
 	
+	var on_mousewheel_deltas = [0, 0];
+	var on_mousewheel_timeout = null;
+	
 	var on_mousewheel = function(e) {
 		var coords = this.get_mouse_coordinates(e);
 		var widget = this.lock || this.get_child_with_coords(coords[0], coords[1]);
@@ -197,14 +207,25 @@ suit.Screen.prototype.attach_dom_events = function() {
 		
 		if (deltaX === 0 && deltaY === 0) return false;
 		
-		if (widget) {
-			widget.register_event(
-				new suit.EventScroll(
-					suit.Modifiers.None,
-					coords[0], coords[1],
-					deltaX, deltaY, -1
-				));
-		}
+		on_mousewheel_deltas[0] += deltaX;
+		on_mousewheel_deltas[1] += deltaY;
+		
+		if (on_mousewheel_timeout) { clearTimeout(on_mousewheel_timeout); }
+		on_mousewheel_timeout = setTimeout(function() {
+		
+			if (widget) {
+				widget.register_event(
+					new suit.EventScroll(
+						suit.Modifiers.None,
+						coords[0], coords[1],
+						on_mousewheel_deltas[0], on_mousewheel_deltas[1], -1
+					));
+			}
+			
+			on_mousewheel_deltas = [0, 0];
+			
+		}, 25);
+		
 		e.stopPropagation();
 		e.preventDefault();
 		return false;

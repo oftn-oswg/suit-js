@@ -11,11 +11,13 @@ suit.Widget.prototype.set_allocation = function(allocation) {
 	suit.ensure(allocation, suit.Allocation);
 	
 	this.allocation = allocation;
+	return this;
 };
 suit.Widget.prototype.size_allocate = function(allocation) {
 	suit.ensure(allocation, suit.Allocation);
 	
 	this.set_allocation(allocation);
+	return this;
 };
 
 suit.Widget.prototype.get_allocation = function() {
@@ -30,11 +32,13 @@ suit.Widget.prototype.get_preferred_height_for_width = function() {};
 
 suit.Widget.prototype.queue_redraw = function() {
 	if (this.parent) this.parent.queue_redraw();
+	return this;
 };
 suit.Widget.prototype.queue_resize = function() {
 	if (this.parent) { 
 		this.parent.queue_resize();
 	}
+	return this;
 };
 
 suit.Widget.prototype.get_screen = function() {
@@ -51,12 +55,14 @@ suit.Widget.prototype.event_mask_add = function(bits) {
 	suit.ensure(bits, "number");
 	
 	this.event_mask |= bits;
+	return this;
 };
 
 suit.Widget.prototype.event_mask_sub = function(bits) {
 	suit.ensure(bits, "number");
 	
 	this.event_mask ^= bits;
+	return this;
 };
 
 suit.Widget.prototype.lock = function() {

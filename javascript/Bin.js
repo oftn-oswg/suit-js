@@ -15,26 +15,28 @@ suit.Bin.prototype.set_child = function(widget) {
 	} else {
 		suit.error("#%s already has child widget #%s.", this.name, this.child.name);
 	}
+	return this;
 };
 
 suit.Bin.prototype.get_child = function() {
 	if (this.child) return this.child;
-	return false;
+	return this;
 };
 
 suit.Bin.prototype.clear_child = function() {
 	this.child = null;
 	this.remove_all();
+	return this;
 };
 
 suit.Bin.prototype.add = function() {
 	suit.error("#%s is a Bin widget and can only hold one child, use set_child to add a child.", this.name);
-	return false;
+	return this;
 };
 
 suit.Bin.prototype.remove = function() {
 	suit.error("#%s is a Bin widget; use clear_child to remove its child.", this.name);
-	return false;
+	return this;
 };
 
 suit.Bin.prototype.get_request_mode = function() {

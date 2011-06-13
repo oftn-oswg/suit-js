@@ -38,6 +38,7 @@ suit.ProgressBar.prototype.draw = function(context) {
 	} else {
 		context.rect(a.x, a.y, a.width, a.height*this.fraction | 0);
 	}
+	return this;
 };
 
 suit.ProgressBar.prototype.set_fraction = function(fraction) {
@@ -45,6 +46,7 @@ suit.ProgressBar.prototype.set_fraction = function(fraction) {
 	
 	this.fraction = fraction;
 	this.queue_redraw();
+	return this;
 };
 
 suit.ProgressBar.prototype.get_fraction = function() {

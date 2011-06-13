@@ -9,6 +9,7 @@ suit.Graphics.prototype.rect = function(x, y, w, h, stroke, fill) {
 
 	if (fill) this.cc.fillRect (x, y, w, h);
 	if (stroke) this.cc.strokeRect (x, y, w, h);
+	return this;
 };
 
 suit.Graphics.prototype.push_clip = function(x, y, w, h) {
@@ -17,11 +18,13 @@ suit.Graphics.prototype.push_clip = function(x, y, w, h) {
 	this.cc.rect (x, y, w, h);
 	this.cc.clip();
 	this.clip.push({x: x, y: y, width: w, height: h});
+	return this;
 };
 
 suit.Graphics.prototype.pop_clip = function() {
 	this.cc.restore();
 	this.clip.pop();
+	return this;
 };
 
 suit.Graphics.prototype.get_clip = function() {
@@ -46,6 +49,7 @@ suit.Graphics.prototype.path = function(data, closepath, stroke, fill) {
 	if (closepath) this.cc.closePath();
 	if (stroke) this.cc.stroke();
 	if (fill) this.cc.fill();
+	return this;
 };
 
 suit.Graphics.prototype.set_shadow = function(offsetX, offsetY, blur, color) {
@@ -61,6 +65,7 @@ suit.Graphics.prototype.set_shadow = function(offsetX, offsetY, blur, color) {
 		this.cc.shadowBlur = 0;
 		this.cc.shadowColor = "transparent";
 	}
+	return this;
 };
 
 suit.Graphics.prototype.create_linear_gradient = function(x, y, x2, y2, data) {
@@ -78,6 +83,7 @@ suit.Graphics.prototype.set_stroke_style = function(width, cap, linejoin, miterl
 	// bevel, round, miter
 	if (typeof linejoin !== "undefined" && linejoin !== null) this.cc.lineJoin = linejoin;
 	if (typeof miterlimit !== "undefined" && miterlimit !== null) this.cc.miterLimit = miterlimit;
+	return this;
 };
 
 suit.Graphics.prototype.set_font_style = function(font, align, baseline) {
@@ -86,17 +92,21 @@ suit.Graphics.prototype.set_font_style = function(font, align, baseline) {
 	if (typeof align !== "undefined" && align !== null) this.cc.textAlign = align;
 	// top, hanging, middle, alphabetic, ideographic, bottom
 	if (typeof baseline !== "undefined" && baseline !== null) this.cc.textBaseline = baseline;
+	return this;
 };
 
 suit.Graphics.prototype.set_fill_stroke = function(fill, stroke) {
 	if (fill) this.cc.fillStyle = fill;
 	if (stroke) this.cc.strokeStyle = stroke;
+	return this;
 };
 
 suit.Graphics.prototype.save = function() {
 	this.cc.save();
+	return this;
 };
 
 suit.Graphics.prototype.restore = function() {
 	this.cc.restore();
+	return this;
 };

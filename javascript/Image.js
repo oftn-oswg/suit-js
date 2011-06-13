@@ -50,6 +50,7 @@ suit.Image.prototype.draw = function(context) {
 		break;
 	}
 	context.cc.drawImage(this.usedimage, middlex | 0, middley | 0);
+	return this;
 };
 
 suit.Image.prototype.set_align = function(align) {
@@ -57,6 +58,7 @@ suit.Image.prototype.set_align = function(align) {
 	
 	this.align = align;
 	this.queue_redraw();
+	return this;
 };
 
 suit.Image.prototype.set_valign = function(valign) {
@@ -64,6 +66,7 @@ suit.Image.prototype.set_valign = function(valign) {
 	
 	this.valign = valign;
 	this.queue_redraw();
+	return this;
 };
 
 suit.Image.prototype.get_request_mode = function() {

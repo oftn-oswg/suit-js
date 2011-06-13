@@ -39,6 +39,7 @@ suit.TextLayout.prototype.text_width = function(string) {
 suit.TextLayout.prototype.invalidate = function() {
 	this.calculated = false;
 	this.wrapped_length_cache = [];
+	return this;
 };
 
 suit.TextLayout.prototype.set_text = function (text) {
@@ -50,6 +51,7 @@ suit.TextLayout.prototype.set_text = function (text) {
 		this.invalidate();
 		this.emit('resize');
 	}
+	return this;
 };
 
 suit.TextLayout.prototype.set_font = function (font_name, font_size) {
@@ -67,6 +69,7 @@ suit.TextLayout.prototype.set_font = function (font_name, font_size) {
 	this.invalidate();
 	this.em_width = this.text_width("M");
 	this.emit('resize');
+	return this;
 };
 
 suit.TextLayout.prototype.set_line_height = function (line_height) {
@@ -74,12 +77,14 @@ suit.TextLayout.prototype.set_line_height = function (line_height) {
 	
 	this.line_height = line_height;
 	this.emit('resize');
+	return this;
 };
 
 suit.TextLayout.prototype.set_align = function (align) {
 	suit.ensure(align, "string");
 	
 	this.align = align;
+	return this;
 };
 
 suit.TextLayout.prototype.set_width = function (width) {
@@ -89,6 +94,7 @@ suit.TextLayout.prototype.set_width = function (width) {
 		this.width = width;
 		this.calculated = false;
 	}
+	return this;
 };
 
 suit.TextLayout.prototype.get_css_font_string = function() {
@@ -141,6 +147,7 @@ suit.TextLayout.prototype.recalculate_layout = function() {
 	
 	this.calculated = true;
 	this.text_wrapped = text_wrapped;
+	return this;
 };
 
 suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callback) {
@@ -173,6 +180,7 @@ suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callba
 		}
 		callback.call(this, line.substring(start_index))//.replace(/^\s+/, ""));
 	}
+	return this;
 };
 
 suit.TextLayout.prototype.get_preferred_height = function() {
@@ -260,4 +268,5 @@ suit.TextLayout.prototype.render = function(context, x, y) {
 	};
 	
 	context.cc.restore();
+	return this;
 };

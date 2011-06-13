@@ -9,6 +9,8 @@ suit.Scrollbar = function(orientation) {
 	
 	this.scroll = 0;      // The amount of scroll on the child
 	this.scroll_size = 0; // The size of the child widget
+	
+	suit.error("Why did you make a scrollbar?");
 };
 
 suit.Scrollbar.prototype = suit.Widget.inherit();
@@ -39,6 +41,7 @@ suit.Scrollbar.prototype.draw = function(context) {
 			[x, y+h]
 		]);
 	}
+	return this;
 };
 
 

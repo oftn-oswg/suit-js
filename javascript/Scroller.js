@@ -57,6 +57,7 @@ suit.Scroller.prototype.draw = function(context) {
 	if (this.child) {
 		this.draw_scrollbars(context);
 	}
+	return this;
 };
 
 suit.Scroller.prototype.draw_scrollbars = function(context) {
@@ -112,6 +113,7 @@ suit.Scroller.prototype.size_allocate = function(allocation) {
 		this.child.size_allocate(new suit.Allocation(0, 0, cw, ch));
 		this.update_scroll_position();
 	}
+	return this;
 };
 
 suit.Scroller.prototype.update_scroll_position = function() {
@@ -136,6 +138,7 @@ suit.Scroller.prototype.update_scroll_position = function() {
 		this.child.set_allocation(ca); // Use set_allocation here because we don't need to recalculate layout.
 		this.queue_redraw();
 	}
+	return this;
 };
 
 suit.Scroller.prototype.set_policy = function(horizontal, vertical) {
@@ -144,6 +147,7 @@ suit.Scroller.prototype.set_policy = function(horizontal, vertical) {
 	
 	this.policyX = horizontal || "never";
 	this.policyY = vertical || "always";
+	return this;
 };
 
 suit.Scroller.prototype.on_event_scroll = function(e) {

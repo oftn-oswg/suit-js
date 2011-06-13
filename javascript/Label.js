@@ -22,6 +22,7 @@ suit.Label.prototype.set_text = function(text) {
 	
 	this.layout.set_text(text);
 	this.queue_redraw();
+	return this;
 };
 
 suit.Label.prototype.set_align = function(align) {
@@ -29,6 +30,7 @@ suit.Label.prototype.set_align = function(align) {
 	
 	this.layout.set_align (align);
 	this.queue_redraw();
+	return this;
 };
 
 suit.Label.prototype.set_valign = function(valign) {
@@ -36,11 +38,13 @@ suit.Label.prototype.set_valign = function(valign) {
 	
 	this.valign = valign;
 	this.queue_redraw();
+	return this;
 };
 
 suit.Label.prototype.set_line_height = function(line_height) {
 	this.layout.set_line_height(line_height);
 	this.queue_redraw();
+	return this;
 };
 
 suit.Label.prototype.draw = function(context) {
@@ -72,6 +76,7 @@ suit.Label.prototype.draw = function(context) {
 	}
 
 	this.layout.render(context, x, y);
+	return this;
 };
 
 suit.Label.prototype.size_allocate = function(allocation) {
@@ -79,6 +84,7 @@ suit.Label.prototype.size_allocate = function(allocation) {
 	
 	suit.Widget.prototype.size_allocate.call(this, allocation);
 	this.layout.set_width(allocation.width);
+	return this;
 };
 
 suit.Label.prototype.get_request_mode = function() {

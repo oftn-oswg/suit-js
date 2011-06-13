@@ -73,6 +73,7 @@ suit.Button.prototype.draw = function(context) {
 	//var top = a.y+((a.height-1)/2);
 	//context.text("Droid Sans", (a.x + (a.width-1)/2) |0, top+(this.pressed?1:0));
 	//context.set_shadow ();
+	return this;
 };
 
 suit.Button.prototype.size_allocate = function(allocation) {
@@ -85,6 +86,7 @@ suit.Button.prototype.size_allocate = function(allocation) {
 			allocation.height - this.style.padding_top - this.style.padding_bottom - 1
 		));
 	}
+	return this;
 };
 
 suit.Button.prototype.on_event_button = function(e) {
