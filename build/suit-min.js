@@ -71,23 +71,25 @@ suit.ensure = function(a, b) {
     var b = Array.prototype.slice.call(arguments, 1);
     for (var c = 0, d = this.signals[a].length; c < d; c++) this.signals[a][c].callback.apply(this, b.concat(this.signals[a][c].extras));
 }, suit.TextLayout = function() {
-    suit.Object.call(this), this.text = "", this.text_split = [ "" ], this.text_wrapped = [ "" ], this.font_name = "sans-serif", this.font_size = 14, this.line_height = null, this.align = "left", this.width = null, this.calculated = !0, this.em_width = this.text_width("M");
+    suit.Object.call(this), this.text = "", this.text_split = [ "" ], this.text_wrapped = [ "" ], this.font_name = "sans-serif", this.font_size = 14, this.line_height = null, this.align = "left", this.width = null, this.calculated = !0, this.wrapped_length_cache = [], this.em_width = this.text_width("M");
 }, suit.TextLayout.canvas_context = function() {
     var a = document.createElement("canvas");
     return a.getContext("2d");
 }(), suit.TextLayout.prototype = suit.Object.inherit(), suit.TextLayout.prototype.text_width = function(a) {
     suit.ensure(a, "string"), suit.TextLayout.canvas_context.font = this.get_css_font_string();
     return suit.TextLayout.canvas_context.measureText(a).width;
+}, suit.TextLayout.prototype.invalidate = function() {
+    this.calculated = !1, this.wrapped_length_cache = [];
 }, suit.TextLayout.prototype.set_text = function(a) {
-    suit.ensure(a, "string"), this.text = a, this.text_split = a.split("\n"), this.calculated = !1, this.emit("resize");
+    suit.ensure(a, "string"), this.text !== a && (this.text = a, this.text_split = a.split("\n"), this.invalidate(), this.emit("resize"));
 }, suit.TextLayout.prototype.set_font = function(a, b) {
-    suit.ensure(a, [ "string", "undefined" ]), suit.ensure(b, [ "number", "undefined" ]), a && (this.font_name = Array.isArray(a) ? '"' + a.join('", "') + '"' : '"' + a + '"'), b && (this.font_size = b), this.calculated = !1, this.em_width = this.text_width("M"), this.emit("resize");
+    suit.ensure(a, [ "string", "undefined" ]), suit.ensure(b, [ "number", "undefined" ]), a && (this.font_name = Array.isArray(a) ? '"' + a.join('", "') + '"' : '"' + a + '"'), b && (this.font_size = b), this.invalidate(), this.em_width = this.text_width("M"), this.emit("resize");
 }, suit.TextLayout.prototype.set_line_height = function(a) {
     suit.ensure(a, "number"), this.line_height = a, this.emit("resize");
 }, suit.TextLayout.prototype.set_align = function(a) {
     suit.ensure(a, "string"), this.align = a;
 }, suit.TextLayout.prototype.set_width = function(a) {
-    suit.ensure(a, "number"), this.width = a, this.calculated = !1;
+    suit.ensure(a, "number"), this.width !== a && (this.width = a, this.calculated = !1);
 }, suit.TextLayout.prototype.get_css_font_string = function() {
     return this.font_size + "px " + this.font_name;
 }, suit.TextLayout.prototype.get_index_at_pos = function(a, b) {
@@ -110,7 +112,7 @@ suit.ensure = function(a, b) {
         a.push(b);
     })) : a = this.line_split, this.calculated = !0, this.text_wrapped = a;
 }, suit.TextLayout.prototype.perform_text_wrap = function(a, b, c) {
-    suit.ensure(a, "object"), suit.ensure(b, "number"), suit.ensure(c, "function");
+    suit.ensure(a, "object"), suit.ensure(b, "number"), suit.ensure(c, "function"), suit.log("Performing text wrap.", this.text.substr(0, 20).replace(/^\s+/, ""), b);
     for (var d = 0, e = a.length; d < e; d++) {
         var f, g = a[d], h = 0, i = 0, j = 0;
         while (f = g.substr(j).match(/. |-[^ ]|.$/)) {
@@ -129,9 +131,9 @@ suit.ensure = function(a, b) {
 }, suit.TextLayout.prototype.get_preferred_height_for_width = function(a) {
     suit.ensure(a, "number");
     var b = 0, c = 0;
-    this.perform_text_wrap(this.text_split, a, function(a) {
+    typeof this.wrapped_length_cache[a] == "undefined" ? (this.perform_text_wrap(this.text_split, a, function(a) {
         b++;
-    }), c = b * this.get_line_size() + 1 | 0;
+    }), this.wrapped_length_cache[a] = b) : b = this.wrapped_length_cache[a], c = b * this.get_line_size() + 1 | 0;
     return c;
 }, suit.TextLayout.prototype.get_preferred_width_for_height = function(a) {
     suit.ensure(a, "number");
@@ -659,7 +661,7 @@ suit.ensure = function(a, b) {
     this.child && this.child.size_allocate(new suit.Allocation(a.width / 2 - b / 2, a.height / 2 - c / 2, b, c));
 }, suit.Screen.prototype.resize = function() {
     var a = window.innerWidth, b = window.innerHeight;
-    this.size_allocate(new suit.Allocation(0, 0, a, b)), this.draw();
+    this.size_allocate(new suit.Allocation(0, 0, a, b)), this.draw(), suit.log("suit.Screen.RESIZE()");
 }, suit.Screen.prototype.attach_dom_events = function() {
     var a = this.resize.bind(this), b = function(a) {
         var b = this.get_mouse_coordinates(a), c = this.lock || this.get_child_with_coords(b[0], b[1]);

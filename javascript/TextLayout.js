@@ -13,6 +13,10 @@ suit.TextLayout = function() {
 	this.width = null; // Infinite
 	this.calculated = true;
 	
+	/* This stores key/value pairs where the key is the width of a rendered
+	   layout and the value is the number of lines the layout will take. */
+	this.wrapped_length_cache = [];
+	
 	this.em_width = this.text_width("M");
 };
 
@@ -30,13 +34,22 @@ suit.TextLayout.prototype.text_width = function(string) {
 	return suit.TextLayout.canvas_context.measureText(string).width;
 };
 
+// This invalidates the TextLayout meaning the layout needs to be re-calculated.
+// It also clears the wrapped_length_cache as this is no longer valid.
+suit.TextLayout.prototype.invalidate = function() {
+	this.calculated = false;
+	this.wrapped_length_cache = [];
+};
+
 suit.TextLayout.prototype.set_text = function (text) {
 	suit.ensure(text, "string");
 	
-	this.text = text;
-	this.text_split = text.split("\n");
-	this.calculated = false;
-	this.emit('resize');
+	if (this.text !== text) {
+		this.text = text;
+		this.text_split = text.split("\n");
+		this.invalidate();
+		this.emit('resize');
+	}
 };
 
 suit.TextLayout.prototype.set_font = function (font_name, font_size) {
@@ -51,7 +64,7 @@ suit.TextLayout.prototype.set_font = function (font_name, font_size) {
 	if (font_size) {
 		this.font_size = font_size;
 	}
-	this.calculated = false;
+	this.invalidate();
 	this.em_width = this.text_width("M");
 	this.emit('resize');
 };
@@ -72,8 +85,10 @@ suit.TextLayout.prototype.set_align = function (align) {
 suit.TextLayout.prototype.set_width = function (width) {
 	suit.ensure(width, "number");
 	
-	this.width = width;
-	this.calculated = false;
+	if (this.width !== width) {
+		this.width = width;
+		this.calculated = false;
+	}
 };
 
 suit.TextLayout.prototype.get_css_font_string = function() {
@@ -133,6 +148,8 @@ suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callba
 	suit.ensure(width, "number");
 	suit.ensure(callback, "function");
 	
+	suit.log("Performing text wrap.", this.text.substr(0, 20).replace(/^\s+/, ''), width);
+	
 	for (var i = 0, len = line_split.length; i < len; i++) {
 		var m;
 		var line = line_split[i];
@@ -178,9 +195,15 @@ suit.TextLayout.prototype.get_preferred_height_for_width = function(width) {
 	suit.ensure(width, "number");
 	
 	var lines = 0, height = 0;
-	this.perform_text_wrap(this.text_split, width, function(line) {
-		lines++;
-	});
+	// Save some time if the width is already set
+	if (typeof this.wrapped_length_cache[width] === "undefined") {
+		this.perform_text_wrap(this.text_split, width, function(line) {
+			lines++;
+		});
+		this.wrapped_length_cache[width] = lines;
+	} else {
+		lines = this.wrapped_length_cache[width];
+	}
 	height = lines * this.get_line_size() + 1 | 0;
 	return height;
 };
