@@ -32,13 +32,15 @@ suit.Graphics.prototype.path = function(data, closepath, stroke, fill) {
 	if (typeof closepath === "undefined" || closepath === null) closepath = false;
 	if (typeof stroke === "undefined" || stroke === null) stroke = true;
 	if (typeof fill === "undefined" || fill === null) fill = false;
+	
+	var delta = this.cc.lineWidth / 2 % 1;
 
 	this.cc.beginPath();
 	for (var i = 0, len = data.length; i < len; i++) {
 		if (!i) {
-			this.cc.moveTo(data[i][0]+0.5, data[i][1]+0.5);
+			this.cc.moveTo((data[i][0]|0)+delta, (data[i][1]|0)+delta);
 		} else {
-			this.cc.lineTo(data[i][0]+0.5, data[i][1]+0.5);
+			this.cc.lineTo((data[i][0]|0)+delta, (data[i][1]|0)+delta);
 		}
 	}
 	if (closepath) this.cc.closePath();

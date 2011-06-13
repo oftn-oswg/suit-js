@@ -148,8 +148,6 @@ suit.TextLayout.prototype.perform_text_wrap = function(line_split, width, callba
 	suit.ensure(width, "number");
 	suit.ensure(callback, "function");
 	
-	suit.log("Performing text wrap.", this.text.substr(0, 20).replace(/^\s+/, ''), width);
-	
 	for (var i = 0, len = line_split.length; i < len; i++) {
 		var m;
 		var line = line_split[i];

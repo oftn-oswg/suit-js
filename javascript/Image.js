@@ -50,7 +50,6 @@ suit.Image.prototype.draw = function(context) {
 		break;
 	}
 	context.cc.drawImage(this.usedimage, middlex | 0, middley | 0);
-	suit.log("Drew image");
 };
 
 suit.Image.prototype.set_align = function(align) {

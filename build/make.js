@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var Path = require("path");
 var File = require("fs");
 
@@ -167,7 +169,7 @@ Maker.prototype.compress_files = function() {
 		var ast = jsp.parse(orig_code); // parse code and get the initial AST
 		ast = pro.ast_mangle(ast); // get a new AST with mangled names
 		ast = pro.ast_squeeze(ast); // get an AST with compression optimizations
-		var final_code = pro.gen_code(ast, {beautify: true}); // compressed code here
+		var final_code = pro.gen_code(ast); // compressed code here
 	
 		var output_file = Path.join(__dirname, "suit-min.js");
 		this.log_info("Creating \033[32;1m"+output_file+"\033[0m...");
