@@ -32,8 +32,22 @@ another_label.set_align("right");
 
 var hpacker = new suit.Packer("horizontal");
 hpacker.set_spacing (18);
-hpacker.add(new suit.Button("Button 1"));
-hpacker.add(new suit.Button("Button 2"));
+
+var alertbtn = new suit.Button("Alert()");
+alertbtn.connect("activate", function() {
+	alert("You clicked me!");
+});
+
+var promptbtn = new suit.Button("Prompt()");
+promptbtn.connect("activate", function() {
+	var text = prompt("Enter some text and the button's label will be updated with the text:");
+	if (text) {
+		this.get_child().set_text(text);
+	}
+});
+
+hpacker.add(alertbtn);
+hpacker.add(promptbtn);
 hpacker.add(new suit.Button("Button 3"));
 
 var vpacker = new suit.Packer("vertical");
