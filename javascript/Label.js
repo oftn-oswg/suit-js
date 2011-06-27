@@ -1,8 +1,7 @@
 suit.Label = function(text) {
 	suit.Widget.call(this);
-	this.valign = "top"; // top, middle, bottom
+	
 	this.layout = new suit.TextLayout();
-	//this.layout.set_font("Droid Sans", 16);
 	this.layout.set_font(["Droid Sans", "Segoe UI", "sans-serif"], 16);
 	
 	var self = this;
@@ -16,6 +15,9 @@ suit.Label = function(text) {
 };
 suit.Label.prototype = suit.Widget.inherit();
 suit.Label.prototype.name = "Label";
+
+// Default instance variables
+suit.Label.prototype.valign = "top"; // top, middle, bottom
 
 suit.Label.prototype.set_text = function(text) {
 	suit.ensure(text, "string");

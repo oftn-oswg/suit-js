@@ -1,11 +1,13 @@
 suit.Widget = function() {
 	suit.Object.call(this);
-	this.parent = null;
-	this.screen = null;
-	this.event_mask = suit.Event.None;
 };
 suit.Widget.prototype = suit.Object.inherit();
 suit.Widget.prototype.name = "Widget";
+
+// Default instance variables
+suit.Widget.prototype.parent = null;
+suit.Widget.prototype.screen = null;
+suit.Widget.prototype.event_mask = suit.Event.None;
 
 suit.Widget.prototype.set_allocation = function(allocation) {
 	suit.ensure(allocation, suit.Allocation);

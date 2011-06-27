@@ -3,10 +3,18 @@
 var Path = require("path");
 var File = require("fs");
 
+function error(str) {
+	return "\033[31;1m"+str+"\033[0m";
+}
+
+function filename(str) {
+	return "\033[32;1m"+str+"\033[0m";
+}
+
 try {
 	var Uglify = require("uglify-js");
 } catch (e) {
-	process.stdout.write("\033[31;1mUglifyJS not found. Not compressing.\033[0m\n");
+	process.stdout.write(error("UglifyJS not found. Not compressing.")+"\n");
 }
 
 var Maker = function() {
@@ -41,7 +49,7 @@ Maker.prototype.log_info = function() {
 
 Maker.prototype.log_error = function() {
 	for (var i = 0, len = arguments.length; i < len; i++) {
-		process.stderr.write("\033[31;1m"+arguments[i]+"\033[0m\n");
+		process.stderr.write(error(arguments[i])+"\n");
 	}
 };
 
@@ -155,7 +163,7 @@ Maker.prototype.compress_files = function() {
 	if (typeof Uglify === "undefined") {
 
 		var output_file = Path.join(__dirname, "suit-uncompressed.js");
-		this.log_info("Creating \033[32;1m"+output_file+"\033[0m...");
+		this.log_info("Creating "+filename(output_file)+"...");
 		File.writeFileSync(output_file, combined);
 		
 	} else {
@@ -172,7 +180,7 @@ Maker.prototype.compress_files = function() {
 		var final_code = pro.gen_code(ast); // compressed code here
 	
 		var output_file = Path.join(__dirname, "suit-min.js");
-		this.log_info("Creating \033[32;1m"+output_file+"\033[0m...");
+		this.log_info("Creating "+filename(output_file)+"...");
 		File.writeFileSync(output_file, final_code);
 		
 	}

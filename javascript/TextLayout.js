@@ -1,17 +1,5 @@
 suit.TextLayout = function() {
 	suit.Object.call(this);
-
-	this.text = "";
-	this.text_split = [""];
-	this.text_wrapped = [""];
-	
-	this.font_name = "sans-serif";
-	this.font_size = 14;
-	this.line_height = null;
-	
-	this.align = "left";
-	this.width = null; // Infinite
-	this.calculated = true;
 	
 	/* This stores key/value pairs where the key is the width of a rendered
 	   layout and the value is the number of lines the layout will take. */
@@ -26,6 +14,19 @@ suit.TextLayout.canvas_context = (function() {
 })();
 
 suit.TextLayout.prototype = suit.Object.inherit();
+suit.TextLayout.prototype.name = "TextLayout";
+
+// Default instance variables
+suit.TextLayout.prototype.text = "";
+suit.TextLayout.prototype.text_wrapped = [""];
+suit.TextLayout.prototype.text_split = [""];
+suit.TextLayout.prototype.font_name = "sans-serif";
+suit.TextLayout.prototype.font_size = 14;
+suit.TextLayout.prototype.line_height = null;
+suit.TextLayout.prototype.align = "left";
+suit.TextLayout.prototype.width = null; // Infinite
+suit.TextLayout.prototype.calculated = true;
+
 
 suit.TextLayout.prototype.text_width = function(string) {
 	suit.ensure(string, "string");

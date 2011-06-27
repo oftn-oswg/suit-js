@@ -1,9 +1,6 @@
 suit.Button = function(text) {
 	suit.Bin.call(this);
 	
-	this.event_mask = suit.Event.ButtonPress;
-	
-	this.pressed = false;
 	if (text) {
 		suit.ensure(text, "string");
 		
@@ -22,6 +19,10 @@ suit.Button = function(text) {
 };
 suit.Button.prototype = suit.Bin.inherit();
 suit.Button.prototype.name = "Button";
+
+// Default instance variables
+suit.Button.prototype.pressed = false;
+suit.Button.prototype.event_mask = suit.Event.ButtonPress;
 
 suit.Button.prototype.draw = function(context) {
 	suit.ensure(context, suit.Graphics);

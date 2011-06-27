@@ -4,15 +4,8 @@ suit.Image = function(filename) {
 	suit.Widget.call(this);
 	this.filename = filename;
 	
-	this.loaded = false;
-	
-	this.usedimage = suit.Image.broken_image;
-	
 	var imageobj = new Image();
 	imageobj.src = filename;
-	
-	this.align = "center";
-	this.valign = "middle";
 	
 	var self = this;
 	imageobj.onload = function() {
@@ -31,6 +24,13 @@ suit.Image.broken_image = (function() {
 
 suit.Image.prototype = suit.Widget.inherit();
 suit.Image.prototype.name = "Image";
+
+// Default instance variables
+suit.Image.prototype.loaded = false;
+suit.Image.prototype.usedimage = suit.Image.broken_image;
+suit.Image.prototype.align = "center";
+suit.Image.prototype.valign = "middle";
+
 
 suit.Image.prototype.draw = function(context) {
 	suit.ensure(context, suit.Graphics);

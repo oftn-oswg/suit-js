@@ -3,8 +3,6 @@ suit.Packer = function(orientation) {
 	suit.Container.call(this);
 
 	this.orientation = orientation || "horizontal"; // "horizontal" or "vertical"
-	this.align = "start"; // "start", "end" or "middle"
-	this.spacing = 20;
 	this.style = {
 		padding_top: 0,
 		padding_bottom: 0,
@@ -15,6 +13,10 @@ suit.Packer = function(orientation) {
 };
 suit.Packer.prototype = suit.Container.inherit();
 suit.Packer.prototype.name = "Packer";
+
+// Default instance variables
+suit.Packer.prototype.align = "start"; // "start", "end" or "middle"
+suit.Packer.prototype.spacing = 20;
 
 suit.Packer.prototype.set_spacing = function(spacing) {
 	suit.ensure(spacing, "number");

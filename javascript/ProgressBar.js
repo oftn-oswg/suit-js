@@ -1,9 +1,6 @@
 suit.ProgressBar = function(text) {
 	suit.Bin.call(this);
 	
-	this.orientation = "horizontal";
-	this.fraction = 0;
-	
 	if (text) {
 		suit.ensure(text, "string");
 		
@@ -22,6 +19,10 @@ suit.ProgressBar = function(text) {
 
 suit.ProgressBar.prototype = suit.Bin.inherit();
 suit.ProgressBar.prototype.name = "ProgressBar";
+
+// Default instance variables
+suit.ProgressBar.prototype.orientation = "horizontal";
+suit.ProgressBar.prototype.fraction = 0;
 
 suit.ProgressBar.prototype.draw = function(context) {
 	suit.ensure(context, suit.Graphics);
