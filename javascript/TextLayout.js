@@ -223,7 +223,7 @@ suit.TextLayout.prototype.get_preferred_width_for_height = function(height) {
 
 suit.TextLayout.prototype.get_line_size = function() {
 	return (this.line_height !== null) ? this.font_size * this.line_height : this.font_size;
-}
+};
 
 suit.TextLayout.prototype.render = function(context, x, y) {
 	suit.ensure(context, suit.Graphics);
