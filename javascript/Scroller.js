@@ -4,9 +4,6 @@ suit.Scroller = function(child) {
 	this.scrollX = 0; // Distance from left of child to left of scroller. <= 0
 	this.scrollY = 0; // Distance from top of child to top of scroller. <= 0
 	
-	this.event_mask =
-		suit.Event.ButtonPress | suit.Event.ButtonRelease | suit.Event.Scroll;
-	
 	this.dragging = false;
 	this.startDragX = null;
 	this.startDragY = null;
@@ -18,9 +15,6 @@ suit.Scroller = function(child) {
 		suit.ensure(child, suit.Widget);
 		this.set_child(child);
 	}
-	this.connect("event_button", this.on_event_button);
-	this.connect("event_scroll", this.on_event_scroll);
-	this.connect("event_motion", this.on_event_motion);
 
 	this.style = {
 		padding_top: 5,
@@ -28,28 +22,26 @@ suit.Scroller = function(child) {
 		padding_left: 8,
 		padding_right: 8
 	};
+
+	this.set_has_window (true);
 };
 suit.Scroller.prototype = suit.Bin.inherit();
 suit.Scroller.prototype.name = "Scroller";
+
+
+suit.Scroller.prototype.realize = function() {
+	suit.Widget.prototype.realize.call(this);
+
+	this.window.connect("event_button", this.on_event_button);
+	this.window.connect("event_scroll", this.on_event_scroll);
+	this.window.connect("event_motion", this.on_event_motion);
+};
+
 
 suit.Scroller.prototype.draw = function(context) {
 	suit.ensure(context, suit.Graphics);
 	
 	var a = this.allocation;
-	
-	/*context.set_shadow (0, 0, 5, "#000");
-	context.set_fill_stroke ("#fff");
-	context.rect(a.x, a.y, a.width, a.height);
-	context.set_shadow();
-	
-	var gradhei = Math.min(a.y+a.height, a.y+20);
-	context.set_fill_stroke (
-		context.create_linear_gradient (a.x, a.y, a.x, gradhei,
-		[
-			[0, "#eee"],
-			[1, "#fff"]
-		]));
-	context.rect(a.x, a.y+1, a.width, gradhei); */
 	
 	context.set_fill_stroke ("#000");
 	context.rect(a.x, a.y, a.width, a.height);

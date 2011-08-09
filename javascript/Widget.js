@@ -1,20 +1,33 @@
 suit.Widget = function() {
 	suit.Object.call(this);
 };
+
 suit.Widget.prototype = suit.Object.inherit();
 suit.Widget.prototype.name = "Widget";
 
 // Default instance variables
 suit.Widget.prototype.parent = null;
 suit.Widget.prototype.screen = null;
-suit.Widget.prototype.event_mask = suit.Event.None;
+suit.Widget.prototype.has_window = false;
+suit.Widget.prototype.window = null;
+suit.Widget.prototype.realized = false;
 
 suit.Widget.prototype.set_allocation = function(allocation) {
+	var window;
+
 	suit.ensure(allocation, suit.Allocation);
 	
+	window = this.window;
 	this.allocation = allocation;
+
+	if (window) {
+		window.move_resize (allocation);
+	}
+
 	return this;
 };
+
+
 suit.Widget.prototype.size_allocate = function(allocation) {
 	suit.ensure(allocation, suit.Allocation);
 	
@@ -22,9 +35,47 @@ suit.Widget.prototype.size_allocate = function(allocation) {
 	return this;
 };
 
+
 suit.Widget.prototype.get_allocation = function() {
 	return this.allocation;
 };
+
+
+suit.Widget.prototype.get_has_window = function() {
+	return this.has_window;
+};
+
+
+suit.Widget.prototype.set_has_window = function(has_window) {
+	this.has_window = has_window;
+};
+
+
+suit.Widget.prototype.realize = function() {
+	var window, allocation;
+
+	if (this.has_window) {
+		window = new suit.Window(this.get_parent_window());
+		allocation = this.get_allocation();
+		
+		window.move_resize (allocation);
+		
+		this.window = window;
+		this.realized = true;
+	}
+
+};
+
+
+suit.Widget.prototype.unrealize = function() {
+	var window = this.window;
+
+	if (this.has_window && window) {
+		window.destroy ();
+	}
+};
+
+
 suit.Widget.prototype.draw = function(context) {};
 suit.Widget.prototype.get_request_mode = function() {};
 suit.Widget.prototype.get_preferred_width = function() {};
@@ -32,16 +83,27 @@ suit.Widget.prototype.get_preferred_height = function() {};
 suit.Widget.prototype.get_preferred_width_for_height = function() {};
 suit.Widget.prototype.get_preferred_height_for_width = function() {};
 
+
+suit.Widget.prototype.get_parent_window = function() {
+	var parent = this.parent;
+	if (!parent) return null;
+	return parent.window;
+};
+
+
 suit.Widget.prototype.queue_redraw = function() {
 	if (this.parent) this.parent.queue_redraw();
 	return this;
 };
+
+
 suit.Widget.prototype.queue_resize = function() {
 	if (this.parent) { 
 		this.parent.queue_resize();
 	}
 	return this;
 };
+
 
 suit.Widget.prototype.get_screen = function() {
 	if (this.screen) return this.screen;
@@ -53,33 +115,6 @@ suit.Widget.prototype.get_screen = function() {
 	return null;
 };
 
-suit.Widget.prototype.event_mask_add = function(bits) {
-	suit.ensure(bits, "number");
-	
-	this.event_mask |= bits;
-	return this;
-};
-
-suit.Widget.prototype.event_mask_sub = function(bits) {
-	suit.ensure(bits, "number");
-	
-	this.event_mask ^= bits;
-	return this;
-};
-
-suit.Widget.prototype.lock = function() {
-	var screen = this.get_screen();
-	if (screen.lock && screen.lock !== this) {
-		suit.error("Events are already locked by #%s.", screen.lock.name);
-		return false;
-	}
-	screen.lock = this;
-	return true;
-};
-
-suit.Widget.prototype.unlock = function() {
-	this.get_screen().lock = null;
-};
 
 suit.Widget.prototype.register_event = function(e) {
 
@@ -122,6 +157,7 @@ suit.Widget.prototype.register_event = function(e) {
 	return false;
 };
 
+
 suit.Widget.prototype.get_local_coordinates = function(x, y) {
 	suit.ensure(x, "number");
 	suit.ensure(y, "number");
@@ -131,6 +167,7 @@ suit.Widget.prototype.get_local_coordinates = function(x, y) {
 	y -= this.allocation.y;
 	return [x, y];
 };
+
 
 suit.Widget.prototype.get_absolute_coordinates = function(x, y) {
 	suit.ensure(x, "number");

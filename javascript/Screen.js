@@ -6,20 +6,11 @@ suit.Screen = function() {
 	
 	// When set to a widget object, events are channeled directly to the widget
 	this.lock = null;
-	
-	this.canvas = document.createElement("canvas");
-	this.context = new suit.Graphics(this.canvas.getContext("2d"));
-	this.context.mozImageSmoothingEnabled = false;
-	
-	this.container = document.createElement('div');
-	this.container.style.position = "absolute";
-	this.container.style.top = "0";
-	this.container.style.left = "0";
-	this.container.appendChild(this.canvas);
-	
+
+	this.window = new suit.Window(document.body);
+
 	document.body.style.overflow = "hidden";
-	document.body.appendChild(this.container);
-	
+
 	this.resize();
 	this.attach_dom_events();
 	//this.attach_internal_events();
@@ -45,51 +36,16 @@ suit.Screen.prototype.queue_resize = function() {
 };
 
 suit.Screen.prototype.draw = function() {
-	var context = this.context;
+	var context = this.window.context;
 	var a = this.allocation;
 	
 	context.save();
 	context.set_fill_stroke ("#191919");
 	context.rect (0, 0, a.width, a.height);
 	if (this.child) {
-		this.draw_recursive(this.child, context);
+		this.child.draw (context);
 	}
 	context.restore();
-	return this;
-};
-
-suit.Screen.prototype.draw_recursive = function(widget, context) {
-	suit.ensure(widget, suit.Widget);
-	suit.ensure(context, suit.Graphics);
-	
-	var allocation = widget.get_allocation();
-	if (allocation) {
-		// Start with clipping the canvas to the allocation, so it doesn't spill
-		context.push_clip.apply(context, allocation.args());
-		// Draw the widget
-		widget.draw(context);
-		// Translate the coordinates to the widgets to the widgets top-left point
-		context.cc.translate(allocation.x, allocation.y);
-		// If the widget is a container
-		if (widget.children) {
-			// For each child:
-			for (var i = 0, len = widget.children.length; i < len; i++) {
-				// Check the bounds of the child
-				//var ca = widget.get_allocation();
-				//if (!ca) continue;
-				//if (ca.y + ca.height >= 0 &&
-				//	ca.x + ca.width >= 0 //&&
-					//ca.y <= allocation.height &&
-					//ca.x <= allocation.width
-				//) {
-					// Draw the child widget
-					this.draw_recursive (widget.children[i], context);
-				//}
-			}
-		}
-		// Remove the clipping and translation
-		context.pop_clip();
-	}
 	return this;
 };
 
@@ -97,12 +53,9 @@ suit.Screen.prototype.size_allocate = function(a) {
 	suit.ensure(a, suit.Allocation);
 	
 	suit.Widget.prototype.size_allocate.call(this, a);
-	
-	this.container.style.width = a.width + "px";
-	this.container.style.height = a.height + "px";
-	this.canvas.width = a.width;
-	this.canvas.height = a.height;
-	
+
+	this.window.resize(a.width, a.height);
+
 	/*var w = Math.min(600, a.width-50);
 	var h = Math.min(400, a.height-50);
 	if (this.child) {
@@ -185,7 +138,7 @@ suit.Screen.prototype.attach_dom_events = function() {
 	}.bind(this);
 	
 	var on_mousewheel_deltas = [0, 0];
-	var on_mousewheel_timeout = null;
+	var on_mousewheel_time = 0;
 	
 	var on_mousewheel = function(e) {
 		var coords = this.get_mouse_coordinates(e);
@@ -209,9 +162,10 @@ suit.Screen.prototype.attach_dom_events = function() {
 		
 		on_mousewheel_deltas[0] += deltaX;
 		on_mousewheel_deltas[1] += deltaY;
+
+		var now = Date.now();
 		
-		if (on_mousewheel_timeout) { clearTimeout(on_mousewheel_timeout); }
-		on_mousewheel_timeout = setTimeout(function() {
+		if (on_mousewheel_time < (now-15)) {
 		
 			if (widget) {
 				widget.register_event(
@@ -223,8 +177,9 @@ suit.Screen.prototype.attach_dom_events = function() {
 			}
 			
 			on_mousewheel_deltas = [0, 0];
+			on_mousewheel_time = now;
 			
-		}, 25);
+		}
 		
 		e.stopPropagation();
 		e.preventDefault();

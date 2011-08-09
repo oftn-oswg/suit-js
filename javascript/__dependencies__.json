@@ -7,7 +7,7 @@
 	"Allocation": "SUIT",
 	"Event": "SUIT",
 	"Packer": "Container",
-	"Widget": ["Allocation", "Object", "Graphics", "Event", "Logging"],
+	"Widget": ["Allocation", "Object", "Graphics", "Event", "Logging", "Window"],
 	"Container": "Widget",
 	"Bin": "Container",
 	"Screen": "Bin",
@@ -16,5 +16,6 @@
 	"Scroller": "Bin",
 	"Image": "Widget",
 	"ProgressBar": "Bin",
-	"Scrollbar": "Widget"
+	"Scrollbar": "Widget",
+	"Window": "Object"
 }

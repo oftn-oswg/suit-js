@@ -1,6 +1,8 @@
 suit.Graphics = function(context) {
 	this.cc = context;
 	this.clip = [];
+
+	context.mozImageSmoothingEnabled = true;
 }
 
 suit.Graphics.prototype.rect = function(x, y, w, h, stroke, fill) {

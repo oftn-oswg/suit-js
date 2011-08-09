@@ -1,5 +1,8 @@
 var suit = {};
 
+// When set to a suit.Window object, events are channeled directly to it.
+suit.lock = null;
+
 suit.ensure = function(variable, expect) {
 	var type = typeof variable;
 	
