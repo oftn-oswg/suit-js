@@ -1,4 +1,4 @@
-suit.Object = function() {
+suit.Object = function SUITObject() {
 	this.signals = {};
 };
 

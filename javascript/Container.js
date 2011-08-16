@@ -1,4 +1,4 @@
-suit.Container = function() {
+suit.Container = function SUITContainer() {
 	suit.Widget.call(this);
 	this.children = [];
 	this.connect("add", function() {
@@ -6,11 +6,24 @@ suit.Container = function() {
 			this.size_allocate(this.allocation);
 		}
 	});
+
+	// Containers need a window by default to align children
+	this.set_has_window (true);
 };
 
-suit.Container.prototype = suit.Widget.inherit();
+suit.Container.inherit (suit.Widget);
 
 suit.Container.prototype.name = "Container";
+
+suit.Container.prototype.show_all = function() {
+	var children = this.children;
+	var i = children.length;
+
+	this.show ();
+	while (i--) {
+		children[i].show_all();
+	}
+};
 
 suit.Container.prototype.index_of = function(widget) {
 	suit.ensure(widget, suit.Widget);
@@ -101,4 +114,37 @@ suit.Container.prototype.get_child_with_coords = function(x, y) {
 		}
 	}
 	return false;
+};
+
+suit.Container.prototype.draw = function(graphics) {
+	var children, len;
+
+	children = this.children;
+	len = children.length;
+
+	while (len--) {
+		this.propagate_draw (children[len], graphics);
+	}
+};
+
+suit.Container.prototype.propagate_draw = function(child, graphics) {
+	var allocation;
+
+	suit.ensure (child, suit.Widget);
+	suit.ensure (graphics, suit.Graphics);
+
+	suit.assert (child.get_parent () === this, "propogate_draw: argument is not child to container");
+
+	if (child.get_has_window ()) {
+		return;
+	}
+
+	allocation = child.get_allocation ();
+
+	graphics.save ();
+	graphics.translate (allocation.x, allocation.y);
+
+	child.draw (graphics);
+
+	graphics.restore ();
 };

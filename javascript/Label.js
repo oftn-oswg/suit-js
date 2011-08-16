@@ -1,4 +1,4 @@
-suit.Label = function(text) {
+suit.Label = function SUITLabel(text) {
 	suit.Widget.call(this);
 	
 	this.layout = new suit.TextLayout();
@@ -13,10 +13,11 @@ suit.Label = function(text) {
 		this.layout.set_text(text);
 	}
 };
-suit.Label.prototype = suit.Widget.inherit();
-suit.Label.prototype.name = "Label";
+
+suit.Label.inherit (suit.Widget);
 
 // Default instance variables
+suit.Label.prototype.name = "Label";
 suit.Label.prototype.valign = "top"; // top, middle, bottom
 
 suit.Label.prototype.set_text = function(text) {
@@ -49,35 +50,34 @@ suit.Label.prototype.set_line_height = function(line_height) {
 	return this;
 };
 
-suit.Label.prototype.draw = function(context) {
-	suit.ensure(context, suit.Graphics);
+suit.Label.prototype.draw = function(graphics) {
+	suit.ensure(graphics, suit.Graphics);
 
 	var height, x, y;
-	context.set_fill_stroke ("#fff");
+	graphics.set_fill_stroke ("#fff");
+
+	x = 0;
+	y = 0;
 
 	switch (this.valign) {
-	case "top":
-		y = this.allocation.y; break;
 	case "middle":
 		height = this.layout.get_preferred_height();
-		y = (this.allocation.y + (this.allocation.height/2) - (height/2) - 1) | 0;
+		y = (this.allocation.height/2) - (height/2) - 1 | 0;
 		break;
 	case "bottom":
 		height = this.layout.get_preferred_height();
-		y = this.allocation.y + this.allocation.height - height - 1;
+		y = this.allocation.height - height - 1;
 		break;
 	}
 
 	switch (this.layout.align) {
-	case "left":
-		x = this.allocation.x; break;
 	case "center":
-		x = (this.allocation.x + this.allocation.width/2 - 1) | 0; break;
+		x = (this.allocation.width/2 - 1) | 0; break;
 	case "right":
-		x = this.allocation.x + this.allocation.width - 1;
+		x = this.allocation.width - 1;
 	}
 
-	this.layout.render(context, x, y);
+	this.layout.render(graphics, x, y);
 	return this;
 };
 

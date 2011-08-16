@@ -1,4 +1,4 @@
-suit.ProgressBar = function(text) {
+suit.ProgressBar = function SUITProgressBar(text) {
 	suit.Bin.call(this);
 	
 	if (text) {
@@ -17,10 +17,10 @@ suit.ProgressBar = function(text) {
 	};
 };
 
-suit.ProgressBar.prototype = suit.Bin.inherit();
-suit.ProgressBar.prototype.name = "ProgressBar";
+suit.ProgressBar.inherit (suit.Bin);
 
 // Default instance variables
+suit.ProgressBar.prototype.name = "ProgressBar";
 suit.ProgressBar.prototype.orientation = "horizontal";
 suit.ProgressBar.prototype.fraction = 0;
 

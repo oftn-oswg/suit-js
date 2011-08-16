@@ -1,7 +1,11 @@
-suit.Error = function(msg) {
+suit.Error = function SUITError(msg) {
 	this.message = msg;
 };
 suit.Error.prototype.name = "SUITError";
+
+suit.assert = function(condition, error) {
+	if (!condition) suit.error(error);
+};
 
 suit.log = function() {
 	if (console.log.apply) {

@@ -23,7 +23,7 @@ suit.Modifiers = {
 };
 
 // Keyboard button events
-suit.EventKey = function(type, state, keycode) {
+suit.EventKey = function SUITEventKey(type, state, keycode) {
 	suit.ensure(type, "number");
 	suit.ensure(state, "number");
 	suit.ensure(keycode, "number");
@@ -36,7 +36,7 @@ suit.EventKey = function(type, state, keycode) {
 suit.EventKey.prototype.name = "event_key";
 
 // Mouse button events
-suit.EventButton = function(type, state, button, x, y, id) {
+suit.EventButton = function SUITEventButton(type, state, button, x, y, id) {
 	suit.ensure(type, "number");
 	suit.ensure(state, "number");
 	suit.ensure(button, "number");
@@ -55,7 +55,7 @@ suit.EventButton = function(type, state, button, x, y, id) {
 suit.EventButton.prototype.name = "event_button";
 
 // Mouse wheel scroll events
-suit.EventScroll = function(state, x, y, deltax, deltay, id) {
+suit.EventScroll = function SUITEventScroll(state, x, y, deltax, deltay, id) {
 	suit.ensure(state, "number");
 	suit.ensure(x, "number");
 	suit.ensure(y, "number");
@@ -75,7 +75,7 @@ suit.EventScroll = function(state, x, y, deltax, deltay, id) {
 suit.EventScroll.prototype.name = "event_scroll";
 
 // Move move events
-suit.EventMotion = function(state, x, y, id) {
+suit.EventMotion = function SUITEventMotion(state, x, y, id) {
 	suit.ensure(state, "number");
 	suit.ensure(x, "number");
 	suit.ensure(y, "number");

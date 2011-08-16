@@ -1,4 +1,4 @@
-suit.TextLayout = function() {
+suit.TextLayout = function SUITTextLayout() {
 	suit.Object.call(this);
 	
 	/* This stores key/value pairs where the key is the width of a rendered
@@ -13,10 +13,10 @@ suit.TextLayout.canvas_context = (function() {
 	return c.getContext('2d');
 })();
 
-suit.TextLayout.prototype = suit.Object.inherit();
-suit.TextLayout.prototype.name = "TextLayout";
+suit.TextLayout.inherit (suit.Object);
 
 // Default instance variables
+suit.TextLayout.prototype.name = "TextLayout";
 suit.TextLayout.prototype.text = "";
 suit.TextLayout.prototype.text_wrapped = [""];
 suit.TextLayout.prototype.text_split = [""];
@@ -225,17 +225,17 @@ suit.TextLayout.prototype.get_line_size = function() {
 	return (this.line_height !== null) ? this.font_size * this.line_height : this.font_size;
 };
 
-suit.TextLayout.prototype.render = function(context, x, y) {
-	suit.ensure(context, suit.Graphics);
+suit.TextLayout.prototype.render = function(graphics, x, y) {
+	suit.ensure(graphics, suit.Graphics);
 	suit.ensure(x, "number");
 	suit.ensure(y, "number");
 	
 	if (!this.calculated) this.recalculate_layout();
 	
-	context.cc.save();
-	context.cc.font = this.get_css_font_string();
-	context.cc.textBaseline = "top";
-	context.cc.textAlign = this.align;
+	graphics.context.save();
+	graphics.context.font = this.get_css_font_string();
+	graphics.context.textBaseline = "top";
+	graphics.context.textAlign = this.align;
 	
 	var line_size = this.get_line_size();
 	
@@ -243,7 +243,9 @@ suit.TextLayout.prototype.render = function(context, x, y) {
 	var i = 0;
 	var len, lines_n;
 	len = lines_n = this.text_wrapped.length;
-	var clip = context.get_clip();
+
+	/*
+	var clip = graphics.get_clip();
 	if (clip.y > y) {
 		i = (((clip.y - y)/line_size) | 0);
 		i = i < 0 ? 0 : i;
@@ -251,7 +253,7 @@ suit.TextLayout.prototype.render = function(context, x, y) {
 	if (clip.height) {
 		len = i + ((clip.height/line_size) | 0) + 2;
 		len = len > lines_n ? lines_n : len;
-	}
+	}//*/
 	var text;
 	
 	/*
@@ -264,10 +266,10 @@ suit.TextLayout.prototype.render = function(context, x, y) {
 		if (firsttab) {
 			firsttab = firsttab[0].length * this.em_width * 4;
 		}*/
-		context.cc.fillText(text, x,
+		graphics.context.fillText(text, x,
 			(y + i * line_size + (line_size/2-this.font_size/2)) | 0 );
 	};
 	
-	context.cc.restore();
+	graphics.context.restore();
 	return this;
 };

@@ -1,10 +1,10 @@
-suit.Image = function(filename) {
+suit.Image = function SUITImage(filename) {
 	suit.ensure(filename, "string");
 	
 	suit.Widget.call(this);
 	this.filename = filename;
 	
-	var imageobj = new Image();
+	var imageobj = document.createElement("img");
 	imageobj.src = filename;
 	
 	var self = this;
@@ -22,18 +22,18 @@ suit.Image.broken_image = (function() {
 	return img;
 })();
 
-suit.Image.prototype = suit.Widget.inherit();
-suit.Image.prototype.name = "Image";
+suit.Image.inherit (suit.Widget);
 
 // Default instance variables
+suit.Image.prototype.name = "Image";
 suit.Image.prototype.loaded = false;
 suit.Image.prototype.usedimage = suit.Image.broken_image;
 suit.Image.prototype.align = "center";
 suit.Image.prototype.valign = "middle";
 
 
-suit.Image.prototype.draw = function(context) {
-	suit.ensure(context, suit.Graphics);
+suit.Image.prototype.draw = function(graphics) {
+	suit.ensure(graphics, suit.Graphics);
 	
 	var middlex = 0;
 	var middley = 0;
@@ -49,7 +49,7 @@ suit.Image.prototype.draw = function(context) {
 	case "bottom": middley = this.allocation.height - this.usedimage.height;
 		break;
 	}
-	context.cc.drawImage(this.usedimage, middlex | 0, middley | 0);
+	graphics.context.drawImage(this.usedimage, middlex | 0, middley | 0);
 	return this;
 };
 

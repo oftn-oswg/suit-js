@@ -1,20 +1,31 @@
-suit.Window = function(parent, empty) {
-	var base, canvas, context;
+suit.Window = function SUITWindow(parent, widget, empty) {
+	var base, canvas, context, unique;
+
 	suit.ensure (parent, "object");
+	if (!parent) throw new Error("suit.Window requires a parent");
 
 	suit.Object.call(this);
 
+	unique = suit.unique();
+
 	base = document.createElement("div");
-	base.className = "suit_window";
-	base.style.position = "absolute";
-	base.style.top = "0";
-	base.style.left = "0";
+	base.className = "suit suit_"+widget.name;
+	base.style.top = 0;
+	base.style.left = 0;
 
 	if (!empty) {
 		canvas = document.createElement("canvas");
+		canvas.suit_unique = unique;
 		context = new suit.Graphics(canvas.getContext("2d"));
 		base.appendChild(canvas);
 	}
+
+	this.base = base;
+	this.unique = unique;
+	this.parent = parent;
+	this.canvas = canvas;
+	this.widget = widget;
+	this.context = context;
 
 	if (typeof parent.appendChild === "function") {
 		parent.appendChild (base);
@@ -22,16 +33,20 @@ suit.Window = function(parent, empty) {
 		parent.add_window (this);
 	}
 
-	this.base = base;
-	this.parent = parent;
-	this.canvas = canvas;
-	this.context = context;
+	if (widget) {
+		suit.widgets[unique] = widget;
+	}
+
 };
 
-suit.Window.prototype = suit.Object.inherit();
+suit.Window.inherit (suit.Object);
 
 // We need a reference back to the widget.
 suit.Window.prototype.widget = null;
+suit.Window.prototype.x = 0;
+suit.Window.prototype.y = 0;
+suit.Window.prototype.width = 0;
+suit.Window.prototype.height = 0;
 
 suit.Window.prototype.destroy = function() {
 	var parent;
@@ -41,6 +56,10 @@ suit.Window.prototype.destroy = function() {
 		parent.removeChild (this.base);
 	} else {
 		parent.remove_window (this);
+	}
+
+	if (this.widget) {
+		delete suit.widgets[this.unique];
 	}
 };
 
@@ -55,14 +74,29 @@ suit.Window.prototype.remove_window = function(window) {
 };
 
 
+suit.Window.prototype.invalidate = function() {
+	if (this.widget && this.context) {
+		this.context.clear ();
+		this.widget.draw (this.context);
+	}
+};
+
+
 suit.Window.prototype.move = function(x, y) {
 	suit.ensure (x, "number");
 	suit.ensure (y, "number");
 
 	var base = this.base;
 
-	base.style.top = x + "px";
-	base.style.left = y + "px";
+	if (x !== this.x) {
+		base.style.left = x + "px";
+		this.x = x;
+	}
+
+	if (y !== this.y) {
+		base.style.top = y + "px";
+		this.y = y;
+	}
 };
 
 
@@ -70,18 +104,34 @@ suit.Window.prototype.resize = function(width, height) {
 	suit.ensure (width, "number");
 	suit.ensure (height, "number");
 
-	var base = this.base;
+	var base;
+	var canvas;
+	var invalidate;
 
-	base.style.width = width + "px";
-	base.style.height = height + "px";
+	base = this.base;
+	canvas = this.canvas;
+	invalidate = false;
 
-	var canvas = this.canvas;
-	if (canvas) {
-		canvas.width = width;
-		canvas.height = height;
+	if (width !== this.width) {
+		base.style.width = width + "px";
+		if (canvas) {
+			canvas.width = width;
+			invalidate = true;
+		}
+		this.width = width;
 	}
-};
 
+	if (height !== this.height) {
+		base.style.height = height + "px";
+		if (canvas) {
+			canvas.height = height;
+			invalidate = true;
+		}
+		this.height = height;
+	}
+	
+	if (invalidate) this.invalidate ();
+};
 
 suit.Window.prototype.move_resize = function(x, y, w, h) {
 
@@ -100,35 +150,4 @@ suit.Window.prototype.move_resize = function(x, y, w, h) {
 
 suit.Window.prototype.append_to = function(element) {
 	element.appendChild(this.base);
-};
-
-
-suit.Window.prototype.event_mask_add = function(bits) {
-	suit.ensure(bits, "number");
-	
-	this.event_mask |= bits;
-	return this;
-};
-
-
-suit.Window.prototype.event_mask_sub = function(bits) {
-	suit.ensure(bits, "number");
-	
-	this.event_mask ^= bits;
-	return this;
-};
-
-
-suit.Window.prototype.lock = function() {
-	if (suit.lock && suit.lock !== this) {
-		suit.error("Events are already locked by another window.");
-		return false;
-	}
-	suit.lock = this;
-	return true;
-};
-
-
-suit.Window.prototype.unlock = function() {
-	suit.lock = null;
 };

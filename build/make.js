@@ -11,6 +11,10 @@ function filename(str) {
 	return "\033[32;1m"+str+"\033[0m";
 }
 
+function dependency(str) {
+	return "\033[33;1m"+str+"\033[0m";
+}
+
 try {
 	var Uglify = require("uglify-js");
 } catch (e) {
@@ -110,7 +114,7 @@ Maker.prototype.calculate_deps = function(obj) {
 	}
 	
 	for (var i = 1, len = L.length; i <= len; i++) {
-		this.log_info((i<10?"  ":" ")+i+") "+L[i-1]+".js");
+		this.log_info((i<10?"  ":" ")+i+") "+dependency(L[i-1])+".js");
 	}
 	
 	var dir = this.build_directory;
@@ -157,19 +161,16 @@ Maker.prototype.read_files = function() {
 Maker.prototype.preprocess_files = function() {};
 
 Maker.prototype.compress_files = function() {
+
+	this.log_info("Now writing package to disk...");
 	
 	var combined = this.buffer.join("\n");
 
-	if (typeof Uglify === "undefined") {
-
-		var output_file = Path.join(__dirname, "suit-uncompressed.js");
-		this.log_info("Creating "+filename(output_file)+"...");
-		File.writeFileSync(output_file, combined);
+	var output_file = Path.join(__dirname, "suit-uncompressed.js");
+	this.log_info("Creating "+filename(output_file)+"...");
+	File.writeFileSync(output_file, combined);
 		
-	} else {
-	
-		this.log_info("Now compressing code...");
-	
+	if (typeof Uglify !== "undefined") {
 		var jsp = Uglify.parser;
 		var pro = Uglify.uglify;
 

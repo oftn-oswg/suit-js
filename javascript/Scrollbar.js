@@ -1,4 +1,4 @@
-suit.Scrollbar = function(orientation) {
+suit.Scrollbar = function Scrollbar(orientation) {
 	suit.Widget.call(this);
 	
 	this.orientation = orientation || "vertical";
@@ -13,7 +13,8 @@ suit.Scrollbar = function(orientation) {
 	suit.error("Why did you make a scrollbar?");
 };
 
-suit.Scrollbar.prototype = suit.Widget.inherit();
+suit.Scrollbar.inherit (suit.Widget);
+
 suit.Scrollbar.prototype.name = "Scrollbar";
 
 suit.Scrollbar.prototype.draw = function(context) {

@@ -1,4 +1,4 @@
-suit.Scroller = function(child) {
+suit.Scroller = function SUITScroller(child) {
 	suit.Bin.call(this);
 	
 	this.scrollX = 0; // Distance from left of child to left of scroller. <= 0
@@ -22,60 +22,53 @@ suit.Scroller = function(child) {
 		padding_left: 8,
 		padding_right: 8
 	};
-
-	this.set_has_window (true);
+	
+	this.event_mask =
+		suit.Event.ButtonPress | suit.Event.ButtonRelease | suit.Event.Scroll;
 };
-suit.Scroller.prototype = suit.Bin.inherit();
+suit.Scroller.inherit (suit.Bin);
+
 suit.Scroller.prototype.name = "Scroller";
 
-
-suit.Scroller.prototype.realize = function() {
-	suit.Widget.prototype.realize.call(this);
-
-	this.window.connect("event_button", this.on_event_button);
-	this.window.connect("event_scroll", this.on_event_scroll);
-	this.window.connect("event_motion", this.on_event_motion);
-};
-
-
-suit.Scroller.prototype.draw = function(context) {
-	suit.ensure(context, suit.Graphics);
+suit.Scroller.prototype.draw = function(graphics) {
+	suit.ensure(graphics, suit.Graphics);
 	
 	var a = this.allocation;
 	
-	context.set_fill_stroke ("#000");
-	context.rect(a.x, a.y, a.width, a.height);
-	
+	//graphics.set_fill_stroke ("#000");
+	//graphics.rect(0, 0, a.width, a.height);
+		
 	if (this.child) {
-		this.draw_scrollbars(context);
+		this.propagate_draw (this.child, graphics);
+		this.draw_scrollbars (graphics);
 	}
 	return this;
 };
 
-suit.Scroller.prototype.draw_scrollbars = function(context) {
-	suit.ensure(context, suit.Graphics);
+suit.Scroller.prototype.draw_scrollbars = function(graphics) {
+	suit.ensure(graphics, suit.Graphics);
 	
 	var a = this.allocation;
 	var ca = this.child.get_allocation();
 	
-	context.set_stroke_style (4, "round");
-	context.set_fill_stroke (null, "#333");
+	graphics.set_stroke_style (4, "round");
+	graphics.set_fill_stroke (null, "#333");
 	
 	if (this.policyY === "always") {
-		var x = a.x + a.width - 5.5;
-		var y = 6 + a.y + ((-this.scrollY) / ca.height * a.height);
+		var x = a.width - 5.5;
+		var y = 6 + ((-this.scrollY) / ca.height * a.height);
 		var h = a.height/ca.height*(a.height-12) - 12;
-		context.path([
+		graphics.path([
 			[x, y],
 			[x, y+h]
 		]);
 	}
 	
 	if (this.policyX === "always") {
-		var y = a.y + a.height - 5.5;
-		var x = 6 + a.x + ((-this.scrollX) / ca.width * a.width);
+		var y = a.height - 5.5;
+		var x = 6 + ((-this.scrollX) / ca.width * a.width);
 		var w = a.width/ca.width*(a.width-12) - 12;
-		context.path([
+		graphics.path([
 			[x, y],
 			[x+w, y]
 		]);
@@ -142,6 +135,24 @@ suit.Scroller.prototype.set_policy = function(horizontal, vertical) {
 	return this;
 };
 
+suit.Scroller.prototype.event = function(event) {
+	switch (event.type) {
+	case suit.Event.Scroll:
+		this.on_event_scroll(event);
+		break;
+	case suit.Event.ButtonPress:
+	case suit.Event.ButtonRelease:
+		this.on_event_button(event);
+		break;
+	case suit.Event.Motion:
+		this.on_event_motion(event);
+		break;
+	default:
+		suit.log("Unknown event "+event.type);
+	}
+	return true;
+};
+
 suit.Scroller.prototype.on_event_scroll = function(e) {
 	if (e.deltaY && this.policyY === "always") {
 		this.scrollY += e.deltaY;
@@ -172,6 +183,7 @@ suit.Scroller.prototype.on_event_button = function(e) {
 };
 
 suit.Scroller.prototype.on_event_motion = function(e) {
+
 	if (this.dragging) {
 		if (this.policyY === "always") {
 			this.scrollY -= this.startDragY - e.y;

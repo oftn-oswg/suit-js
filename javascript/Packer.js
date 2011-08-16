@@ -1,4 +1,4 @@
-suit.Packer = function(orientation) {
+suit.Packer = function SUITPacker(orientation) {
 	suit.ensure(orientation, "string");
 	suit.Container.call(this);
 
@@ -9,12 +9,11 @@ suit.Packer = function(orientation) {
 		padding_left: 0,
 		padding_right: 0
 	};
-
 };
-suit.Packer.prototype = suit.Container.inherit();
-suit.Packer.prototype.name = "Packer";
+suit.Packer.inherit (suit.Container);
 
 // Default instance variables
+suit.Packer.prototype.name = "Packer";
 suit.Packer.prototype.align = "start"; // "start", "end" or "middle"
 suit.Packer.prototype.spacing = 20;
 

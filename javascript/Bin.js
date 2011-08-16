@@ -1,10 +1,10 @@
-suit.Bin = function() {
+suit.Bin = function SUITBin() {
 	suit.Container.call(this);
 };
 
-suit.Bin.prototype = suit.Container.inherit();
-suit.Bin.prototype.name = "Bin";
+suit.Bin.inherit (suit.Container);
 
+suit.Bin.prototype.name = "Bin";
 suit.Bin.prototype.child = null;
 
 suit.Bin.prototype.set_child = function(widget) {
