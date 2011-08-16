@@ -41,10 +41,11 @@ suit.get_relevant_widget = function(event, mask, no_lock) {
 	if (!no_lock && suit.lock) return suit.lock;
 
 	target = event.target || event.srcElement;
+	if (target.nodeType === 3) target = target.parentNode;
 
 	do {
 
-		if (target.nodeType === 3) target = target.parentNode;
+		if (target.suit_empty) target = target.parentNode.firstChild;
 		if (!target.suit_unique) return null;
 
 		widget = suit.widgets[target.suit_unique];

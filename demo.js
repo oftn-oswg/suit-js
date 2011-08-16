@@ -36,7 +36,7 @@ hpack.add (button_alert);
 
 button_prompt = new suit.Button ("Prompt");
 button_prompt.connect ("activate", function() {
-	var text = prompt ("Enter some text and the button's label will be updated with the text:", this.get_child ().layout.text);
+	var text = prompt ("Enter some text and the button's label will be updated with the text:", this.get_child ().text);
 	if (text != null) {
 		this.get_child ().set_text (text);
 	}

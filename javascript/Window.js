@@ -18,6 +18,9 @@ suit.Window = function SUITWindow(parent, widget, empty) {
 		canvas.suit_unique = unique;
 		context = new suit.Graphics(canvas.getContext("2d"));
 		base.appendChild(canvas);
+	} else {
+		base.suit_unique = unique;
+		base.suit_empty = true;
 	}
 
 	this.base = base;

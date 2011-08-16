@@ -24,7 +24,7 @@ suit.Scroller = function SUITScroller(child) {
 	};
 	
 	this.event_mask =
-		suit.Event.ButtonPress | suit.Event.ButtonRelease | suit.Event.Scroll;
+		/*suit.Event.ButtonPress | suit.Event.ButtonRelease | */suit.Event.Scroll;
 };
 suit.Scroller.inherit (suit.Bin);
 
