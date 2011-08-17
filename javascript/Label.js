@@ -1,9 +1,26 @@
 suit.Label = function SUITLabel(text) {
+	var style;
+
 	suit.Widget.call(this);
 
-	if (text) this.text = text;
-
 	this.set_has_window (true);
+
+	this.window = new suit.Window (document.body, this, true);
+	style = this.window.base.style;
+	
+	style.display = "none";
+	style.whiteSpace = "pre-wrap";
+	style.overflow = "visible";
+	style.color = "white";
+
+	this.update_properties ();
+
+	this.cache_pref_width = null;
+	this.cache_pref_height = null;
+	this.cache_pref_wfh = [];
+	this.cache_pref_hfw = [];
+
+	if (text) this.set_text (text);
 };
 
 suit.Label.inherit (suit.Widget);
@@ -13,18 +30,18 @@ suit.Label.prototype.name = "Label";
 suit.Label.prototype.updated = false;
 suit.Label.prototype.align = "left";
 suit.Label.prototype.valign = "top"; // top, middle, bottom
+suit.Label.prototype.line_height = null;
+suit.Label.prototype.selectable = true;
 
-suit.Label.metric = (function() {
-	var offscreen = document.createElement ("div");
-	offscreen.style.position = "absolute";
-	offscreen.style.display = "none";
-	offscreen.style.whiteSpace = "pre-wrap";
-	document.body.appendChild (offscreen);
-	return offscreen;
-})();
+suit.Label.prototype.clear_cache = function() {
+	this.cache_pref_width = null;
+	this.cache_pref_height = null;
+	this.cache_pref_wfh.length = 0;
+	this.cache_pref_hfw.length = 0;
+};
 
 suit.Label.prototype.realize = function() {
-	var window, allocation;
+	var window, base, parent, allocation;
 
 	if (!this.realized) {
 
@@ -34,16 +51,11 @@ suit.Label.prototype.realize = function() {
 			this.size_allocate (allocation);
 		}
 
-		window = new suit.Window(this.get_parent_window(), this, true);
+		window = this.window;
+		window.reparent (this.get_parent_window ());
+		window.base.style.display = "block";
+
 		window.move_resize (allocation);
-
-		window.base.style.whiteSpace = "pre-wrap";
-		window.base.style.overflow = "visible";
-		window.base.style.color = "white";
-		window.base.style.textAlign = this.align;
-		this.set_element_text (window.base, this.text);
-
-		this.window = window;
 	}
 
 	this.realized = true;
@@ -51,39 +63,75 @@ suit.Label.prototype.realize = function() {
 };
 
 
+suit.Label.prototype.update_properties = function() {
+	var base;
+
+	base = this.window.base;
+	base.style.textAlign = this.align;
+	base.style.lineHeight = this.line_height ? this.line_height + "em" : "normal";
+
+	if (this.selectable) {
+		base.style.cursor = "auto";
+	} else {
+		base.style.cursor = "default";
+		base.style.userSelect = "none";
+		base.style.MozUserSelect = "none";
+		base.style.KhtmlUserSelect = "none";
+	}
+};
+
+
 suit.Label.prototype.set_text = function(text) {
 	text = String(text);
 
-	if (this.realized) {
+	if (this.text !== text) {
+		this.clear_cache ();
 		this.set_element_text (this.window.base, text);
+		this.text = text;
+		this.queue_resize ();
 	}
-
-	this.text = text;
-
-	this.queue_resize ();
 };
 
 suit.Label.prototype.set_align = function(align) {
 	suit.ensure(align, "string");
 	
-	this.align = align;
-	if (this.realized) {
-		this.window.base.style.textAlign = align;
+	if (this.align !== align) {
+		this.align = align;
+		this.update_properties ();
 	}
 };
 
 suit.Label.prototype.set_valign = function(valign) {
 	suit.ensure(valign, "string");
 	
-	this.valign = valign;
-	this.queue_redraw();
+	if (this.valign !== valign) {
+		this.valign = valign;
+		this.update_properties ();
+	}
 };
 
 suit.Label.prototype.set_line_height = function(line_height) {
+	if (this.line_height !== line_height) {
+		this.line_height = line_height;
+		this.update_properties ();
+		this.clear_cache ();
+		this.queue_resize ();
+	}
+};
+
+suit.Label.prototype.set_selectable = function(selectable) {
+	suit.ensure(selectable, "boolean");
+
+	if (this.selectable !== selectable) {
+		this.selectable = selectable;
+		this.update_properties ();
+	}
 };
 
 suit.Label.prototype.set_element_text = function(element, text) {
-	while (element.hasChildNodes()) element.removeChild(element.lastChild);
+	while (element.firstChild) {
+		element.removeChild(element.firstChild);
+	}
 	element.appendChild(document.createTextNode(text));
 };
 
@@ -92,79 +140,145 @@ suit.Label.prototype.get_request_mode = function() {
 };
 
 suit.Label.prototype.get_preferred_width = function() {
-	var width, ostyle;
+	var width, realized, ostyle, ow, oh;
 
-	ostyle = suit.Label.metric.style;
+	if (this.cache_pref_width !== null) {
+		width = this.cache_pref_width;
+	} else {
 
-	this.set_element_text (suit.Label.metric, this.text);
+		realized = this.realized;
+		ostyle = this.window.base.style;
 
-	ostyle.display = "block";
-	ostyle.height = "auto";
-	ostyle.width = "auto";
+		if (!realized) {
+			ostyle.display = "block";
+		} else {
+			ow = ostyle.width;
+			oh = ostyle.height;
+		}
 
-	width = suit.Label.metric.clientWidth + 1;
+		ostyle.height = "auto";
+		ostyle.width = "auto";
 
-	ostyle.display = "none";
+		width = this.cache_pref_width = this.window.base.clientWidth + 1;
+
+		if (!realized) {
+			ostyle.display = "none";
+		} else {
+			ostyle.width = ow;
+			ostyle.height = oh;
+		}
+	}
 
 	return {
 		minimum: width,
 		natural: width
 	};
 };
+
 suit.Label.prototype.get_preferred_height = function() {
-	var height, ostyle;
+	var height, realized, ostyle, ow, oh;
 
-	ostyle = suit.Label.metric.style;
+	if (this.cache_pref_height !== null) {
+		height = this.cache_pref_height;
+	} else {
 
-	this.set_element_text (suit.Label.metric, this.text);
+		realized = this.realized;
+		ostyle = this.window.base.style;
 
-	ostyle.display = "block";
-	ostyle.height = "auto";
-	ostyle.width = "auto";
+		if (!realized) {
+			ostyle.display = "block";
+		} else {
+			ow = ostyle.width;
+			oh = ostyle.height;
+		}
 
-	height = suit.Label.metric.clientHeight + 1;
+		ostyle.height = "auto";
+		ostyle.width = "auto";
 
-	ostyle.display = "none";
+		height = this.cache_pref_height = this.window.base.clientHeight + 1;
+
+		if (!realized) {
+			ostyle.display = "none";
+		} else {
+			ostyle.width = ow;
+			ostyle.height = oh;
+		}
+	}
 
 	return {
 		minimum: height,
 		natural: height
 	};
 };
+
+
+
 suit.Label.prototype.get_preferred_height_for_width = function(width) {
-	var height, ostyle;
+	var height, realized, ostyle, ow, oh;
 
-	ostyle = suit.Label.metric.style;
+	if (this.cache_pref_hfw[width] != null) {
+		height = this.cache_pref_hfw[width];
+	} else {
 
-	this.set_element_text (suit.Label.metric, this.text);
+		realized = this.realized;
+		ostyle = this.window.base.style;
 
-	ostyle.display = "block";
-	ostyle.width = width+"px";
-	ostyle.height = "auto";
+		if (!realized) {
+			ostyle.display = "block";
+		} else {
+			ow = ostyle.width;
+			oh = ostyle.height;
+		}
 
-	height = suit.Label.metric.clientHeight + 1;
+		ostyle.height = "auto";
+		ostyle.width = width+"px";
 
-	ostyle.display = "none";
+		height = this.cache_pref_hfw[width] = this.window.base.clientHeight + 1;
+
+		if (!realized) {
+			ostyle.display = "none";
+		} else {
+			ostyle.width = ow;
+			ostyle.height = oh;
+		}
+	}
 
 	return {
 		minimum: height,
 		natural: height
 	};
 };
+
+
 suit.Label.prototype.get_preferred_width_for_height = function(height) {
-	var width, ostyle;
+	var width, realized, ostyle, ow, oh;
 
-	ostyle = suit.Label.metric.style;
+	if (this.cache_pref_wfh[height] != null) {
+		width = this.cache_pref_wfh[height];
+	} else {
 
-	this.set_element_text (suit.Label.metric, this.text);
+		realized = this.realized;
+		ostyle = this.window.base.style;
 
-	ostyle.display = "block";
-	ostyle.width = "auto";
-	ostyle.height = height+"px";
+		if (!realized) {
+			ostyle.display = "block";
+		} else {
+			ow = ostyle.width;
+			oh = ostyle.height;
+		}
 
-	width = suit.Label.metric.clientWidth + 1;
+		ostyle.height = height+"px";
+		ostyle.width = "auto";
 
-	ostyle.display = "none";
+		width = this.cache_pref_wfh[height] = this.window.base.clientWidth + 1;
+
+		if (!realized) {
+			ostyle.display = "none";
+		} else {
+			ostyle.width = ow;
+			ostyle.height = oh;
+		}
+	}
 
 	return {
 		minimum: width,

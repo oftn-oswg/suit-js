@@ -166,7 +166,7 @@ Maker.prototype.compress_files = function() {
 	
 	var combined = this.buffer.join("\n");
 
-	var output_file = Path.join(__dirname, "suit-uncompressed.js");
+	var output_file = Path.join(__dirname, "suit.js");
 	this.log_info("Creating "+filename(output_file)+"...");
 	File.writeFileSync(output_file, combined);
 		

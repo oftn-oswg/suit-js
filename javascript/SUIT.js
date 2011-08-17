@@ -1,3 +1,5 @@
+"use strict";
+
 var suit = {};
 
 // When set to a suit.Window object, events are channeled directly to it.
@@ -14,7 +16,7 @@ suit.unique = (function() {
 
 suit.register = function(widget, event, event_dom) {
 
-	if (widget.event (event)) {
+	if (widget.event && widget.event (event)) {
 		event_dom.stopPropagation();
 		event_dom.preventDefault();
 		return false;
@@ -44,22 +46,25 @@ suit.get_relevant_widget = function(event, mask, no_lock) {
 	if (target.nodeType === 3) target = target.parentNode;
 
 	do {
-
-		if (target.suit_empty) target = target.parentNode.firstChild;
 		if (!target.suit_unique) return null;
 
 		widget = suit.widgets[target.suit_unique];
 		if (widget.event_mask & mask) break;
 
-	} while (target = target.parentNode.parentNode.firstChild);
+		if (target.suit_empty) target = target.parentNode.firstChild;
+		else target = target.parentNode.parentNode.firstChild;
+
+	} while (target);
 
 	return widget;
 };
 
 
 suit.get_event_position = function(event, target) {
-	var x = 0;
-	var y = 0;
+	var x, y, box;
+	
+	x = 0;
+	y = 0;
 
 	if (event.pageX || event.pageY) {
 		x = event.pageX;
@@ -83,8 +88,8 @@ suit.get_event_button = function(event) {
 	var right_click;
 	
 	right_click = false;
-	if (event.which) rightclick = (event.which == 3);
-	else if (event.button) rightclick = (event.button == 2);
+	if (event.which) right_click = (event.which == 3);
+	else if (event.button) right_click = (event.button == 2);
 	return right_click ? 3 : 1;
 };
 
@@ -103,7 +108,7 @@ suit.do_event = function(type, event) {
 		widget = suit.get_relevant_widget (event, stype);
 		if (!widget) return true;
 
-		target = widget.window.canvas;
+		target = widget.window.base;
 		pos = suit.get_event_position (event, target);
 		button = suit.get_event_button (event);
 		
@@ -122,7 +127,7 @@ suit.do_event = function(type, event) {
 		widget = suit.get_relevant_widget (event, suit.Event.Motion);
 		if (!widget) return true;
 
-		target = widget.window.canvas;
+		target = widget.window.base;
 		pos = suit.get_event_position (event, target);
 
 		return suit.register (
@@ -156,7 +161,7 @@ suit.do_event = function(type, event) {
 		widget = suit.get_relevant_widget (event, suit.Event.Scroll);
 		if (!widget) return true;
 		
-		target = widget.window.canvas;
+		target = widget.window.base;
 		pos = suit.get_event_position (event, target);
 
 		return suit.register (

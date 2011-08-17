@@ -1,12 +1,17 @@
 suit.Button = function SUITButton(text) {
+	var label;
+
 	suit.Bin.call(this);
 	
 	if (text) {
 		suit.ensure(text, "string");
 		
-		this.set_child(new suit.Label(text));
-		this.child.set_align ("center");
-		this.child.set_valign ("middle");
+		label = new suit.Label(text);
+		label.set_selectable (false);
+		label.set_align ("center");
+		label.set_valign ("middle");
+
+		this.set_child (label);
 	}
 	
 	this.style = {

@@ -67,6 +67,22 @@ suit.Window.prototype.destroy = function() {
 };
 
 
+suit.Window.prototype.reparent = function(parent) {
+	var base, parent;
+
+	base = this.base.parentNode.removeChild (this.base);
+
+	if (typeof parent.appendChild === "function") {
+		parent.appendChild (base);
+	} else {
+		parent.add_window (this);
+	}
+
+	this.parent = parent;
+
+};
+
+
 suit.Window.prototype.add_window = function(window) {
 	this.base.appendChild (window.base);
 };
