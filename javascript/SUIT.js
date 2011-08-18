@@ -49,7 +49,7 @@ suit.get_relevant_widget = function(event, mask, no_lock) {
 		if (!target.suit_unique) return null;
 
 		widget = suit.widgets[target.suit_unique];
-		if (widget.event_mask & mask) break;
+		if (widget.event_mask & mask || mask === suit.Event.None) break;
 
 		if (target.suit_empty) target = target.parentNode.firstChild;
 		else target = target.parentNode.parentNode.firstChild;
@@ -214,12 +214,15 @@ suit.init = function() {
 	}, false);
 
 	addEventListener("contextmenu", function(event) {
+		var widget;
 
-		// TODO: Only do this if we're not on a suit window
+		widget = suit.get_relevant_widget (event, suit.Event.None, true);
+		if (widget) {
+			event.stopPropagation();
+			event.preventDefault();
+			return false;
+		}
 
-		event.stopPropagation();
-		event.preventDefault();
-		return false;
 	}, false);
 
 };
