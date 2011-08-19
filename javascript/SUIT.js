@@ -51,8 +51,11 @@ suit.get_relevant_widget = function(event, mask, no_lock) {
 		widget = suit.widgets[target.suit_unique];
 		if (widget.event_mask & mask || mask === suit.Event.None) break;
 
-		if (target.suit_empty) target = target.parentNode.firstChild;
-		else target = target.parentNode.parentNode.firstChild;
+		if (target.suit_empty) {
+			target = target.parentNode.firstChild;
+		} else {
+			target = target.parentNode.parentNode.firstChild;
+		}
 
 	} while (target);
 

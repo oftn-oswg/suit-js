@@ -58,5 +58,24 @@ vpack.add (source);
 scroller = new suit.Scroller (vpack);
 screen.set_child (scroller);
 
-screen.set_allocation (new suit.Allocation(50, 50, 640, 420));
+resize();
 screen.show_all ();
+
+function resize() {
+	var x, y, w, h, ww, wh;
+
+	suit.log("resizing");
+
+	ww = window.innerWidth;
+	wh = window.innerHeight;
+
+	w = Math.min(600, ww-50);
+	h = Math.min(400, wh-50);
+
+	x = ww/2 - w/2;
+	y = wh/2 - h/2;
+
+	screen.size_allocate (new suit.Allocation (x, y, w, h));
+};
+
+window.onresize = resize;

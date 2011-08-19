@@ -20,7 +20,8 @@ suit.Scroller = function SUITScroller(child) {
 		padding_top: 5,
 		padding_bottom: 5,
 		padding_left: 8,
-		padding_right: 8
+		padding_right: 8,
+		scroll_bar_width: 8
 	};
 	
 	this.event_mask =
@@ -47,17 +48,23 @@ suit.Scroller.prototype.draw = function(graphics) {
 
 suit.Scroller.prototype.draw_scrollbars = function(graphics) {
 	suit.ensure(graphics, suit.Graphics);
+
+	var a, ca, sb_width, sb_width_half, sb_width_double;
 	
-	var a = this.allocation;
-	var ca = this.child.get_allocation();
+	a = this.allocation;
+	ca = this.child.get_allocation();
+
+	sb_width = this.style.scroll_bar_width;
+	sb_width_half = sb_width >> 1;
+	sb_width_double = sb_width << 1;
 	
-	graphics.set_stroke_style (4, "round");
-	graphics.set_fill_stroke (null, "#333");
+	graphics.set_stroke_style (sb_width, "round");
+	graphics.set_fill_stroke (null, "black");
 	
 	if (this.policyY === "always") {
-		var x = a.width - 5.5;
-		var y = 6 + ((-this.scrollY) / ca.height * a.height);
-		var h = a.height/ca.height*(a.height-12) - 12;
+		var x = a.width - sb_width_half;
+		var y = sb_width_half + ((-this.scrollY) / ca.height * a.height);
+		var h = a.height / ca.height * (a.height - sb_width) - sb_width;
 		graphics.path([
 			[x, y],
 			[x, y+h]
@@ -65,9 +72,9 @@ suit.Scroller.prototype.draw_scrollbars = function(graphics) {
 	}
 	
 	if (this.policyX === "always") {
-		var y = a.height - 5.5;
-		var x = 6 + ((-this.scrollX) / ca.width * a.width);
-		var w = a.width/ca.width*(a.width-12) - 12;
+		var y = a.height - sb_width_half;
+		var x = sb_width_half + ((-this.scrollX) / ca.width * a.width);
+		var w = a.width / ca.width * (a.width - sb_width) - sb_width;
 		graphics.path([
 			[x, y],
 			[x+w, y]
@@ -79,20 +86,22 @@ suit.Scroller.prototype.size_allocate = function(allocation) {
 	suit.ensure(allocation, suit.Allocation);
 	
 	suit.Widget.prototype.size_allocate.call(this, allocation);
+
+	var sb_width = this.style.scroll_bar_width;
 	
 	var cw, ch;
 	if (this.child) {
 		if (this.policyX === "never" && this.policyY === "always") {
-			cw = allocation.width - this.style.padding_left - this.style.padding_right - 1;
+			cw = allocation.width - this.style.padding_left - this.style.padding_right - 1 - sb_width;
 			ch = this.child.get_preferred_height_for_width(cw).natural;
 		} else if (this.policyX === "never" && this.policyY === "never") {
 			cw = allocation.width - this.style.padding_left - this.style.padding_right - 1;
 			ch = allocation.height - this.style.padding_top - this.style.padding_bottom - 1;
 		} else if (this.policyX === "always" && this.policyY === "always") {
-			cw = this.child.get_preferred_width().natural;
-			ch = this.child.get_preferred_height().natural;
+			cw = this.child.get_preferred_width().natural - sb_width;
+			ch = this.child.get_preferred_height().natural - sb_width;
 		} else if (this.policyX === "always" && this.policyY === "never") {
-			ch = allocation.height - this.style.padding_top - this.style.padding_bottom - 1;
+			ch = allocation.height - this.style.padding_top - this.style.padding_bottom - 1 - sb_width;
 			cw = this.child.get_preferred_width_for_height(ch).natural;
 		}
 		this.child.size_allocate(new suit.Allocation(0, 0, cw, ch));

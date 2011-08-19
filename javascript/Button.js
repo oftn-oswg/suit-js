@@ -32,12 +32,18 @@ suit.Button.prototype.draw = function(graphics) {
 	suit.ensure(graphics, suit.Graphics);
 	
 	var a = this.allocation;
+	var x, y, w, h;
+
+	x = 2;
+	y = 2;
+	w = a.width - 4;
+	h = a.height - 4;
 
 	// TODO: Move this into a theme class
-	/*context.set_shadow (0, 0, 5, "#000");
-	context.rect(a.x, a.y, a.width, a.height);
+	graphics.set_shadow (0, 0, 5, "#000");
+	graphics.rect(x, y, w, h);
 		// Safari can't do shadows on shapes with gradients I guess
-	context.set_shadow();*/
+	graphics.set_shadow();
 
 	var stops;
 	if (!this.pressed) {
@@ -53,22 +59,22 @@ suit.Button.prototype.draw = function(graphics) {
 	}
 
 	graphics.set_fill_stroke (
-		graphics.create_linear_gradient (0, 0, 0, a.height, stops),
+		graphics.create_linear_gradient (x, y, x, y+h, stops),
 		"#575757");
-	graphics.rect(0, 0, a.width, a.height);
+	graphics.rect(x, y, w, h);
 	
 	graphics.set_stroke_style (1, "butt", "miter");
 	graphics.path([
-		[0,           a.height - 1],
-		[0,           0],
-		[a.width - 1, 0],
-		[a.width - 1, a.height - 1]
+		[x,         y + h - 1],
+		[x,         y],
+		[x + w - 1, y],
+		[x + w - 1, y + h - 1]
 	]);
 
 	graphics.set_fill_stroke ("#ffffff", "#0b0b0b");
 	graphics.path([
-		[a.width - 1, a.height - 1],
-		[0,           a.height - 1]
+		[x + w - 1, y + h - 1],
+		[x,         y + h - 1]
 	]);
 
 	var child;
