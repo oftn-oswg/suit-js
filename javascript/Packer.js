@@ -10,7 +10,7 @@ suit.Packer = function SUITPacker(orientation) {
 		padding_right: 0
 	};
 };
-suit.Packer.inherit (suit.Container);
+suit.inherit (suit.Packer, suit.Container);
 
 // Default instance variables
 suit.Packer.prototype.name = "Packer";
@@ -21,7 +21,6 @@ suit.Packer.prototype.set_spacing = function(spacing) {
 	suit.ensure(spacing, "number");
 	this.spacing = spacing;
 	if (this.allocation) this.size_allocate (this.allocation);
-	return this;
 };
 
 suit.Packer.prototype.get_spacing = function() {
@@ -34,15 +33,11 @@ suit.Packer.prototype.size_allocate = function(allocation) {
 	
 	var majorsize, minorsize;
 	if (this.orientation === "horizontal") {
-		majorsize = (this.orientation === "horizontal") ?
-			allocation.width : allocation.height;
-		minorsize = (this.orientation === "horizontal") ?
-			allocation.height : allocation.width;
+		majorsize = allocation.width;
+		minorsize = allocation.height;
 	} else {
-		majorsize = (this.orientation === "horizontal") ?
-			allocation.height : allocation.width;
-		minorsize = (this.orientation === "horizontal") ?
-			allocation.width : allocation.height;
+		majorsize = allocation.height;
+		minorsize = allocation.width;
 	}
 	
 	var childsize = 0;
@@ -52,7 +47,7 @@ suit.Packer.prototype.size_allocate = function(allocation) {
 		var child = this.children[i];
 		var majchild = (this.orientation === "horizontal") ?
 			child.get_preferred_width_for_height(minorsize).natural :
-			child.get_preferred_height_for_width(majorsize).natural
+			child.get_preferred_height_for_width(minorsize).natural
 
 		childsize += majchild;
 		if (i !== 0) { childsize += this.spacing; }
@@ -81,11 +76,10 @@ suit.Packer.prototype.size_allocate = function(allocation) {
 		child.size_allocate(ca);
 		majpos += childsize_parts[i];
 	}
-	return this;
 };
 
 suit.Packer.prototype.get_request_mode = function() {
-	return SizeRequestMode.HEIGHT_FOR_WIDTH;
+	return this.orientation === "vertical" ? SizeRequestMode.HEIGHT_FOR_WIDTH : SizeRequestMode.WIDTH_FOR_HEIGHT;
 };
 
 suit.Packer.prototype.get_preferred_width = function() {

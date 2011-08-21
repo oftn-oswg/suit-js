@@ -3,7 +3,7 @@ suit.Screen = function SUITScreen(root) {
 	this.root = root;
 };
 
-suit.Screen.inherit (suit.Bin);
+suit.inherit (suit.Screen, suit.Bin);
 
 suit.Screen.prototype.name = "Screen";
 suit.Screen.prototype.root = null;

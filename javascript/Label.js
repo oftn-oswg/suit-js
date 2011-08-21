@@ -5,7 +5,10 @@ suit.Label = function SUITLabel(text) {
 
 	this.set_has_window (true);
 
-	this.window = new suit.Window (document.body, this, true);
+	// Should use document.documentElement here,
+	// but since there might not be a <body> element,
+	// I should find a way around this sometime.
+	this.window = new suit.Window (suit.Label.container, this, true);
 	style = this.window.base.style;
 	
 	style.display = "none";
@@ -23,7 +26,18 @@ suit.Label = function SUITLabel(text) {
 	if (text) this.set_text (text);
 };
 
-suit.Label.inherit (suit.Widget);
+suit.Label.container = (function() {
+	var container;
+
+	container = document.documentElement.appendChild(document.createElementNS("http://www.w3.org/1999/xhtml", "_"));
+	container.className = "suit";
+	container.style.width = 0;
+	container.style.height = 0;
+
+	return container;
+})();
+
+suit.inherit (suit.Label, suit.Widget);
 
 // Default instance variables
 suit.Label.prototype.name = "Label";
@@ -159,7 +173,7 @@ suit.Label.prototype.get_preferred_width = function() {
 		ostyle.height = "auto";
 		ostyle.width = "auto";
 
-		width = this.cache_pref_width = this.window.base.clientWidth + 1;
+		width = this.cache_pref_width = this.window.base.offsetWidth + 1;
 
 		if (!realized) {
 			ostyle.display = "none";
@@ -195,7 +209,7 @@ suit.Label.prototype.get_preferred_height = function() {
 		ostyle.height = "auto";
 		ostyle.width = "auto";
 
-		height = this.cache_pref_height = this.window.base.clientHeight + 1;
+		height = this.cache_pref_height = this.window.base.offsetHeight + 1;
 
 		if (!realized) {
 			ostyle.display = "none";
@@ -233,7 +247,7 @@ suit.Label.prototype.get_preferred_height_for_width = function(width) {
 		ostyle.height = "auto";
 		ostyle.width = width+"px";
 
-		height = this.cache_pref_hfw[width] = this.window.base.clientHeight + 1;
+		height = this.cache_pref_hfw[width] = this.window.base.offsetHeight + 1;
 
 		if (!realized) {
 			ostyle.display = "none";
@@ -270,7 +284,7 @@ suit.Label.prototype.get_preferred_width_for_height = function(height) {
 		ostyle.height = height+"px";
 		ostyle.width = "auto";
 
-		width = this.cache_pref_wfh[height] = this.window.base.clientWidth + 1;
+		width = this.cache_pref_wfh[height] = this.window.base.offsetWidth + 1;
 
 		if (!realized) {
 			ostyle.display = "none";

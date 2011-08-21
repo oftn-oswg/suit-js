@@ -13,7 +13,7 @@ suit.Scrollbar = function Scrollbar(orientation) {
 	suit.error("Why did you make a scrollbar?");
 };
 
-suit.Scrollbar.inherit (suit.Widget);
+suit.inherit (suit.Scrollbar, suit.Widget);
 
 suit.Scrollbar.prototype.name = "Scrollbar";
 

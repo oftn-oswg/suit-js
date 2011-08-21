@@ -21,7 +21,7 @@ suit.Button = function SUITButton(text) {
 		padding_right: 8
 	};
 };
-suit.Button.inherit (suit.Bin);
+suit.inherit (suit.Button, suit.Bin);
 
 // Default instance variables
 suit.Button.prototype.name = "Button";
@@ -87,16 +87,19 @@ suit.Button.prototype.draw = function(graphics) {
 };
 
 suit.Button.prototype.size_allocate = function(allocation) {
+	var ca;
+
 	suit.Widget.prototype.size_allocate.call(this, allocation);
 	if (this.child) {
-		this.child.size_allocate(new suit.Allocation(
+		ca = new suit.Allocation(
 			this.style.padding_left,
 			this.style.padding_top + this.pressed,
-			allocation.width - this.style.padding_left - this.style.padding_right - 1,
-			allocation.height - this.style.padding_top - this.style.padding_bottom - 1
-		));
+			allocation.width - this.style.padding_left - this.style.padding_right,
+			allocation.height - this.style.padding_top - this.style.padding_bottom
+		);
+		//console.log('button', this.child.text, 'alocation '+ca, 'my alloc'+allocation);
+		this.child.size_allocate(ca);
 	}
-	return this;
 };
 
 suit.Button.prototype.event = function(e) {

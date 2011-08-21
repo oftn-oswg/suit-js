@@ -1,6 +1,5 @@
 suit.Graphics = function SUITGraphics(context) {
 	this.context = context;
-	this.clip = [];
 
 	context.mozImageSmoothingEnabled = true;
 }
@@ -15,25 +14,15 @@ suit.Graphics.prototype.rect = function(x, y, w, h, stroke, fill) {
 	if (stroke) context.strokeRect (x, y, w, h);
 };
 
-suit.Graphics.prototype.push_clip = function(x, y, w, h) {
+
+suit.Graphics.prototype.clip = function(x, y, w, h) {
 	var context = this.context;
 
-	context.save();
 	context.beginPath();
 	context.rect (x, y, w, h);
 	context.clip();
-
-	this.clip.push({x: x, y: y, width: w, height: h});
 };
 
-suit.Graphics.prototype.pop_clip = function() {
-	this.context.restore();
-	this.clip.pop();
-};
-
-suit.Graphics.prototype.get_clip = function() {
-	return this.clip.length ? this.clip[this.clip.length-1] : null;
-};
 
 suit.Graphics.prototype.path = function(data, closepath, stroke, fill) {
 	var context, delta;
@@ -124,10 +113,17 @@ suit.Graphics.prototype.set_fill_stroke = function(fill, stroke) {
 };
 
 suit.Graphics.prototype.clear = function() {
+	var canvas;
+	
+	canvas = this.context.canvas;
+	this.clear_area (0, 0, canvas.width, canvas.height);
+};
+
+suit.Graphics.prototype.clear_area = function(x, y, w, h) {
 	var context;
 
 	context = this.context;
-	context.clearRect (0, 0, context.canvas.width, context.canvas.height);
+	context.clearRect (x, y, w, h);
 };
 
 suit.Graphics.prototype.translate = function(x, y) {

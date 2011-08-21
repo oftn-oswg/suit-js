@@ -14,6 +14,7 @@ suit.Allocation.prototype.args = function() {
 	return [this.x, this.y, this.width, this.height];
 };
 
+suit.Allocation.prototype.valueOf =
 suit.Allocation.prototype.toString = function() {
 	var a = this;
 	return "("+a.x+", "+a.y+") "+a.width+"x"+a.height;

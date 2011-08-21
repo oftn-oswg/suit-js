@@ -17,19 +17,23 @@ suit.Scroller = function SUITScroller(child) {
 	}
 
 	this.style = {
-		padding_top: 5,
-		padding_bottom: 5,
-		padding_left: 8,
-		padding_right: 8,
+		padding_top: 0,
+		padding_bottom: 0,
+		padding_left: 0,
+		padding_right: 0,
 		scroll_bar_width: 8
 	};
+
+	this.animation = new suit.Animation;
+	this.fade_out_timer = null;
 	
 	this.event_mask =
-		/*suit.Event.ButtonPress | suit.Event.ButtonRelease | */suit.Event.Scroll;
+		suit.Event.ButtonPress | suit.Event.ButtonRelease | suit.Event.Scroll;
 };
-suit.Scroller.inherit (suit.Bin);
+suit.inherit (suit.Scroller, suit.Bin);
 
 suit.Scroller.prototype.name = "Scroller";
+suit.Scroller.prototype.opacity = 0;
 
 suit.Scroller.prototype.draw = function(graphics) {
 	suit.ensure(graphics, suit.Graphics);
@@ -43,7 +47,33 @@ suit.Scroller.prototype.draw = function(graphics) {
 		this.propagate_draw (this.child, graphics);
 		this.draw_scrollbars (graphics);
 	}
-	return this;
+};
+
+suit.Scroller.prototype.fade_to = function(to, time) {
+	var self = this;
+
+	if (this.opacity !== to) {
+		this.animation.start(time, this.opacity, to, function(opacity) {
+			opacity = (opacity * 100 | 0) / 100;
+			self.opacity = opacity;
+			self.scrollbar_redraw();
+		});
+	};
+};
+
+suit.Scroller.prototype.scrollbar_redraw = function() {
+	var a = this.allocation;
+	var sb_width = this.style.scroll_bar_width;
+
+	if (this.policyX === "never" && this.policyY === "always") {
+		this.queue_redraw_area (a.width - sb_width, 0, sb_width, a.height);
+	} else if (this.policyX === "never" && this.policyY === "never") {
+		// We a'int got no scroll bars
+	} else if (this.policyX === "always" && this.policyY === "always") {
+		this.queue_redraw ();
+	} else if (this.policyX === "always" && this.policyY === "never") {
+		this.queue_redraw_area (0, a.height - sb_width, a.width, sb_width);
+	}
 };
 
 suit.Scroller.prototype.draw_scrollbars = function(graphics) {
@@ -59,7 +89,7 @@ suit.Scroller.prototype.draw_scrollbars = function(graphics) {
 	sb_width_double = sb_width << 1;
 	
 	graphics.set_stroke_style (sb_width, "round");
-	graphics.set_fill_stroke (null, "black");
+	graphics.set_fill_stroke (null, "rgba(0,0,0,"+this.opacity+")");
 	
 	if (this.policyY === "always") {
 		var x = a.width - sb_width_half;
@@ -87,7 +117,7 @@ suit.Scroller.prototype.size_allocate = function(allocation) {
 	
 	suit.Widget.prototype.size_allocate.call(this, allocation);
 
-	var sb_width = this.style.scroll_bar_width;
+	var sb_width = 0; //this.style.scroll_bar_width;
 	
 	var cw, ch;
 	if (this.child) {
@@ -105,9 +135,8 @@ suit.Scroller.prototype.size_allocate = function(allocation) {
 			cw = this.child.get_preferred_width_for_height(ch).natural;
 		}
 		this.child.size_allocate(new suit.Allocation(0, 0, cw, ch));
-		this.update_scroll_position();
+		this.update_scroll_position ();
 	}
-	return this;
 };
 
 suit.Scroller.prototype.update_scroll_position = function() {
@@ -130,9 +159,9 @@ suit.Scroller.prototype.update_scroll_position = function() {
 		ca.y = this.style.padding_top + this.scrollY;
 		
 		this.child.set_allocation(ca); // Use set_allocation here because we don't need to recalculate layout.
-		this.queue_redraw();
+		if (!this.child.has_window) this.queue_redraw();
+		this.scrollbar_redraw ();
 	}
-	return this;
 };
 
 suit.Scroller.prototype.set_policy = function(horizontal, vertical) {
@@ -141,69 +170,76 @@ suit.Scroller.prototype.set_policy = function(horizontal, vertical) {
 	
 	this.policyX = horizontal || "never";
 	this.policyY = vertical || "always";
-	return this;
 };
 
 suit.Scroller.prototype.event = function(event) {
+	var self = this, update;
+
 	switch (event.type) {
 	case suit.Event.Scroll:
-		this.on_event_scroll(event);
-		break;
-	case suit.Event.ButtonPress:
-	case suit.Event.ButtonRelease:
-		this.on_event_button(event);
-		break;
-	case suit.Event.Motion:
-		this.on_event_motion(event);
-		break;
-	default:
-		suit.log("Unknown event "+event.type);
-	}
-	return true;
-};
 
-suit.Scroller.prototype.on_event_scroll = function(e) {
-	if (e.deltaY && this.policyY === "always") {
-		this.scrollY += e.deltaY;
-		this.update_scroll_position();
-	}
-	if (e.deltaX && this.policyX === "always") {
-		this.scrollX += e.deltaX;
-		this.update_scroll_position();
-	}
-};
+		this.fade_to (1, 100);
 
-suit.Scroller.prototype.on_event_button = function(e) {
-	switch (e.type) {
+		if (this.fade_out_timer) {
+			clearTimeout (this.fade_out_timer);
+			this.fade_out_timer = null;
+		}
+
+		this.fade_out_timer = setTimeout (function() {
+			self.fade_to (0, 500);
+		}, 350);
+
+		update = false;
+
+		if (event.deltaY && this.policyY === "always") {
+			this.scrollY += event.deltaY;
+			update = true;
+		}
+		if (event.deltaX && this.policyX === "always") {
+			this.scrollX += event.deltaX;
+			update = true;
+		}
+
+		if (update) this.update_scroll_position();
+		break;
+
 	case suit.Event.ButtonPress:
-		this.startDragX = e.x;
-		this.startDragY = e.y;
+
+		this.startDragX = event.x;
+		this.startDragY = event.y;
 		this.dragging = true;
 		this.event_mask_add (suit.Event.Motion);
 		this.lock();
 		break;
+
 	case suit.Event.ButtonRelease:
+
 		if (this.dragging) {
 			this.dragging = false;
 			this.event_mask_sub (suit.Event.Motion);
 			this.unlock();
 		}
-	}
-};
+		break;
 
-suit.Scroller.prototype.on_event_motion = function(e) {
+	case suit.Event.Motion:
 
-	if (this.dragging) {
-		if (this.policyY === "always") {
-			this.scrollY -= this.startDragY - e.y;
-			this.startDragY = e.y;
+		if (this.dragging) {
+			if (this.policyY === "always") {
+				this.scrollY -= this.startDragY - event.y;
+				this.startDragY = event.y;
+			}
+			if (this.policyX === "always") {
+				this.scrollX -= this.startDragX - event.x;
+				this.startDragX = event.x;
+			}
+			this.update_scroll_position();
 		}
-		if (this.policyX === "always") {
-			this.scrollX -= this.startDragX - e.x;
-			this.startDragX = e.x;
-		}
-		this.update_scroll_position();
+		break;
+
+	default:
+		suit.log("Unknown event "+event.type);
 	}
+	return true;
 };
 
 suit.Scroller.prototype.get_request_mode = function() {

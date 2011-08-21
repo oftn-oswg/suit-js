@@ -1,10 +1,14 @@
 suit.Image = function SUITImage(filename) {
+	var nsuri;
+
 	suit.ensure(filename, "string");
 	
 	suit.Widget.call(this);
 	this.filename = filename;
-	
-	var imageobj = document.createElement("img");
+
+	nsuri = "http://www.w3.org/1999/xhtml";
+
+	var imageobj = document.createElementNS(nsuri, "img");
 	imageobj.src = filename;
 	
 	var self = this;
@@ -22,7 +26,7 @@ suit.Image.broken_image = (function() {
 	return img;
 })();
 
-suit.Image.inherit (suit.Widget);
+suit.inherit (suit.Image, suit.Widget);
 
 // Default instance variables
 suit.Image.prototype.name = "Image";

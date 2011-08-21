@@ -11,7 +11,7 @@ suit.Container = function SUITContainer() {
 	this.set_has_window (true);
 };
 
-suit.Container.inherit (suit.Widget);
+suit.inherit (suit.Container, suit.Widget);
 
 suit.Container.prototype.name = "Container";
 

@@ -1,5 +1,5 @@
 suit.Window = function SUITWindow(parent, widget, empty) {
-	var base, canvas, context, unique;
+	var base, canvas, context, unique, nsuri;
 
 	suit.ensure (parent, "object");
 	if (!parent) throw new Error("suit.Window requires a parent");
@@ -8,13 +8,15 @@ suit.Window = function SUITWindow(parent, widget, empty) {
 
 	unique = suit.unique();
 
-	base = document.createElement("div");
+	nsuri = "http://www.w3.org/1999/xhtml";
+
+	base = document.createElementNS(nsuri, "div");
 	base.className = "suit suit_"+widget.name;
 	base.style.top = 0;
 	base.style.left = 0;
 
 	if (!empty) {
-		canvas = document.createElement("canvas");
+		canvas = document.createElementNS(nsuri, "canvas");
 		canvas.suit_unique = unique;
 		context = new suit.Graphics(canvas.getContext("2d"));
 		base.appendChild(canvas);
@@ -42,7 +44,7 @@ suit.Window = function SUITWindow(parent, widget, empty) {
 
 };
 
-suit.Window.inherit (suit.Object);
+suit.inherit (suit.Window, suit.Object);
 
 // We need a reference back to the widget.
 suit.Window.prototype.widget = null;
@@ -97,6 +99,24 @@ suit.Window.prototype.invalidate = function() {
 	if (this.widget && this.context) {
 		this.context.clear ();
 		this.widget.draw (this.context);
+	}
+};
+
+
+suit.Window.prototype.invalidate_area = function(x, y, width, height) {
+	var context, widget;
+
+	widget = this.widget;
+	context = this.context;
+
+	if (widget && context) {
+		context.save ();
+
+		context.clip (x, y, width, height);
+		context.clear_area (x, y, width, height);
+		widget.draw (this.context);
+
+		context.restore ();
 	}
 };
 

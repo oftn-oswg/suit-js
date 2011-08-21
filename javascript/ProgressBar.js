@@ -17,7 +17,7 @@ suit.ProgressBar = function SUITProgressBar(text) {
 	};
 };
 
-suit.ProgressBar.inherit (suit.Bin);
+suit.inherit (suit.ProgressBar, suit.Bin);
 
 // Default instance variables
 suit.ProgressBar.prototype.name = "ProgressBar";

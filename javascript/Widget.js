@@ -2,7 +2,7 @@ suit.Widget = function SUITWidget() {
 	suit.Object.call(this);
 };
 
-suit.Widget.inherit (suit.Object);
+suit.inherit (suit.Widget, suit.Object);
 
 // Default instance variables
 suit.Widget.prototype.name = "Widget";
@@ -104,11 +104,31 @@ suit.Widget.prototype.get_parent_window = function() {
 
 
 suit.Widget.prototype.queue_redraw = function() {
+	var allocation;
+
+	allocation = this.allocation;
+
 	if (this.realized) {
 		if (this.has_window) {
 			this.window.invalidate ();
 		} else if (this.parent) {
-			this.parent.queue_redraw ();
+			this.parent.queue_redraw_area (allocation.x, allocation.y, allocation.width, allocation.height);
+		}
+	}
+};
+
+
+suit.Widget.prototype.queue_redraw_area = function(x, y, width, height) {
+	suit.ensure (x, "number");
+	suit.ensure (y, "number");
+	suit.ensure (width, "number");
+	suit.ensure (height, "number");
+
+	if (this.realized) {
+		if (this.has_window) {
+			this.window.invalidate_area (x, y, width, height);
+		} else if (this.parent) {
+			this.parent.queue_redraw_area (x, y, width, height); // TODO: Translate coordinates
 		}
 	}
 };

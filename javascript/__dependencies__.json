@@ -1,8 +1,8 @@
 {
+	"Animation": false,
 	"SUIT": false,
 	"Logging": "SUIT",
 	"Graphics": "SUIT",
-	"TextLayout": "SUIT",
 	"Object": "SUIT",
 	"Allocation": "SUIT",
 	"Event": "SUIT",
@@ -11,7 +11,7 @@
 	"Container": "Widget",
 	"Bin": "Container",
 	"Screen": "Bin",
-	"Label": ["Widget", "TextLayout"],
+	"Label": ["Widget"],
 	"Button": ["Bin", "Label"],
 	"Scroller": "Bin",
 	"Image": "Widget",
