@@ -17,5 +17,6 @@
 	"Image": "Widget",
 	"ProgressBar": "Bin",
 	"Scrollbar": "Widget",
-	"Window": "Object"
+	"Window": "Object",
+	"Frame": "Widget"
 }

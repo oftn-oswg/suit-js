@@ -54,7 +54,7 @@ suit.Widget.prototype.set_has_window = function(has_window) {
 };
 
 
-suit.Widget.prototype.realize = function() {
+suit.Widget.prototype.realize = function(empty) {
 	var window, allocation;
 
 	if (this.has_window && !this.realized) {
@@ -65,7 +65,7 @@ suit.Widget.prototype.realize = function() {
 			this.size_allocate (allocation);
 		}
 
-		window = new suit.Window(this.get_parent_window(), this);
+		window = new suit.Window(this.get_parent_window(), this, empty);
 		window.move_resize (allocation);
 
 		this.window = window;
