@@ -84,14 +84,7 @@ suit.Label.prototype.update_properties = function() {
 	base.style.textAlign = this.align;
 	base.style.lineHeight = this.line_height ? this.line_height + "em" : "normal";
 
-	if (this.selectable) {
-		base.style.cursor = "auto";
-	} else {
-		base.style.cursor = "default";
-		base.style.userSelect = "none";
-		base.style.MozUserSelect = "none";
-		base.style.KhtmlUserSelect = "none";
-	}
+	this.window.set_selectable(this.selectable);
 };
 
 
@@ -134,12 +127,7 @@ suit.Label.prototype.set_line_height = function(line_height) {
 };
 
 suit.Label.prototype.set_selectable = function(selectable) {
-	suit.ensure(selectable, "boolean");
-
-	if (this.selectable !== selectable) {
-		this.selectable = selectable;
-		this.update_properties ();
-	}
+	this.window.set_selectable(selectable);
 };
 
 suit.Label.prototype.set_element_text = function(element, text) {

@@ -86,6 +86,12 @@ suit.Button.prototype.draw = function(graphics) {
 	}
 };
 
+suit.Button.prototype.realize = function(empty) {
+	suit.Widget.prototype.realize.call(this, empty);
+
+	this.window.set_selectable(false);
+}
+
 suit.Button.prototype.size_allocate = function(allocation) {
 	var ca;
 

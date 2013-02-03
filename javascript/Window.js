@@ -39,7 +39,7 @@ suit.Window = function SUITWindow(parent, widget, empty) {
 	}
 
 	if (widget) {
-		suit.widgets[unique] = widget;
+		suit.register_widget (unique, widget);
 	}
 
 };
@@ -52,6 +52,7 @@ suit.Window.prototype.x = 0;
 suit.Window.prototype.y = 0;
 suit.Window.prototype.width = 0;
 suit.Window.prototype.height = 0;
+suit.Window.prototype.selectable = true;
 
 suit.Window.prototype.destroy = function() {
 	var parent;
@@ -64,7 +65,7 @@ suit.Window.prototype.destroy = function() {
 	}
 
 	if (this.widget) {
-		delete suit.widgets[this.unique];
+		suit.unregister_widget (this.unique);
 	}
 };
 
@@ -82,6 +83,37 @@ suit.Window.prototype.reparent = function(parent) {
 
 	this.parent = parent;
 
+};
+
+
+suit.Window.prototype.update_properties = function() {
+	var base;
+
+	base = this.base;
+
+	if (this.selectable) {
+		base.style.cursor = "inherit";
+		base.style.userSelect = "inherit";
+		base.style.MozUserSelect = "inherit";
+		base.style.KhtmlUserSelect = "inherit";
+		base.style.webkitUserSelect = "inherit";
+	} else {
+		base.style.cursor = "default";
+		base.style.userSelect = "none";
+		base.style.MozUserSelect = "none";
+		base.style.KhtmlUserSelect = "none";
+		base.style.webkitUserSelect = "none";
+	}
+};
+
+
+suit.Window.prototype.set_selectable = function(selectable) {
+	suit.ensure(selectable, "boolean");
+
+	if (this.selectable !== selectable) {
+		this.selectable = selectable;
+		this.update_properties ();
+	}
 };
 
 
