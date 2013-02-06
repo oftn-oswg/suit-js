@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 
-	var demo_text = "\tThis is text from a Label widget that has been added as the child of a Packer widget. The Packer widget lines up widgets in a row or column with optional spacing. It's the child of the Scroller widget which allows you to use your mouse wheel to scroll text. Scroll bars will be added when it becomes more developed.";
+	var demo_text = "\tThis is text from a Label widget that has been added as the child of a Packer widget. The Packer widget lines up widgets in a row or column with optional spacing. It's the child of the Scroller widget which allows you to scroll its contents.";
 
 	var screen, scroller, vpack, hpack, logo, demo_label, button, button_alert, button_prompt, more_text, source;
 
@@ -21,10 +21,19 @@
 	vpack.add (demo_label);
 
 	button = new suit.Button("Click me! I'm a button.");
+
+	var clicks = 0;
 	button.connect ("activate", function() {
-		var a = [], i = 50;
-		while (i--) a.push (97+Math.random()*26|0);
-		this.get_child ().set_text (String.fromCharCode.apply (null, a));
+		var text;
+
+		clicks++;
+		switch (clicks) {
+			case 42: text = "You don't want to wear me out do you?"; break;
+			case 63: text = "I'm fine being clicked all day, but I'm worried about your health."; break;
+			case 109: text = "Please call 9-1-1 if you are having a seizure."; break;
+			default: text = "I have been clicked " + clicks + " time" + (clicks === 1 ? "" : "s") + "!";
+		}
+		this.get_child ().set_text (text);
 	});
 	vpack.add (button);
 
